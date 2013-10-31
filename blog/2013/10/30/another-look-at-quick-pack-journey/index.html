@@ -132,17 +132,17 @@ z</code>.</li>
 
 <p>A snapshot of the error is given below:</p>
 
-<pre><code>    /data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
+<pre><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
 
-    /home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
-         37     except KeyError:
-         38         raise ImageFileError('Cannot work out file type of "%s"' %
-    ---&gt; 39                              filename)
-         40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
-         41         klass = class_map[img_type]['class']
+/home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
+     37     except KeyError:
+     38         raise ImageFileError('Cannot work out file type of "%s"' %
+---&gt; 39                              filename)
+     40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
+     41         klass = class_map[img_type]['class']
 
-    ImageFileError: Cannot work out file type of ""
-    Interface Function failed to run. 
+ImageFileError: Cannot work out file type of ""
+Interface Function failed to run. 
 </code></pre>
 
 <p>To run the crash file, see the code below.</p>
@@ -167,6 +167,27 @@ z</code>.</li>
 </span><span class='line'><span class="n">crashinfo</span><span class="p">[</span><span class="s">&#39;node&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<h1>Preprocessing EmotionalBS</h1>
+
+<p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
+
+<ul>
+<li>Used ANTS for registration</li>
+<li>Two nuisance correction strategies
+
+<pre><code>  * compcor+motion+linear+quadratic
+  * compcor+global+motion+linear+quadratic
+</code></pre></li>
+<li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
+<li>Smoothing of 4.5mm (only for derivatives)</li>
+<li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
+</ul>
+
+
+<h2>Install FSL 5 for Gelert</h2>
+
+<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike&rsquo;s account didn&rsquo;t have. And even if I had those, it wasn&rsquo;t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so</p>
 
 <h1>New Journal</h1>
 
@@ -200,7 +221,7 @@ z</code>.</li>
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a>
+    <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>, <a class='category' href='/blog/categories/emotional-bs/'>emotional-bs</a>, <a class='category' href='/blog/categories/jekyll/'>jekyll</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a>
   
 </span>
 
