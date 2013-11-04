@@ -120,7 +120,7 @@
 
 <h2>Distance Matrices</h2>
 
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(n<sup>2</sup>).</p>
+<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(V*n<sup>2</sup>).</p>
 
 <h2>MDMR</h2>
 
@@ -148,7 +148,7 @@
 </ul>
 
 
-<p>Since the matrix operation will dominate the time, the complexity is O(n<sup>3</sup>).</p>
+<p>Since the matrix operation will dominate the time, the complexity is O(V*n<sup>3</sup>) where V is the number of voxels.</p>
 
 <h3>Pseudo-F Statistic</h3>
 
@@ -161,7 +161,7 @@
 </ul>
 
 
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two operations.</p>
+<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn<sup>2xV</sup>) so as in the distance matrix step the complexity will scale by n<sup>2</sup>.</p>
 
 <h1>References</h1>
 
