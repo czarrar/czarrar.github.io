@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-04T01:51:11-05:00</updated>
+  <updated>2013-11-04T12:36:52-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Monday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/04/monday/"/>
+    <updated>2013-11-04T12:20:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/04/monday</id>
+    <content type="html"><![CDATA[<h1>NiLearn Test Data</h1>
+
+<h1>ABIDE Preprocessing</h1>
+
+<h1>QuickPack</h1>
+
+<h1>TODO</h1>
+
+<p>[] NiLearn Test Data</p>
+
+<pre><code>[] Generate group phenotype file
+</code></pre>
+
+<p>[] ABIDE Preprocessing</p>
+
+<pre><code>[] Email Cam about next steps
+[] Setup the pipeline with gelert excluding centrality
+[] Start running the pipeline
+</code></pre>
+
+<p>[] QuickPack</p>
+
+<pre><code>[] Check that complete run was good
+[] Try to figure out why the old runs did fine?
+[] Using the new complete run as input for QP
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CWAS Computational Complexity]]></title>
