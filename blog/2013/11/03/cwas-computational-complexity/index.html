@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CWAS Computational Complexity - Zarrar's Journaling</title>
+  <meta name="author" content="Zarrar Shehzad">
+
+  
+  <meta name="description" content="I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step. About Time &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zarrar's Journaling</a></h1>
+  
+    <h2>To the edge and beyond</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:czarrar.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CWAS Computational Complexity</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-03T20:06:00-05:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+
+<h1>About Time Complexity</h1>
+
+<p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
+
+<p>Efficiency of an algorithm can be measured by [1]:</p>
+
+<ul>
+<li>Execution time (time complexity)</li>
+<li>Amount of memory required (space complexity)</li>
+</ul>
+
+
+<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There&rsquo;s other relevant information on the wiki page and some online slides [2,3].</p>
+
+<h2>Complexity of Math Operations</h2>
+
+<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n<sup>2</sup> or n*log(n) (depending on the implementation). Matrix multiplication is n<sup>3</sup>. This is a little weird because I think of the correlation coefficient as n<sup>2</sup> since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
+
+<h1>CWAS Complexity</h1>
+
+<p>So I guess that&rsquo;s all the background I need. Now let&rsquo;s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
+
+<h2>Distance Matrices</h2>
+
+<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(V*n<sup>2</sup>).</p>
+
+<h2>MDMR</h2>
+
+<h3>Hat Matrix</h3>
+
+<p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
+
+<ul>
+<li>3 matrix algebra operations</li>
+<li>1 matrix inversion</li>
+<li>2 transpositions (but I won&rsquo;t count those)</li>
+</ul>
+
+
+<p>Each of these operations is O(k<em>n<sup>2</sup>) [4] so this step has O(k</em>n<sup>2</sup>) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
+
+<h3>Gower Matrix</h3>
+
+<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1&rsquo;s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
+
+<ul>
+<li>2 subtractions (additions)</li>
+<li>2 divisions (multiplications)</li>
+<li>2 matrix multiplications</li>
+</ul>
+
+
+<p>Since the matrix operation will dominate the time, the complexity is O(V*n<sup>3</sup>) where V is the number of voxels.</p>
+
+<h3>Pseudo-F Statistic</h3>
+
+<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it&rsquo;s a P x n<sup>2</sup> matrix (P = # of permutations) and G is a vector of gower matrices so it&rsquo;s a n<sup>2</sup> x V matrix (V = # of voxels). This means that there are:</p>
+
+<ul>
+<li>1 subtraction (I-H)</li>
+<li>2 matrix multiplications</li>
+<li>1 division</li>
+</ul>
+
+
+<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn<sup>2xV</sup>) so as in the distance matrix step the complexity will scale by n<sup>2</sup>.</p>
+
+<h1>References</h1>
+
+<ol>
+<li><a href="http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf">http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Time_complexity">http://en.wikipedia.org/wiki/Time_complexity</a></li>
+<li><a href="http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf">http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations">http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</a></li>
+<li><a href="http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation">http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</a></li>
+<li><a href="http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation">http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</a></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-03T20:06:00-05:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cwas/'>cwas</a>, <a class='category' href='/blog/categories/mdmr/'>mdmr</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/30/another-look-at-quick-pack-journey/" title="Previous Post: Another Quick Pack Journey">&laquo; Another Quick Pack Journey</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/04/monday/" title="Next Post: Monday">Monday &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/04/monday/">Monday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/03/cwas-computational-complexity/">CWAS Computational Complexity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/30/another-look-at-quick-pack-journey/">Another Quick Pack Journey</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Zarrar Shehzad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
