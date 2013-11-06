@@ -104,9 +104,7 @@
 
 <h2>Analysis</h2>
 
-<p><strong>TODO:</strong> Add how boot works.</p>
-
-<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end.</p>
+<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
 
 <p>After I got the p-values for each bootstrap, I (based on Phil&rsquo;s suggestion):</p>
 
@@ -117,7 +115,7 @@
 
 <h2>Plotting</h2>
 
-<p>Looking at the data, I am finding</p>
+<p>The basic plots can be found on <a href="http://rpubs.com/czarrar/cwas-bootstrap.">http://rpubs.com/czarrar/cwas-bootstrap.</a> <strong>TODO</strong>: I am still needing to work through the surface rendering.</p>
 
 <h2>Code</h2>
 
@@ -200,6 +198,8 @@ f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
 results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
 </code></pre></noscript></div>
 
+
+
 </div>
 
 
@@ -263,6 +263,10 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/">Rerunning CWAS Using Transformed Correlations</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/05/tuesday/">Tuesday</a>
       </li>
     
@@ -276,10 +280,6 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
     
       <li class="post">
         <a href="/blog/2013/11/03/cwas-computational-complexity/">CWAS Computational Complexity</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/30/another-look-at-quick-pack-journey/">Another Quick Pack Journey</a>
       </li>
     
   </ul>

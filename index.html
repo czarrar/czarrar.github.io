@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="NiLearn I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to &hellip;">
+  <meta name="description" content="We had previously been using the semi-metric 1-r, however are now with a reviewer&rsquo;s suggestion switching to a metric using a slight &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,99 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/">Rerunning CWAS Using Transformed Correlations</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-05T20:26:00-05:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>We had previously been using the semi-metric <code>1-r</code>, however are now with a reviewer&rsquo;s suggestion switching to a metric using a slight transformation of the prior person correlation <code>sqrt(2*1-r)</code><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. This change although simple will require a massive effort to semi-reanalyze everything.</p>
+
+<h1>Code</h1>
+
+<p>The first order of business is creating a function that easily transforms my big matrices and re-generates the gower centered matrices. A few nuances is that I need to make sure to set the number of threads to use in advance (otherwise all processors will be occupied) and to set the memory limit for gower centering.</p>
+
+<p>The actual command can be called from bash with the following usage:</p>
+
+<p><code>./transform_cor.R distance-descriptor memlimit nthreads</code></p>
+
+<ul>
+<li><em>distance-descriptor</em>: File path to the subject distances descriptor</li>
+<li><em>memlimit</em>: Upper bound on RAM to use</li>
+<li><em>nthreads</em>: Number of threads to use for matrix algebra operations</li>
+</ul>
+
+
+<h1>Normandy (aka Redoing Almost All Figures)</h1>
+
+<h2>What Figures</h2>
+
+<p>Below are the list of figures in the main paper and whether I need to redo it or not.</p>
+
+<ol>
+<li><strong>Yes</strong> Since this is an example figure, I don&rsquo;t think I need to redo the particular analysis. However, I do need to edit the figure so it shows <code>sqrt(2*(1-r))</code>.</li>
+<li><strong>No</strong> Just a table.</li>
+<li><strong>Yes</strong> Redo 2 analyses and 3 surface maps.</li>
+<li><strong>Yes</strong> Redo 2 analyses and 2 histograms.</li>
+<li><strong>Yes</strong> Redo network summary and surface map.</li>
+<li><strong>Yes</strong> Redo 3 surface maps.</li>
+<li><strong>Yes</strong> Redo 6 analyses and 6 surface maps.</li>
+<li><strong>Yes</strong> Redo 2 scatter plots, 2 analyses, and 4 surface maps.</li>
+<li><strong>Yes</strong> Redo 2 bar plots.</li>
+<li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
+<li><strong>Yes</strong> Redo 4 analyses and 4 surface maps.</li>
+<li><strong>Yes</strong> Redo 3 analyses and 4 surface maps.</li>
+</ol>
+
+
+<p>Supplementary Figures</p>
+
+<ol>
+<li><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</li>
+<li><strong>Yes</strong> ?</li>
+<li><strong>Yes</strong> 2 analyses and 2 surface maps.</li>
+<li><strong>Yes</strong> 6 analyses and 6 surface maps.</li>
+<li><strong>Yes</strong> 3 analyses and 3 surface maps.</li>
+<li><strong>Yes</strong> 3+ analyses and 3 plots.</li>
+</ol>
+
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>I am still working on getting latex to work so these math equations will be not be displayed well for now.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -231,9 +324,7 @@
 
 <h2>Analysis</h2>
 
-<p><strong>TODO:</strong> Add how boot works.</p>
-
-<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end.</p>
+<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
 
 <p>After I got the p-values for each bootstrap, I (based on Phil&rsquo;s suggestion):</p>
 
@@ -244,7 +335,7 @@
 
 <h2>Plotting</h2>
 
-<p>Looking at the data, I am finding</p>
+<p>The basic plots can be found on <a href="http://rpubs.com/czarrar/cwas-bootstrap.">http://rpubs.com/czarrar/cwas-bootstrap.</a> <strong>TODO</strong>: I am still needing to work through the surface rendering.</p>
 
 <h2>Code</h2>
 
@@ -326,6 +417,8 @@ f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
 # Call
 results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
 </code></pre></noscript></div>
+
+
 
 </div>
   
@@ -778,6 +871,10 @@ Interface Function failed to run.
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/">Rerunning CWAS Using Transformed Correlations</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/05/tuesday/">Tuesday</a>
       </li>
     
@@ -791,10 +888,6 @@ Interface Function failed to run.
     
       <li class="post">
         <a href="/blog/2013/11/03/cwas-computational-complexity/">CWAS Computational Complexity</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/30/another-look-at-quick-pack-journey/">Another Quick Pack Journey</a>
       </li>
     
   </ul>
