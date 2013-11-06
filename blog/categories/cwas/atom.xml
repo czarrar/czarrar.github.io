@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-04T22:50:06-05:00</updated>
+  <updated>2013-11-05T19:09:50-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,113 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Bootstrap of IQ CWAS]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/"/>
+    <updated>2013-11-04T23:38:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas</id>
+    <content type="html"><![CDATA[<p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
+
+<h2>Analysis</h2>
+
+<p><strong>TODO:</strong> Add how boot works.</p>
+
+<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end.</p>
+
+<p>After I got the p-values for each bootstrap, I (based on Phil&rsquo;s suggestion):</p>
+
+<p><blockquote><p>present some sort of map indicating the proportion of times each voxel comes out as significant. This is similar to the &lsquo;bootstrap inclusion frequency&rsquo; proposed in these references below</p></p><p><p>Royston, P. and Sauerbrei, W. (2008). Multivariable Model-building: a pragmatic approach to regression analysis based on fractional polynomials for modeling continuous variables. Wiley.</p></p><p><p>Sauerbrei, W. and Schumacher, M. (1992). A bootstrap resampling procedure for model building: application to the Cox regression model. Statistics in Medicine 11 2093–2109.</p><footer><strong>Phil Reiss</strong></footer></blockquote></p>
+
+<p>I was able to do these steps fairly easily.</p>
+
+<h2>Plotting</h2>
+
+<p>Looking at the data, I am finding</p>
+
+<h2>Code</h2>
+
+<p><div><script src='https://gist.github.com/7164165.js?file=cwas_bootstrap.R'></script>
+<noscript><pre><code>library(connectir)
+library(boot)
+
+# data = model
+boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
+    ###
+    # Distances
+    ###
+    
+    # We need to sample the distances based on the indices
+    # that is we will create a new set of distances with subject indices based on indices
+    # This will also create a local copy of the big matrix
+    cat(&quot;Subset of subjects in distances\n&quot;)
+    sdist &lt;- filter_subdist(sdist, subs=indices)
+    
+    # Now we can gowerify
+    cat(&quot;Gowerify\n&quot;)
+    gmat &lt;- gower.subdist2(sdist)
+    
+    # Info
+    nvoxs &lt;- ncol(gmat)
+    nsubs &lt;- sqrt(nrow(gmat))
+    nperms &lt;- 4999
+    nfactors &lt;- 1
+    
+    
+    ###
+    # Calculate memory demands
+    ###
+    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
+    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
+    # this will give opts$blocksize and opts$superblocksize that will
+    # limit total RAM usage to 20GB
+    
+    ###
+    # Get the model ready
+    ###
+    
+    cat(&quot;Subset of subjects in model\n&quot;)
+    model &lt;- data.frame(data[indices,])
+    
+    
+    ###
+    # Call MDMR
+    ###
+    
+    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
+                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
+    
+    -log10(ret$pvals[,]) # or should I just return p-values?
+}
+
+
+###
+# Bootstrap ROI-based IQ Results
+###
+
+# Set parallel processing
+nthreads &lt;- 8
+set_parallel_procs(1, nthreads, TRUE)
+
+# Read in the distances (using ROI-based distances and not voxelwise here)
+#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
+dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
+sdist &lt;- attach.big.matrix(dpath)
+
+# Read in the model
+mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
+model &lt;- read.csv(mpath)
+model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
+
+# Set the formula
+f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
+
+# Call
+results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
+</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CWAS Computational Complexity]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-04T22:50:06-05:00</updated>
+  <updated>2013-11-05T19:09:50-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,211 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tuesday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/05/tuesday/"/>
+    <updated>2013-11-05T15:26:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/05/tuesday</id>
+    <content type="html"><![CDATA[<h1>NiLearn</h1>
+
+<p>I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data&rsquo;s location<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+
+<p>So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I&rsquo;m rerunning (on top of the old) the participants with nuisance and bandpass turned off.</p>
+
+<p>Checking on the preprocessing, it initially skipped a bunch of things but now seems to be running some initial steps again. If this takes too long (i.e., is still going into tomorrow), then I might try to apply the warp myself tomorrow.</p>
+
+<hr />
+
+<h1>ABIDE</h1>
+
+<p>Since the QC pages have been fixed, I started to re-run the ABIDE analysis. This time I used 6mm of smoothing, added back the degree centrality, and running each subject with 4 cores on gelert. It is running strong (for now). There are 1102 subjects to run and currently 62 are being run in parallel.</p>
+
+<hr />
+
+<h1>Emotional BS</h1>
+
+<p>I ran the preprocessing for these participants before the QC issue for CPAC was fixed. Now I want to rebuild just the QC as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home/milham/Downloads/cpac_master&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">CPAC</span>
+</span><span class='line'><span class="n">CPAC</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">create_all_qc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;/home2/data/Projects/Emotional-BS/processed_data&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I&rsquo;m not really using, then this shouldn&rsquo;t be an issue.</p>
+
+<p>I also looked into co-registering the two anatomicals. I ended up dropping this endeavor for now since the gain in SNR and benefit to any results should not be too great. In looking at the QC, one possibility is that we may want to replace one of our anatomicals with the other anatomical.</p>
+
+<h2>Multi-Instance Learning</h2>
+
+<p>I did a basic search for relevant reading material. I found the following:</p>
+
+<p><em>A paper outlining the approach in a seemingly easy manner.</em>
+<a href="http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf">http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf</a></p>
+
+<p><em>Very detailed slides that appear to give a good overview.</em>
+<a href="http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf">http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf</a></p>
+
+<p><em>Two links with relevant python code</em><br/>
+<a href="http://engr.case.edu/doran_gary/code.html  ">http://engr.case.edu/doran_gary/code.html  </a>
+<a href="https://github.com/garydoranjr/misvm">https://github.com/garydoranjr/misvm</a></p>
+
+<hr />
+
+<h1>TODO</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[]</span> <span class="n">NiLearn</span> <span class="n">Test</span> <span class="n">Data</span>
+</span><span class='line'>  <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Sent</span> <span class="n">email</span> <span class="n">confirming</span> <span class="n">that</span> <span class="n">band</span><span class="o">-</span><span class="k">pass</span> <span class="n">filtering</span> <span class="ow">is</span> <span class="n">required</span>
+</span><span class='line'>  <span class="p">[]</span> <span class="n">Get</span> <span class="n">the</span> <span class="n">pre</span><span class="o">-</span><span class="n">nuisance</span> <span class="n">variables</span>
+</span><span class='line'><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">ABIDE</span> <span class="n">Preprocessing</span>
+</span><span class='line'>  <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Restart</span> <span class="n">the</span> <span class="n">preprocessing</span> <span class="n">using</span> <span class="mi">4</span> <span class="n">cores</span> <span class="p">(</span><span class="n">everything</span> <span class="k">except</span> <span class="n">eigen</span><span class="p">)</span>
+</span><span class='line'><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Emotional</span> <span class="n">BS</span>
+</span><span class='line'>  <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">regenerate</span> <span class="n">the</span> <span class="n">QC</span> <span class="n">pages</span> <span class="n">based</span> <span class="n">on</span> <span class="n">current</span> <span class="n">output</span>
+</span><span class='line'>  <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Lookup</span> <span class="n">some</span> <span class="n">multi</span><span class="o">-</span><span class="n">instance</span> <span class="n">learning</span> <span class="n">stuff</span>
+</span><span class='line'>  <span class="p">[]</span> <span class="n">QC</span>
+</span><span class='line'><span class="p">[]</span> <span class="n">QuickPack</span>
+</span><span class='line'>  <span class="p">[]</span> <span class="err">?</span> <span class="p">(</span><span class="ow">not</span> <span class="n">enough</span> <span class="n">time</span> <span class="n">today</span> <span class="n">to</span> <span class="n">make</span> <span class="n">substantial</span> <span class="n">progress</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p><code>/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code><a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Bootstrap of IQ CWAS]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/"/>
+    <updated>2013-11-04T23:38:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas</id>
+    <content type="html"><![CDATA[<p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
+
+<h2>Analysis</h2>
+
+<p><strong>TODO:</strong> Add how boot works.</p>
+
+<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end.</p>
+
+<p>After I got the p-values for each bootstrap, I (based on Phil&rsquo;s suggestion):</p>
+
+<blockquote><p>present some sort of map indicating the proportion of times each voxel comes out as significant. This is similar to the &#8216;bootstrap inclusion frequency&#8217; proposed in these references below</p><p>Royston, P. and Sauerbrei, W. (2008). Multivariable Model-building: a pragmatic approach to regression analysis based on fractional polynomials for modeling continuous variables. Wiley.</p><p>Sauerbrei, W. and Schumacher, M. (1992). A bootstrap resampling procedure for model building: application to the Cox regression model. Statistics in Medicine 11 2093–2109.</p><footer><strong>Phil Reiss</strong></footer></blockquote>
+
+
+<p>I was able to do these steps fairly easily.</p>
+
+<h2>Plotting</h2>
+
+<p>Looking at the data, I am finding</p>
+
+<h2>Code</h2>
+
+<div><script src='https://gist.github.com/7164165.js?file=cwas_bootstrap.R'></script>
+<noscript><pre><code>library(connectir)
+library(boot)
+
+# data = model
+boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
+    ###
+    # Distances
+    ###
+    
+    # We need to sample the distances based on the indices
+    # that is we will create a new set of distances with subject indices based on indices
+    # This will also create a local copy of the big matrix
+    cat(&quot;Subset of subjects in distances\n&quot;)
+    sdist &lt;- filter_subdist(sdist, subs=indices)
+    
+    # Now we can gowerify
+    cat(&quot;Gowerify\n&quot;)
+    gmat &lt;- gower.subdist2(sdist)
+    
+    # Info
+    nvoxs &lt;- ncol(gmat)
+    nsubs &lt;- sqrt(nrow(gmat))
+    nperms &lt;- 4999
+    nfactors &lt;- 1
+    
+    
+    ###
+    # Calculate memory demands
+    ###
+    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
+    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
+    # this will give opts$blocksize and opts$superblocksize that will
+    # limit total RAM usage to 20GB
+    
+    ###
+    # Get the model ready
+    ###
+    
+    cat(&quot;Subset of subjects in model\n&quot;)
+    model &lt;- data.frame(data[indices,])
+    
+    
+    ###
+    # Call MDMR
+    ###
+    
+    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
+                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
+    
+    -log10(ret$pvals[,]) # or should I just return p-values?
+}
+
+
+###
+# Bootstrap ROI-based IQ Results
+###
+
+# Set parallel processing
+nthreads &lt;- 8
+set_parallel_procs(1, nthreads, TRUE)
+
+# Read in the distances (using ROI-based distances and not voxelwise here)
+#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
+dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
+sdist &lt;- attach.big.matrix(dpath)
+
+# Read in the model
+mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
+model &lt;- read.csv(mpath)
+model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
+
+# Set the formula
+f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
+
+# Call
+results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
+</code></pre></noscript></div>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Monday]]></title>
@@ -107,14 +312,6 @@
 
 <p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can&rsquo;t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn&rsquo;t work! Ugh so it&rsquo;s specifically related to the command-line, which is doing something differently than the GUI.</p>
 
-<ul>
-<li>pierre => big</li>
-<li>xinian => small</li>
-<li>steve => from cam if can&rsquo;t find QC file should skip
-multi source learning</li>
-</ul>
-
-
 <hr />
 
 <h1>Emotional-BS</h1>
@@ -143,15 +340,15 @@ multi source learning</li>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[]</span> NiLearn Test Data
-</span><span class='line'>  <span class="o">[]</span> Generate group phenotype file
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>x<span class="o">]</span> NiLearn Test Data
+</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Generate group phenotype file
 </span><span class='line'><span class="o">[]</span> ABIDE Preprocessing
 </span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Email Cam about next steps
 </span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Setup the pipeline with gelert excluding centrality
 </span><span class='line'>  <span class="o">[]</span> Start running the pipeline
 </span><span class='line'><span class="o">[]</span> QuickPack
-</span><span class='line'>  <span class="o">[]</span> Check that <span class="nb">complete </span>run was good
-</span><span class='line'>  <span class="o">[]</span> Try to figure out why the old runs did fine?
+</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Check that <span class="nb">complete </span>run was good
+</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Try to figure out why the old runs did fine?
 </span><span class='line'>  <span class="o">[]</span> Using the new <span class="nb">complete </span>run as input <span class="k">for </span>QP
 </span></code></pre></td></tr></table></div></figure>
 

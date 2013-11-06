@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nilearn | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/nilearn/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-04T22:50:06-05:00</updated>
+  <updated>2013-11-05T19:09:50-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tuesday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/05/tuesday/"/>
+    <updated>2013-11-05T15:26:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/05/tuesday</id>
+    <content type="html"><![CDATA[<h1>NiLearn</h1>
+
+<p>I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data&rsquo;s location<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+
+<p>So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I&rsquo;m rerunning (on top of the old) the participants with nuisance and bandpass turned off.</p>
+
+<p>Checking on the preprocessing, it initially skipped a bunch of things but now seems to be running some initial steps again. If this takes too long (i.e., is still going into tomorrow), then I might try to apply the warp myself tomorrow.</p>
+
+<hr />
+
+<h1>ABIDE</h1>
+
+<p>Since the QC pages have been fixed, I started to re-run the ABIDE analysis. This time I used 6mm of smoothing, added back the degree centrality, and running each subject with 4 cores on gelert. It is running strong (for now). There are 1102 subjects to run and currently 62 are being run in parallel.</p>
+
+<hr />
+
+<h1>Emotional BS</h1>
+
+<p>I ran the preprocessing for these participants before the QC issue for CPAC was fixed. Now I want to rebuild just the QC as follows:</p>
+
+<p>``` python
+import sys
+sys.path.insert(0, &lsquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&rsquo;)
+sys.path.insert(1, &ldquo;/home/milham/Downloads/cpac_master&rdquo;)</p>
+
+<p>import CPAC
+CPAC.utils.create_all_qc.run(&lsquo;/home2/data/Projects/Emotional-BS/processed_data&rsquo;)
+```</p>
+
+<p>This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I&rsquo;m not really using, then this shouldn&rsquo;t be an issue.</p>
+
+<p>I also looked into co-registering the two anatomicals. I ended up dropping this endeavor for now since the gain in SNR and benefit to any results should not be too great. In looking at the QC, one possibility is that we may want to replace one of our anatomicals with the other anatomical.</p>
+
+<h2>Multi-Instance Learning</h2>
+
+<p>I did a basic search for relevant reading material. I found the following:</p>
+
+<p><em>A paper outlining the approach in a seemingly easy manner.</em>
+<a href="http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf">http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf</a></p>
+
+<p><em>Very detailed slides that appear to give a good overview.</em>
+<a href="http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf">http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf</a></p>
+
+<p><em>Two links with relevant python code</em><br/>
+<a href="http://engr.case.edu/doran_gary/code.html  ">http://engr.case.edu/doran_gary/code.html  </a>
+<a href="https://github.com/garydoranjr/misvm">https://github.com/garydoranjr/misvm</a></p>
+
+<hr />
+
+<h1>TODO</h1>
+
+<p>```
+[] NiLearn Test Data</p>
+
+<pre><code>[x] Sent email confirming that band-pass filtering is required
+[] Get the pre-nuisance variables
+</code></pre>
+
+<p>[x] ABIDE Preprocessing</p>
+
+<pre><code>[x] Restart the preprocessing using 4 cores (everything except eigen)
+</code></pre>
+
+<p>[x] Emotional BS</p>
+
+<pre><code>[x] Try to regenerate the QC pages based on current output
+[x] Lookup some multi-instance learning stuff
+[] QC
+</code></pre>
+
+<p>[] QuickPack</p>
+
+<pre><code>[] ? (not enough time today to make substantial progress)
+</code></pre>
+
+<p>```</p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p><code>/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code><a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Monday]]></title>
@@ -107,14 +199,6 @@ Traceback (most recent call last):
 
 <p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can&rsquo;t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn&rsquo;t work! Ugh so it&rsquo;s specifically related to the command-line, which is doing something differently than the GUI.</p>
 
-<ul>
-<li>pierre => big</li>
-<li>xinian => small</li>
-<li>steve => from cam if can&rsquo;t find QC file should skip
-multi source learning</li>
-</ul>
-
-
 <hr />
 
 <h1>Emotional-BS</h1>
@@ -134,9 +218,9 @@ multi source learning</li>
 <h1>TODO</h1>
 
 <p>```
-[] NiLearn Test Data</p>
+[x] NiLearn Test Data</p>
 
-<pre><code>[] Generate group phenotype file
+<pre><code>[x] Generate group phenotype file
 </code></pre>
 
 <p>[] ABIDE Preprocessing</p>
@@ -148,8 +232,8 @@ multi source learning</li>
 
 <p>[] QuickPack</p>
 
-<pre><code>[] Check that complete run was good
-[] Try to figure out why the old runs did fine?
+<pre><code>[x] Check that complete run was good
+[x] Try to figure out why the old runs did fine?
 [] Using the new complete run as input for QP
 </code></pre>
 
