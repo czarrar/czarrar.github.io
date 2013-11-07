@@ -81,11 +81,6 @@ AttributeError: 'NoneType' object has no attribute 'name'
 
 The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can't really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn't work! Ugh so it's specifically related to the command-line, which is doing something differently than the GUI.
 
-- pierre => big
-- xinian => small
-- steve => from cam if can't find QC file should skip
-multi source learning
-
 ---
 
 # Emotional-BS
@@ -105,14 +100,14 @@ I think I also had a bit of trouble keeping on track today. It was very frustrat
 # TODO
 
 ```
-[] NiLearn Test Data
-	[] Generate group phenotype file
+[x] NiLearn Test Data
+	[x] Generate group phenotype file
 [] ABIDE Preprocessing
 	[x] Email Cam about next steps
 	[x] Setup the pipeline with gelert excluding centrality
 	[] Start running the pipeline
 [] QuickPack
-	[] Check that complete run was good
-	[] Try to figure out why the old runs did fine?
+	[x] Check that complete run was good
+	[x] Try to figure out why the old runs did fine?
 	[] Using the new complete run as input for QP
 ```

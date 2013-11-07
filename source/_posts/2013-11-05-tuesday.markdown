@@ -1,0 +1,75 @@
+---
+layout: post
+title: "Tuesday"
+date: 2013-11-05 15:26
+comments: true
+categories: [nilearn, emotional-bs, abide, quickpack]
+toc: true
+---
+
+# NiLearn
+
+I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data's location[^1].
+
+[^1]: `/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package`
+
+So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I'm rerunning (on top of the old) the participants with nuisance and bandpass turned off.
+
+Checking on the preprocessing, it initially skipped a bunch of things but now seems to be running some initial steps again. If this takes too long (i.e., is still going into tomorrow), then I might try to apply the warp myself tomorrow.
+
+---
+
+# ABIDE
+
+Since the QC pages have been fixed, I started to re-run the ABIDE analysis. This time I used 6mm of smoothing, added back the degree centrality, and running each subject with 4 cores on gelert. It is running strong (for now). There are 1102 subjects to run and currently 62 are being run in parallel.
+
+---
+
+# Emotional BS
+
+I ran the preprocessing for these participants before the QC issue for CPAC was fixed. Now I want to rebuild just the QC as follows:
+
+``` python
+import sys
+sys.path.insert(0, '/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages')
+sys.path.insert(1, "/home/milham/Downloads/cpac_master")
+
+import CPAC
+CPAC.utils.create_all_qc.run('/home2/data/Projects/Emotional-BS/processed_data')
+```
+
+This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I'm not really using, then this shouldn't be an issue.
+
+I also looked into co-registering the two anatomicals. I ended up dropping this endeavor for now since the gain in SNR and benefit to any results should not be too great. In looking at the QC, one possibility is that we may want to replace one of our anatomicals with the other anatomical.
+
+## Multi-Instance Learning
+
+I did a basic search for relevant reading material. I found the following:
+
+_A paper outlining the approach in a seemingly easy manner._
+http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf
+
+_Very detailed slides that appear to give a good overview._
+http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf
+
+_Two links with relevant python code_  
+http://engr.case.edu/doran_gary/code.html  
+https://github.com/garydoranjr/misvm
+
+---
+
+# TODO
+
+```
+[] NiLearn Test Data
+	[x] Sent email confirming that band-pass filtering is required
+	[] Get the pre-nuisance variables
+[x] ABIDE Preprocessing
+	[x] Restart the preprocessing using 4 cores (everything except eigen)
+[x] Emotional BS
+	[x] Try to regenerate the QC pages based on current output
+	[x] Lookup some multi-instance learning stuff
+	[] QC
+[] QuickPack
+	[] ? (not enough time today to make substantial progress)
+```
