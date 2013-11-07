@@ -4,7 +4,7 @@
   <title><![CDATA[Category: abide | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/abide/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-05T21:45:35-05:00</updated>
+  <updated>2013-11-07T12:42:16-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[thursday lib cmi nyu]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/07/thursday-lib-cmi-nyu/"/>
+    <updated>2013-11-07T11:17:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/07/thursday-lib-cmi-nyu</id>
+    <content type="html"><![CDATA[<h1>ABIDE</h1>
+
+<p>On gelert, it has been over 2 days and it is now (morning of the 7th) on the 125th to 186th participant. However, it appears that there were many crashes for some participants.</p>
+
+<p>Below are some crash files that I tried. Ultimately, it appears that there is no space left on the device for /tmp. This likely implies that the working directory folder is not being removed when it should. Ugh.</p>
+
+<p>On rocky, the removal of the working directory works fine. I thought I had tried it for gelert too and found it was fine. I see a few possibilities.</p>
+
+<ol>
+<li>Some error might occur as CPAC runs, which might lead it to skip removing the directory.</li>
+<li>It doesn&rsquo;t actually remove the directory when running through SGE (maybe because it is using a different function). Note that removal of the working directory occurs at the very end in the cpac runner run function.</li>
+<li>There&rsquo;s some issue with permissions and so a /tmp directory can be created but not removed. This can be easily tested.</li>
+</ol>
+
+
+<h2>Sample Crash File A</h2>
+
+<p>``` python
+import os
+os.chdir(&lsquo;/data/Projects/ABIDE_Initiative/CPAC/crash&rsquo;)</p>
+
+<p>from nipype.utils.filemanip import loadflat
+crashfile = loadflat(&lsquo;crash-20131107-103920-qli-_apply_ants_3d_warp149.npz&rsquo;)
+```</p>
+
+<p>This gives the following error</p>
+
+<p><code>
+TraitError: Each element of the 'transformation_series' trait of a WarpImageMultiTransformInputSpec instance must be an existing file name, but a value of '/tmp/resting_preproc_00
+50699_session_1/anat_mni_ants_register_0/warp_brain/ants_Warp.nii.gz' &lt;type 'str'&gt; was specified.
+</code></p>
+
+<p>It seems like a working directory file for this particular subject does not exist from this error. However, looking at the various functional/derivative outputs in subject&rsquo;s folder that are in standard space, stuff appears the fine:</p>
+
+<ul>
+<li>functional: <strong>good</strong></li>
+<li>alff: <strong>good</strong></li>
+<li>centrality: <strong>good</strong></li>
+<li>reho: <strong>good</strong></li>
+<li>sca_roi: Is there no standard space SCA map?</li>
+<li>dr: Is there no standard space SCA map?</li>
+<li>vmhc: <strong>good</strong></li>
+</ul>
+
+
+<p>I believe I might be missing some other relevant outputs.</p>
+
+<h2>Sample Crash File B</h2>
+
+<p>I get the following error for this crash file <code>crash-20131107-114514-qli-_network_centrality_smooth_10.npz</code>.</p>
+
+<p><code>
+TraitError: The 'in_file' trait of a MultiImageMathsInput instance must be an existing file name, but a value of '/tmp/resting_preproc_0050702_session_1/centrality_zscore_1/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/_bandpass_freqs_0.01.0.1/_mask_mask_abide_90percent_gm/z_score/mapflow/_z_score0/degree_centrality_binarize_maths.nii.gz' &lt;type 'str'&gt; was specified.
+</code></p>
+
+<p>So it seems like for this participant the fslmaths command was not run on the centrality outputs and later the smoothing was not applied.</p>
+
+<h1>Quick Pack</h1>
+
+<p>Let&rsquo;s recre</p>
+
+<h1>Emotional-BS</h1>
+
+<p>I want to focus on the QC to get that out of the way.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[wednesday nki]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/06/wednesday-nki/"/>
+    <updated>2013-11-06T14:59:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/06/wednesday-nki</id>
+    <content type="html"><![CDATA[<h1>ABIDE</h1>
+
+<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a &ldquo;Not Authorized&rdquo; error. I sent an email to Stan with Cameron cc'ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
+
+<p>Cameron will be getting sudo access and will figure out mounting the drive.</p>
+
+<h1>NiLearn</h1>
+
+<p>The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir and sent an email to Gael et al. So should be all done here.</p>
+
+<p>I believe I do want to get access to ADHD200 nitrc sftp so I can upload the data to that site. Right now it is on my own connectir nitrc site.</p>
+
+<h1>Emotional-BS</h1>
+
+<p>Read some articles. Check the QC.</p>
+
+<h1>Quick-Pack</h1>
+
+<p>Look into the GUI error&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tuesday]]></title>
