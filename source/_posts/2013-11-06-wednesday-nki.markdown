@@ -3,7 +3,8 @@ layout: post
 title: "wednesday nki"
 date: 2013-11-06 14:59
 comments: true
-categories: 
+categories: [abide, nilearn]
+toc: true
 ---
 
 # ABIDE
@@ -15,7 +16,9 @@ Cameron will be getting sudo access and will figure out mounting the drive.
 
 # NiLearn
 
-The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir (waiting to finish).
+The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir and sent an email to Gael et al. So should be all done here.
+
+I believe I do want to get access to ADHD200 nitrc sftp so I can upload the data to that site. Right now it is on my own connectir nitrc site.
 
 
 # Emotional-BS
