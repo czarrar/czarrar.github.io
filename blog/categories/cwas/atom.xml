@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-07T12:42:16-05:00</updated>
+  <updated>2013-11-08T00:22:38-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -45,10 +45,10 @@
 <li><strong>Yes</strong> Since this is an example figure, I don&rsquo;t think I need to redo the particular analysis. However, I do need to edit the figure so it shows <code>sqrt(2*(1-r))</code>.</li>
 <li><strong>No</strong> Just a table.</li>
 <li><strong>Yes</strong> Redo 2 analyses and 3 surface maps.</li>
-<li><strong>Yes</strong> Redo 2 analyses and 2 histograms.</li>
-<li><strong>Yes</strong> Redo network summary and surface map.</li>
-<li><strong>Yes</strong> Redo 3 surface maps.</li>
-<li><strong>Yes</strong> Redo 6 analyses and 6 surface maps.</li>
+<li><strong>Yes</strong> Redo 2 analyses and 2 histograms <em>(depends on 3)</em>.</li>
+<li><strong>Yes</strong> Redo network summary and surface map <em>(depends on 3)</em>.</li>
+<li><strong>Yes</strong> Redo 3 surface maps <em>(depends on 3)</em>.</li>
+<li><strong>Yes</strong> Redo 6 analyses and 6 surface maps <em>(depends on 3)</em>.</li>
 <li><strong>Yes</strong> Redo 2 scatter plots, 2 analyses, and 4 surface maps.</li>
 <li><strong>Yes</strong> Redo 2 bar plots.</li>
 <li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
@@ -68,6 +68,70 @@
 <li><strong>Yes</strong> 3+ analyses and 3 plots.</li>
 </ol>
 
+
+<h2>Figure 3</h2>
+
+<h3>Transformation + MDMR</h3>
+
+<p>I&rsquo;m running <code>32_mdmr_runner.bash</code>, which runs the following two commands:</p>
+
+<p><code>bash
+./30_mdmr.bash short compcor 8
+./30_mdmr.bash medium compcor 8
+</code></p>
+
+<p>Each of those in turn will run the following commands (excerpt from longer script):</p>
+
+<p>``` bash
+echo &ldquo;Voxelwise&rdquo;
+sdistdir=&ldquo;${distbase}/${strategy}<em>kvoxs${sm}</em>to_kvoxs${sm}&rdquo;
+curdir=$(pwd)</p>
+
+<p>cd /home2/data/Projects/CWAS/share/lib
+./transform_cor.R ${sdistdir}/subdist.desc 30 12
+cd $curdir</p>
+
+<p>time connectir_mdmr.R -i ${sdistdir} \</p>
+
+<pre><code>--formula "FSIQ + Age + Sex + ${scan}_meanFD" \
+--model ${subdir}/subject_info_with_iq_and_gcors.csv \
+--factors2perm "FSIQ" \
+--permutations 14999 \
+--forks 1 --threads 12 \
+--memlimit 12 \
+--save-perms \
+--ignoreprocerror \
+iq_age+sex+meanFD.mdmr
+</code></pre>
+
+<p>```</p>
+
+<h3>Multiple Comparisons Correction</h3>
+
+<p>Then with <code>36_mdmr_correct_runner.bash</code>, I ran the following lines:</p>
+
+<p><code>bash
+./34_mdmr_correct.bash short compcor 8
+./34_mdmr_correct.bash medium compcor 8
+</code></p>
+
+<h2>Figure 7</h2>
+
+<p>For the mean connectivity regression, I would use the same transformation as redone with Figure 3. I do need to redo the transformation for Figure 7.</p>
+
+<p>The below script will run MDMR for IQ with mean connectivity as a covariate as well as for mean connectivity as the main effect.</p>
+
+<p><code>bash
+./30_mdmr_with_gcors.bash short compcor 8
+./30_mdmr_with_gcors.bash medium compcor 8
+</code></p>
+
+<p>The below script will run MDMR for IQ using GSR corrected data.</p>
+
+<p><code>bash
+./33_mdmr_gs.bash short compcor 8
+./33_mdmr_gs.bash medium compcor 8
+</code></p>
 <div class="footnotes">
 <hr/>
 <ol>

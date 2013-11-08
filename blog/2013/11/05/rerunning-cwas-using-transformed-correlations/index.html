@@ -127,10 +127,10 @@
 <li><strong>Yes</strong> Since this is an example figure, I don&rsquo;t think I need to redo the particular analysis. However, I do need to edit the figure so it shows <code>sqrt(2*(1-r))</code>.</li>
 <li><strong>No</strong> Just a table.</li>
 <li><strong>Yes</strong> Redo 2 analyses and 3 surface maps.</li>
-<li><strong>Yes</strong> Redo 2 analyses and 2 histograms.</li>
-<li><strong>Yes</strong> Redo network summary and surface map.</li>
-<li><strong>Yes</strong> Redo 3 surface maps.</li>
-<li><strong>Yes</strong> Redo 6 analyses and 6 surface maps.</li>
+<li><strong>Yes</strong> Redo 2 analyses and 2 histograms <em>(depends on 3)</em>.</li>
+<li><strong>Yes</strong> Redo network summary and surface map <em>(depends on 3)</em>.</li>
+<li><strong>Yes</strong> Redo 3 surface maps <em>(depends on 3)</em>.</li>
+<li><strong>Yes</strong> Redo 6 analyses and 6 surface maps <em>(depends on 3)</em>.</li>
 <li><strong>Yes</strong> Redo 2 scatter plots, 2 analyses, and 4 surface maps.</li>
 <li><strong>Yes</strong> Redo 2 bar plots.</li>
 <li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
@@ -149,6 +149,97 @@
 <li><strong>Yes</strong> 3 analyses and 3 surface maps.</li>
 <li><strong>Yes</strong> 3+ analyses and 3 plots.</li>
 </ol>
+
+
+<h2>Figure 3</h2>
+
+<h3>Transformation + MDMR</h3>
+
+<p>I&rsquo;m running <code>32_mdmr_runner.bash</code>, which runs the following two commands:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./30_mdmr.bash short compcor 8
+</span><span class='line'>./30_mdmr.bash medium compcor 8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Each of those in turn will run the following commands (excerpt from longer script):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;Voxelwise&quot;</span>
+</span><span class='line'><span class="nv">sdistdir</span><span class="o">=</span><span class="s2">&quot;${distbase}/${strategy}_kvoxs${sm}_to_kvoxs${sm}&quot;</span>
+</span><span class='line'><span class="nv">curdir</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">cd</span> /home2/data/Projects/CWAS/share/lib
+</span><span class='line'>./transform_cor.R <span class="k">${</span><span class="nv">sdistdir</span><span class="k">}</span>/subdist.desc 30 12
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$curdir</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">time </span>connectir_mdmr.R -i <span class="k">${</span><span class="nv">sdistdir</span><span class="k">}</span> <span class="se">\</span>
+</span><span class='line'>    --formula <span class="s2">&quot;FSIQ + Age + Sex + ${scan}_meanFD&quot;</span> <span class="se">\</span>
+</span><span class='line'>    --model <span class="k">${</span><span class="nv">subdir</span><span class="k">}</span>/subject_info_with_iq_and_gcors.csv <span class="se">\</span>
+</span><span class='line'>    --factors2perm <span class="s2">&quot;FSIQ&quot;</span> <span class="se">\</span>
+</span><span class='line'>    --permutations 14999 <span class="se">\</span>
+</span><span class='line'>    --forks 1 --threads 12 <span class="se">\</span>
+</span><span class='line'>    --memlimit 12 <span class="se">\</span>
+</span><span class='line'>    --save-perms <span class="se">\</span>
+</span><span class='line'>    --ignoreprocerror <span class="se">\</span>
+</span><span class='line'>    iq_age+sex+meanFD.mdmr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Multiple Comparisons Correction</h3>
+
+<p>Then with <code>36_mdmr_correct_runner.bash</code>, I ran the following lines:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./34_mdmr_correct.bash short compcor 8
+</span><span class='line'>./34_mdmr_correct.bash medium compcor 8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Figure 7</h2>
+
+<p>For the mean connectivity regression, I would use the same transformation as redone with Figure 3. I do need to redo the transformation for Figure 7.</p>
+
+<p>The below script will run MDMR for IQ with mean connectivity as a covariate as well as for mean connectivity as the main effect.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./30_mdmr_with_gcors.bash short compcor 8
+</span><span class='line'>./30_mdmr_with_gcors.bash medium compcor 8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>The below script will run MDMR for IQ using GSR corrected data.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./33_mdmr_gs.bash short compcor 8
+</span><span class='line'>./33_mdmr_gs.bash medium compcor 8
+</span></code></pre></td></tr></table></div></figure>
+
+
 
 <div class="footnotes">
 <hr/>
