@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: cmi - Zarrar's Journaling</title>
+  <title>Monday for Veterans - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Category: cmi">
+  <meta name="description" content="ABIDE I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.ioblog/categories/cmi">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/11/monday-for-veterans">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
@@ -73,35 +73,135 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Cmi</h1>
+    
+      <h1 class="entry-title">Monday for Veterans</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-11T16:26:00-05:00" pubdate data-updated="true">Nov 11<span>th</span>, 2013</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><h1>ABIDE</h1>
 
-  
-  <h2>2013</h2>
+<p>I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also check up on the mounted data on rocky.</p>
 
-<article>
-  
-<h1><a href="/blog/2013/10/30/another-look-at-quick-pack-journey/">Another Quick Pack Journey</a></h1>
-<time datetime="2013-10-30T15:55:00-04:00" pubdate><span class='month'>Oct</span> <span class='day'>30</span> <span class='year'>2013</span></time>
+<h2>Pierre Preprocessed Data</h2>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>, <a class='category' href='/blog/categories/emotional-bs/'>emotional-bs</a>, <a class='category' href='/blog/categories/jekyll/'>jekyll</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a></span>
-</footer>
+<p>There are 4 different preprocessed data types.</p>
+
+<ol>
+<li>No GSR and low-pass filter</li>
+<li>No GSR and no low-pass filter</li>
+<li>GSR and low-pass filter</li>
+<li>GSR and no low-pass filter</li>
+</ol>
 
 
-</article>
+<p>A json file is included with each preprocessed data. This has regressor information and time-points (which I guess are the time-points that were kept for the analysis…so there was scrubbing).</p>
 
+<h2>Xinian Preprocessed Data</h2>
+
+<p>Subjects here are labeled by their site. Data includes freesurfer information. For the functional data, I am not totally sure which of the different preprocessed outputs to use. Also will we be making use of the freesurfer registered functional output?</p>
+
+<p>A brief overview shows the following preprocessing factors that were varied:</p>
+
+<ul>
+<li>Temporal Filtering (guessing same way as Pierre&rsquo;s)</li>
+<li>Smoothnesss (0 or 6 mm FWHM)</li>
+</ul>
+
+
+<p>So for this and the other preprocessed data, I will need to have a working Quick Pack.</p>
+
+<h1>CPAC</h1>
+
+<p>To help better understand why some working directories are being deleted but not others, we made a change to the file for standard output and standard error. Previously, this file held information for all participants. Here are the changes I made to running with SGE that did away with this issue:</p>
+
+<ul>
+<li>Run each subject separately with the grid engine (instead of as a job array).</li>
+<li>Use a different standard output and error for each subject</li>
+<li>Save the list of job ids and corresponding subjects</li>
+</ul>
+
+
+<p>Pretty simple change but big in allowing me to figure out what&rsquo;s going on. Additionally, I can manually check job ids that have completed and knowing the corresponding subjects, I could manually delete the working directories if they have not been deleted already.</p>
+
+<h1>QuickPack</h1>
+
+<p>So where did we leave off. It appears like it will run if I use the GUI but throws an error.</p>
+
+<h1>Other Projects</h1>
+
+<p>I&rsquo;m also still looking at EmotionalBS and is there anything else?</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-11T16:26:00-05:00" pubdate data-updated="true">Nov 11<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/abide/'>abide</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/11/monday-for-veterans/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/11/monday-for-veterans/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/09/comparing-distances/" title="Previous Post: Comparing Distances">&laquo; Comparing Distances</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: abide | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/abide/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-08T09:49:43-05:00</updated>
+  <updated>2013-11-11T18:24:33-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,66 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Monday for Veterans]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/11/monday-for-veterans/"/>
+    <updated>2013-11-11T16:26:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/11/monday-for-veterans</id>
+    <content type="html"><![CDATA[<h1>ABIDE</h1>
+
+<p>I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also check up on the mounted data on rocky.</p>
+
+<h2>Pierre Preprocessed Data</h2>
+
+<p>There are 4 different preprocessed data types.</p>
+
+<ol>
+<li>No GSR and low-pass filter</li>
+<li>No GSR and no low-pass filter</li>
+<li>GSR and low-pass filter</li>
+<li>GSR and no low-pass filter</li>
+</ol>
+
+
+<p>A json file is included with each preprocessed data. This has regressor information and time-points (which I guess are the time-points that were kept for the analysis…so there was scrubbing).</p>
+
+<h2>Xinian Preprocessed Data</h2>
+
+<p>Subjects here are labeled by their site. Data includes freesurfer information. For the functional data, I am not totally sure which of the different preprocessed outputs to use. Also will we be making use of the freesurfer registered functional output?</p>
+
+<p>A brief overview shows the following preprocessing factors that were varied:</p>
+
+<ul>
+<li>Temporal Filtering (guessing same way as Pierre&rsquo;s)</li>
+<li>Smoothnesss (0 or 6 mm FWHM)</li>
+</ul>
+
+
+<p>So for this and the other preprocessed data, I will need to have a working Quick Pack.</p>
+
+<h1>CPAC</h1>
+
+<p>To help better understand why some working directories are being deleted but not others, we made a change to the file for standard output and standard error. Previously, this file held information for all participants. Here are the changes I made to running with SGE that did away with this issue:</p>
+
+<ul>
+<li>Run each subject separately with the grid engine (instead of as a job array).</li>
+<li>Use a different standard output and error for each subject</li>
+<li>Save the list of job ids and corresponding subjects</li>
+</ul>
+
+
+<p>Pretty simple change but big in allowing me to figure out what&rsquo;s going on. Additionally, I can manually check job ids that have completed and knowing the corresponding subjects, I could manually delete the working directories if they have not been deleted already.</p>
+
+<h1>QuickPack</h1>
+
+<p>So where did we leave off. It appears like it will run if I use the GUI but throws an error.</p>
+
+<h1>Other Projects</h1>
+
+<p>I&rsquo;m also still looking at EmotionalBS and is there anything else?</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Friday - Save the Date]]></title>
@@ -46,11 +106,19 @@
 [39] 171 173 176 178 180 184 185 186
 </code></p>
 
-<h3>The removed directories had completed functional preprocessing</h3>
+<h3>The removed directories completed functional preprocessing</h3>
 
 <p>Now I wonder if participant&rsquo;s with deleted working directories have completed workflows. I checked and all the 46 participants had a <code>functional_mni</code> that exists. Here is a sample path for the first participant: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-05/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0050642_session_1/scan_rest_1_rest/func/functional_mni.nii.gz</code>.</p>
 
+<h3>The kept directories also completed functional preprocessing</h3>
+
+<p>I thought some of these might have failed at generating the <code>functional_mni</code>, however they are all there.</p>
+
 <blockquote><p>Note: the relevant script is <code>x_find_tmps.R</code>.</p></blockquote>
+
+<hr />
+
+<p>You regress out the covariates and</p>
 ]]></content>
   </entry>
   
@@ -242,142 +310,6 @@ CPAC.utils.create_all_qc.run(&lsquo;/home2/data/Projects/Emotional-BS/processed_
 </ol>
 </div>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Monday]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/04/monday/"/>
-    <updated>2013-11-04T12:20:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/04/monday</id>
-    <content type="html"><![CDATA[<h1>NiLearn Test Data</h1>
-
-<p>Note that the code to generate all this is as well as the actual package is in <code>/home/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code>.</p>
-
-<p>I&rsquo;ve already gotten the subject data and regressors. I am left to create the group phenotypic file. It appears that I don&rsquo;t need to duplicate the previous setup so I can use what we have on motion per subject. With this new data packaged up, I uploaded it to my connectir repository as I still don&rsquo;t have access to the ADHD200 repository.</p>
-
-<p>The download links are below:</p>
-
-<p><a href="http://connectir.projects.nitrc.org/adhd40_p1.nii.gz">http://connectir.projects.nitrc.org/adhd40_p1.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p2.nii.gz">http://connectir.projects.nitrc.org/adhd40_p2.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p3.nii.gz">http://connectir.projects.nitrc.org/adhd40_p3.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p4.nii.gz">http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</a></p>
-
-<p>And I have contacted the other peeps about this. So DONE.</p>
-
-<hr />
-
-<h1>ABIDE Preprocessing</h1>
-
-<p>I found out that the QC pages are a little broken. So this will have to wait.</p>
-
-<h2>Run Config Setup</h2>
-
-<p>I have adjusted this file to run one subject for every two nodes. I am using FSL5 now. Preprocessing will be run as well as all the derivatives except centrality (degree or eigen). This is because they both need a decent amount of RAM and computational time so I&rsquo;ll wait to run them separately later.</p>
-
-<hr />
-
-<h1>QuickPack</h1>
-
-<p>So the first general issue that I&rsquo;m experiencing is that if I run everything (no quick-pack), then I don&rsquo;t get any of the sym links. However, in my Emotional-BS run, the symlinks all seem to be fine! A little weird. I&rsquo;m not sure what is causing the problem.</p>
-
-<h2>Running with just CPAC</h2>
-
-<p>I&rsquo;m focusing on why I&rsquo;m getting symlink issues when I run internally with CPAC. I think the reasons that no files are being symlinked is because there might be single quotes in the strategy part of the path.</p>
-
-<p><code>bash
-ln -s /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_RameyBorough/0051466_session_1/qc/mni_normalized_anatomical_a/mni_anat_a.png /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_RameyBorough/_compcor_'ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.csf0'_CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan/qc/mni_anat_a.png
-</code></p>
-
-<p>If I run this command that was spit out from CPAC, then I get a &ldquo;No such file or directory&rdquo; error. This error doesn&rsquo;t appear with CPAC but this might explain why no symlinks were generated.</p>
-
-<p>Now we must understand why those single quotes are there. We should note that there were actually 2 strategies that I had given but only one strategy folder in the symlinks directory folder was created. I wonder if this has to do with some error?</p>
-
-<p>I tried to open the config file with the GUI and re-save it, seeing if that would help but it didn&rsquo;t. Now I&rsquo;ll try to run the pipeline from the GUI. Yup that fixed the issue and it isn&rsquo;t related to the fact that I&rsquo;m using Dan&rsquo;s path and shiz. Running this one subject through the GUI.</p>
-
-<h2>Running ALFF</h2>
-
-<p>There was one previous and confusing link issue. However, another issue that I didn&rsquo;t notice was the ALFF output directory using single quotes in its symlinks strategy directory and only has one of the two strategies. This suggests a potential benefit in running this through the GUI.</p>
-
-<h3>GUI</h3>
-
-<p>This run failed. The error message is below. I am not sure what&rsquo;s going on.</p>
-
-<p>```
-Invalid Connection: ALFF: 0  resource_pool:  {}
-Process Process-3:
-Traceback (most recent call last):
-  File &ldquo;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&rdquo;, line 258, in _bootstrap</p>
-
-<pre><code>self.run()
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&rdquo;, line 114, in run</p>
-
-<pre><code>self._target(*self._args, **self._kwargs)
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/CPAC/pipeline/cpac_pipeline.py&rdquo;, line 1198, in prep_workflow</p>
-
-<pre><code>alff, 'inputspec.rest_res')
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 306, in connect</p>
-
-<pre><code>self._check_nodes(newnodes)
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 769, in _check_nodes</p>
-
-<pre><code>if node.name in node_names:
-</code></pre>
-
-<p>AttributeError: &lsquo;NoneType&rsquo; object has no attribute &lsquo;name&rsquo;
-```</p>
-
-<h3>CLI</h3>
-
-<p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can&rsquo;t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn&rsquo;t work! Ugh so it&rsquo;s specifically related to the command-line, which is doing something differently than the GUI.</p>
-
-<hr />
-
-<h1>Emotional-BS</h1>
-
-<p>The preprocessing is done but the QC pages were not generated due to some issue in CPAC. I wish there was some way of running the QC scripts with the current outputs without me having to re-run all of CPAC. Since I ran via gelert using the <code>/tmp</code> directory, it will also need to redo all the processing.</p>
-
-<hr />
-
-<h1>Random</h1>
-
-<p>I spent a bit of time getting the table of contents to work on these pages. Hopefully it was worth it (I might want to also add a go back to the top link for each header). At the very least it gives a sort-of summary list of what will be on the post.</p>
-
-<p>I think I also had a bit of trouble keeping on track today. It was very frustrating and I&rsquo;m hoping it was just re-adjusting to coming back to work after a brief break.</p>
-
-<hr />
-
-<h1>TODO</h1>
-
-<p>```
-[x] NiLearn Test Data</p>
-
-<pre><code>[x] Generate group phenotype file
-</code></pre>
-
-<p>[] ABIDE Preprocessing</p>
-
-<pre><code>[x] Email Cam about next steps
-[x] Setup the pipeline with gelert excluding centrality
-[] Start running the pipeline
-</code></pre>
-
-<p>[] QuickPack</p>
-
-<pre><code>[x] Check that complete run was good
-[x] Try to figure out why the old runs did fine?
-[] Using the new complete run as input for QP
-</code></pre>
-
-<p>```</p>
 ]]></content>
   </entry>
   

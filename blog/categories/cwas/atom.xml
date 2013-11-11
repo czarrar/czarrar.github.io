@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-08T09:49:43-05:00</updated>
+  <updated>2013-11-11T18:24:33-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -14,13 +14,132 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Comparing Distances]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/09/comparing-distances/"/>
+    <updated>2013-11-09T18:02:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/09/comparing-distances</id>
+    <content type="html"><![CDATA[<p>We want to show that the choice of your distance metric won&rsquo;t substantially change your results. I&rsquo;ll be using the first scan of the IQ dataset. I would like to compare the following measures:</p>
+
+<ul>
+<li>Pearson Correlation</li>
+<li>Spearman Rank</li>
+<li>Kendall Tau</li>
+<li>Lin&rsquo;s concordance correlation</li>
+<li>Euclidean distance</li>
+<li>Chebychev distance</li>
+<li>Mahalanobis distance</li>
+</ul>
+
+
+<p>All the measures except the last are used in the Zapala et al. (2006) <em>PNAS</em> paper, and the last measure is something used in Kriegeskorte&rsquo;s work. It is essentially the mean distance between two features/vectors relative to the variance in each of them. Thus, 2 sets of points could be very close on average but have huge variability, meaning that small distance is less meaningful.</p>
+
+<h1>Low-Level Code</h1>
+
+<p>Most of the measures are fairly straightforward. I will add them all to the internal <code>.subdist_distance</code> function, which is called to compute the distance between the different participant connectivity maps for a given voxel. Right now, I have the pearson distance, shrinkage pearson distance, and inverse covariance distance. I added the other distance functions from my list above as additional options.</p>
+
+<p>How do you call the different distances? Note that I have made all of these functions internal so you would call it internally (within the package) as <code>.subdist_distance</code>. However, below I will use the globally accessible <code>test_sdist</code> function that is a simple wrapper around <code>.subdist_distance</code>.</p>
+
+<p>``` r</p>
+
+<p>.test_sdist(seedMaps, dmats, colind, method=&ldquo;pearson&rdquo;)</p>
+
+<p>```</p>
+
+<p>As you can see, we pass a matrix of participant seed maps (voxels as rows and participants as columns), a big matrix of distances (columns as voxels and rows as the vectorized distance matrix for that voxel), the index of the voxel examined in the distances, and your method of choice.</p>
+
+<h2>Measures</h2>
+
+<h3>Pearson</h3>
+
+<p>I updated the connectir pearson distance C function (<code>subdist_pearson_distance</code>) to compute the transformed correlation that has euclidean properties. I should make sure to test this for confirmation.</p>
+
+<h3>Mahalanobis Distance</h3>
+
+<p>I borrowed code for this measure from the following two links:</p>
+
+<p><a href="http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r">http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r</a></p>
+
+<p><a href="http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325">http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</a></p>
+
+<h3>Others</h3>
+
+<p>Here&rsquo;s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
+
+<p>``` r
+.distance_spearman &lt;&ndash; function(seedMaps, dmats, colind, transpose=FALSE, &hellip;) {</p>
+
+<pre><code>seedMaps &lt;- ifelse(transpose, t(seedMaps[,]), seedMaps[,])
+smat &lt;- cor(seedMaps, method="spearman")
+dmat &lt;- sqrt(2*(1-smat))
+dmats[,colind] &lt;- as.vector(dmat)
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>Issues</h2>
+
+<p>I had an NaN error after running the first pearson distance. I realized that this error is related to the fact that the correlation can sometimes go over 1 due to precision errors. To combat this I added a tolerance level, where I adjust the correlation down by 1e-8. This should ensure that no correlation is above 1, which would lead to a negative number in the transformation and a NaN when trying to get the square root. Note that this is really only an issue for the pearson distance.</p>
+
+<h1>Higher-Level Code</h1>
+
+<p>After computing the connectivity maps, I&rsquo;d ideally want to have some manual code that runs all the possible distances and saves them in different file-backed distance matrices. However, this seems to be a bit hairy and would require lots of coding/testing. Main issues are with memory (i.e., holding all the distances in memory or partially in memory). Instead, I&rsquo;ll take the easier but longer approach of running the distances for each method separately. To speed things up, I plan to use the 800 random ROIs.</p>
+
+<p>The details for this code can be found in <code>10_subdist.bash</code>.</p>
+
+<h1>Running the Analyses</h1>
+
+<p>I&rsquo;ve started to run the analyses. I ended up going with two separate workflows since the kendall was taking forever!</p>
+
+<p>I will need to re-run the concordance since there was an error in the code. I should make sure to remove the following folder beforehand: <code>/home/data/Projects/CWAS/nki/cwas/short/try_distances/concordance_k0800_to_k0800</code>.</p>
+
+<blockquote><p>Below the time in parentheses represents computation time but excludes setup time (i.e., reading in distance matrix and creating the hat matrix).</p></blockquote>
+
+<h2>Finished</h2>
+
+<ul>
+<li>Pearson (0.9 mins)</li>
+<li>Spearman (2.5 mins)</li>
+<li>Chebyshev (25 mins)</li>
+<li>Euclidean (6.8 mins)</li>
+</ul>
+
+
+<h2>In Progress</h2>
+
+<ul>
+<li>Kendall (taking bloody forever…might have to stop this and then switch it to use 0.52GB so stuff is split up)</li>
+</ul>
+
+
+<h2>Waiting</h2>
+
+<ul>
+<li>Mahalanobois (some system is computationally singular error)</li>
+</ul>
+
+
+<h2>Redo</h2>
+
+<pre><code>* Concordance (will likely take long too)
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Rerunning CWAS using Transformed Correlations]]></title>
     <link href="http://czarrar.github.io/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/"/>
     <updated>2013-11-05T20:26:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/05/rerunning-cwas-using-transformed-correlations</id>
     <content type="html"><![CDATA[<p>We had previously been using the semi-metric <code>1-r</code>, however are now with a reviewer&rsquo;s suggestion switching to a metric using a slight transformation of the prior person correlation <code>sqrt(2*1-r)</code><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. This change although simple will require a massive effort to semi-reanalyze everything.</p>
 
+<p>We also making another change in the way the permuted hat matrices are generated due to a last minute discovery by Phil. Previously, we had permuted the rows for the columns of interest. The issue with this approach is if the variable of interest is correlated with the covariates, then our permutation will effect both the variable of interest and our covariates. Consequently, we will regress out the covariates of non-interest from our variable of interest. We will then have the fitted response and the residuals. We will permute the order of the residuals and then add back the fitted response.</p>
+
+<blockquote><p>Note: I need to ask Phil what the approach is if your variable of interest has more than one column. I&rsquo;m guessing you apply this procedure to each column of the variable separately?</p></blockquote>
+
 <h1>Code</h1>
+
+<h2>Transformation of Distances</h2>
 
 <p>The first order of business is creating a function that easily transforms my big matrices and re-generates the gower centered matrices. A few nuances is that I need to make sure to set the number of threads to use in advance (otherwise all processors will be occupied) and to set the memory limit for gower centering.</p>
 
@@ -34,6 +153,39 @@
 <li><em>nthreads</em>: Number of threads to use for matrix algebra operations</li>
 </ul>
 
+
+<h2>Permuting Residuals of Predictor Variable</h2>
+
+<p>I made an addition to the MDMR model generation functions and made the new residual based approach of generating permuted hat matrices, the default. Below is the function (added within two functions). The critical new lines are highlighted.</p>
+
+<p>``` r mark:5-9
+permute_rhs_residuals &lt;&ndash; function() {</p>
+
+<pre><code># H
+Xj      &lt;- rhs
+cols    &lt;- grps %in% u.grps[f.ind]
+## permute residuals
+for (i in which(cols)) {
+    model   &lt;- lm(Xj[,i] ~ Xj[,!cols])
+    Xj[,i]  &lt;- model$residuals[o.inds] + model$fitted.values
+}
+## hat matrixx
+qrX     &lt;- qr(Xj, tol=TOL)
+Q       &lt;- qr.Q(qrX)
+H       &lt;- tcrossprod(Q[,1:qrX$rank])
+
+# H2
+cols    &lt;- grps %in% u.grps[-f.ind]
+Xj      &lt;- rhs[,cols]
+qrX     &lt;- qr(Xj, tol = TOL)
+Q       &lt;- qr.Q(qrX)
+H2      &lt;- H - tcrossprod(Q[, 1:qrX$rank])
+
+H2
+</code></pre>
+
+<p>}
+```</p>
 
 <h1>Normandy (aka Redoing Almost All Figures)</h1>
 
@@ -53,14 +205,9 @@
 <li><strong>Yes</strong> Redo 2 bar plots.</li>
 <li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
 <li><strong>Yes</strong> Redo 4 analyses and 4 surface maps.</li>
-<li><strong>Yes</strong> Redo 3 analyses and 4 surface maps.</li>
-</ol>
-
-
-<p>Supplementary Figures</p>
-
-<ol>
-<li><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</li>
+<li><p><strong>Yes</strong> Redo 3 analyses and 4 surface maps.
+Supplementary Figures</p></li>
+<li><p><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</p></li>
 <li><strong>Yes</strong> ?</li>
 <li><strong>Yes</strong> 2 analyses and 2 surface maps.</li>
 <li><strong>Yes</strong> 6 analyses and 6 surface maps.</li>
@@ -111,9 +258,25 @@ iq_age+sex+meanFD.mdmr
 <p>Then with <code>36_mdmr_correct_runner.bash</code>, I ran the following lines:</p>
 
 <p><code>bash
-./34_mdmr_correct.bash short compcor 8
+./34_mdmr_correct.bash short compcor 8; \
 ./34_mdmr_correct.bash medium compcor 8
 </code></p>
+
+<h2>Figure 4</h2>
+
+<p>This figure examines the percent of significant associations for each permutation (false positives) and creates a histogram.</p>
+
+<p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>. All I need to do is re-run these two scripts.</p>
+
+<p><strong>WAITING ON 1st Script TO FINISH</strong></p>
+
+<h2>Figure 5</h2>
+
+<p>The relevant files for plotting are located in this directory <code>/home2/data/Projects/CWAS/share/figures/sfig_yeo</code>.</p>
+
+<h2>Figure 6</h2>
+
+<p>The files for plotting are located in <code>/home2/data/Projects/CWAS/share/figures/sfig_neurosynth</code>. Note that you will need to first plot the elements of Figure 3.</p>
 
 <h2>Figure 7</h2>
 
@@ -122,16 +285,91 @@ iq_age+sex+meanFD.mdmr
 <p>The below script will run MDMR for IQ with mean connectivity as a covariate as well as for mean connectivity as the main effect.</p>
 
 <p><code>bash
-./30_mdmr_with_gcors.bash short compcor 8
+./30_mdmr_with_gcors.bash short compcor 8; \
 ./30_mdmr_with_gcors.bash medium compcor 8
 </code></p>
 
 <p>The below script will run MDMR for IQ using GSR corrected data.</p>
 
 <p><code>bash
-./33_mdmr_gs.bash short compcor 8
-./33_mdmr_gs.bash medium compcor 8
+./33_mdmr_gsr.bash short compcor 8; \
+./33_mdmr_gsr.bash medium compcor 8
 </code></p>
+
+<h3>Multiple Comparisons</h3>
+
+<p>``` bash</p>
+
+<h1>Mean Connectivity</h1>
+
+<p>./34_mdmr_correct_with_gcors.bash short compcor 8; \
+./34_mdmr_correct_with_gcors.bash medium compcor 8</p>
+
+<h1>GSR</h1>
+
+<p>./34_mdmr_correct_gsr.bash short compcor 8; \
+./34_mdmr_correct_gsr.bash medium compcor 8
+```</p>
+
+<h2>Figure 8</h2>
+
+<p>The relevant scripts to generate the plots are in <code>/home2/data/Projects/CWAS/share/figures/fig_05</code> and <code>/home2/data/Projects/CWAS/share/results/40_mdmr_glm</code>.</p>
+
+<h2>Figure 9</h2>
+
+<p>The relevant analytic and plotting scripts are located in <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise</code> and <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2</code>. There&rsquo;s actually not much analysis, just compiling the data together.</p>
+
+<h2>Figure 10</h2>
+
+<p>This figure covers CWAS for three different datasets.</p>
+
+<h3>CWAS</h3>
+
+<p>Right now running development MDMR.</p>
+
+<h4>Development</h4>
+
+<p>Scripts are in <code>/home2/data/Projects/CWAS/share/development+motion/04_analysis</code>. I ran it as follows:</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
+./02a_mdmr.bash
+./04_mdmr_correct.bash
+</code></p>
+
+<h4>ADHD</h4>
+
+<p>Scripts are in <code>/home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis</code>. I ran it as follows:</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis
+./30_mdmr_combined.bash compcor
+./50_mdmr_correct.bash compcor
+</code></p>
+
+<h4>LDOPA</h4>
+
+<p>Scripts are in <code>/home2/data/Projects/CWAS/share/ldopa/04_analysis</code>. I ran it as follows:</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/ldopa/04_analysis
+./02a_mdmr.bash
+./04_mdmr_correct.bash compcor
+</code></p>
+
+<h3>Figure 11</h3>
+
+<p>This requires redoing all the ROI-based MDMRs for the IQ analysis. Although this particular figure only shows one of the scans, might as well do both scans here as one of the supplementary figures will depend on it.</p>
+
+<p>Below are the commands that I ran. Note that the mdmr commands will also transform the previous distances.</p>
+
+<p><code>bash
+./30_mdmr_rois.bash short compcor 0
+</code></p>
+
+<h3>Figure 12</h3>
+
+<p>Here, we&rsquo;ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
 <div class="footnotes">
 <hr/>
 <ol>

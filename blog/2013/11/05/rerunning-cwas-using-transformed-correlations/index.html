@@ -102,7 +102,13 @@
 
 <div class="entry-content"><p>We had previously been using the semi-metric <code>1-r</code>, however are now with a reviewer&rsquo;s suggestion switching to a metric using a slight transformation of the prior person correlation <code>sqrt(2*1-r)</code><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. This change although simple will require a massive effort to semi-reanalyze everything.</p>
 
+<p>We also making another change in the way the permuted hat matrices are generated due to a last minute discovery by Phil. Previously, we had permuted the rows for the columns of interest. The issue with this approach is if the variable of interest is correlated with the covariates, then our permutation will effect both the variable of interest and our covariates. Consequently, we will regress out the covariates of non-interest from our variable of interest. We will then have the fitted response and the residuals. We will permute the order of the residuals and then add back the fitted response.</p>
+
+<blockquote><p>Note: I need to ask Phil what the approach is if your variable of interest has more than one column. I&rsquo;m guessing you apply this procedure to each column of the variable separately?</p></blockquote>
+
 <h1>Code</h1>
+
+<h2>Transformation of Distances</h2>
 
 <p>The first order of business is creating a function that easily transforms my big matrices and re-generates the gower centered matrices. A few nuances is that I need to make sure to set the number of threads to use in advance (otherwise all processors will be occupied) and to set the memory limit for gower centering.</p>
 
@@ -115,6 +121,59 @@
 <li><em>memlimit</em>: Upper bound on RAM to use</li>
 <li><em>nthreads</em>: Number of threads to use for matrix algebra operations</li>
 </ul>
+
+
+<h2>Permuting Residuals of Predictor Variable</h2>
+
+<p>I made an addition to the MDMR model generation functions and made the new residual based approach of generating permuted hat matrices, the default. Below is the function (added within two functions). The critical new lines are highlighted.</p>
+
+<figure class='code'><figcaption><span>mark:5-9</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>permute_rhs_residuals <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1"># H</span>
+</span><span class='line'>    Xj      <span class="o">&lt;-</span> rhs
+</span><span class='line'>    cols    <span class="o">&lt;-</span> grps <span class="o">%in%</span> u.grps<span class="p">[</span>f.ind<span class="p">]</span>
+</span><span class='line'>    <span class="c1">## permute residuals</span>
+</span><span class='line'>    <span class="kr">for</span> <span class="p">(</span>i <span class="kr">in</span> which<span class="p">(</span>cols<span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        model   <span class="o">&lt;-</span> lm<span class="p">(</span>Xj<span class="p">[,</span>i<span class="p">]</span> <span class="o">~</span> Xj<span class="p">[,</span><span class="o">!</span>cols<span class="p">])</span>
+</span><span class='line'>        Xj<span class="p">[,</span>i<span class="p">]</span>  <span class="o">&lt;-</span> model<span class="o">$</span>residuals<span class="p">[</span>o.inds<span class="p">]</span> <span class="o">+</span> model<span class="o">$</span>fitted.values
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">## hat matrixx</span>
+</span><span class='line'>    qrX     <span class="o">&lt;-</span> qr<span class="p">(</span>Xj<span class="p">,</span> tol<span class="o">=</span>TOL<span class="p">)</span>
+</span><span class='line'>    Q       <span class="o">&lt;-</span> qr.Q<span class="p">(</span>qrX<span class="p">)</span>
+</span><span class='line'>    H       <span class="o">&lt;-</span> tcrossprod<span class="p">(</span>Q<span class="p">[,</span><span class="m">1</span><span class="o">:</span>qrX<span class="o">$</span>rank<span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># H2</span>
+</span><span class='line'>    cols    <span class="o">&lt;-</span> grps <span class="o">%in%</span> u.grps<span class="p">[</span><span class="o">-</span>f.ind<span class="p">]</span>
+</span><span class='line'>    Xj      <span class="o">&lt;-</span> rhs<span class="p">[,</span>cols<span class="p">]</span>
+</span><span class='line'>    qrX     <span class="o">&lt;-</span> qr<span class="p">(</span>Xj<span class="p">,</span> tol <span class="o">=</span> TOL<span class="p">)</span>
+</span><span class='line'>    Q       <span class="o">&lt;-</span> qr.Q<span class="p">(</span>qrX<span class="p">)</span>
+</span><span class='line'>    H2      <span class="o">&lt;-</span> H <span class="o">-</span> tcrossprod<span class="p">(</span>Q<span class="p">[,</span> <span class="m">1</span><span class="o">:</span>qrX<span class="o">$</span>rank<span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    H2
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Normandy (aka Redoing Almost All Figures)</h1>
@@ -135,14 +194,9 @@
 <li><strong>Yes</strong> Redo 2 bar plots.</li>
 <li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
 <li><strong>Yes</strong> Redo 4 analyses and 4 surface maps.</li>
-<li><strong>Yes</strong> Redo 3 analyses and 4 surface maps.</li>
-</ol>
-
-
-<p>Supplementary Figures</p>
-
-<ol>
-<li><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</li>
+<li><p><strong>Yes</strong> Redo 3 analyses and 4 surface maps.
+Supplementary Figures</p></li>
+<li><p><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</p></li>
 <li><strong>Yes</strong> ?</li>
 <li><strong>Yes</strong> 2 analyses and 2 surface maps.</li>
 <li><strong>Yes</strong> 6 analyses and 6 surface maps.</li>
@@ -211,10 +265,26 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./34_mdmr_correct.bash short compcor 8
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./34_mdmr_correct.bash short compcor 8; <span class="se">\</span>
 </span><span class='line'>./34_mdmr_correct.bash medium compcor 8
 </span></code></pre></td></tr></table></div></figure>
 
+
+<h2>Figure 4</h2>
+
+<p>This figure examines the percent of significant associations for each permutation (false positives) and creates a histogram.</p>
+
+<p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>. All I need to do is re-run these two scripts.</p>
+
+<p><strong>WAITING ON 1st Script TO FINISH</strong></p>
+
+<h2>Figure 5</h2>
+
+<p>The relevant files for plotting are located in this directory <code>/home2/data/Projects/CWAS/share/figures/sfig_yeo</code>.</p>
+
+<h2>Figure 6</h2>
+
+<p>The files for plotting are located in <code>/home2/data/Projects/CWAS/share/figures/sfig_neurosynth</code>. Note that you will need to first plot the elements of Figure 3.</p>
 
 <h2>Figure 7</h2>
 
@@ -224,7 +294,7 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./30_mdmr_with_gcors.bash short compcor 8
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./30_mdmr_with_gcors.bash short compcor 8; <span class="se">\</span>
 </span><span class='line'>./30_mdmr_with_gcors.bash medium compcor 8
 </span></code></pre></td></tr></table></div></figure>
 
@@ -235,12 +305,97 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./33_mdmr_gs.bash short compcor 8
-</span><span class='line'>./33_mdmr_gs.bash medium compcor 8
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./33_mdmr_gsr.bash short compcor 8; <span class="se">\</span>
+</span><span class='line'>./33_mdmr_gsr.bash medium compcor 8
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h3>Multiple Comparisons</h3>
 
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Mean Connectivity</span>
+</span><span class='line'>./34_mdmr_correct_with_gcors.bash short compcor 8; <span class="se">\</span>
+</span><span class='line'>./34_mdmr_correct_with_gcors.bash medium compcor 8
+</span><span class='line'><span class="c"># GSR</span>
+</span><span class='line'>./34_mdmr_correct_gsr.bash short compcor 8; <span class="se">\</span>
+</span><span class='line'>./34_mdmr_correct_gsr.bash medium compcor 8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Figure 8</h2>
+
+<p>The relevant scripts to generate the plots are in <code>/home2/data/Projects/CWAS/share/figures/fig_05</code> and <code>/home2/data/Projects/CWAS/share/results/40_mdmr_glm</code>.</p>
+
+<h2>Figure 9</h2>
+
+<p>The relevant analytic and plotting scripts are located in <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise</code> and <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2</code>. There&rsquo;s actually not much analysis, just compiling the data together.</p>
+
+<h2>Figure 10</h2>
+
+<p>This figure covers CWAS for three different datasets.</p>
+
+<h3>CWAS</h3>
+
+<p>Right now running development MDMR.</p>
+
+<h4>Development</h4>
+
+<p>Scripts are in <code>/home2/data/Projects/CWAS/share/development+motion/04_analysis</code>. I ran it as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /home2/data/Projects/CWAS/share/development+motion/04_analysis
+</span><span class='line'>./02a_mdmr.bash
+</span><span class='line'>./04_mdmr_correct.bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>ADHD</h4>
+
+<p>Scripts are in <code>/home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis</code>. I ran it as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis
+</span><span class='line'>./30_mdmr_combined.bash compcor
+</span><span class='line'>./50_mdmr_correct.bash compcor
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>LDOPA</h4>
+
+<p>Scripts are in <code>/home2/data/Projects/CWAS/share/ldopa/04_analysis</code>. I ran it as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /home2/data/Projects/CWAS/share/ldopa/04_analysis
+</span><span class='line'>./02a_mdmr.bash
+</span><span class='line'>./04_mdmr_correct.bash compcor
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Figure 11</h3>
+
+<p>This requires redoing all the ROI-based MDMRs for the IQ analysis. Although this particular figure only shows one of the scans, might as well do both scans here as one of the supplementary figures will depend on it.</p>
+
+<p>Below are the commands that I ran. Note that the mdmr commands will also transform the previous distances.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./30_mdmr_rois.bash short compcor 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Figure 12</h3>
+
+<p>Here, we&rsquo;ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
 <div class="footnotes">
 <hr/>
 <ol>
@@ -312,6 +467,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a>
       </li>
     
@@ -321,14 +484,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/06/wednesday-nki/">Wednesday Nki</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/">Rerunning CWAS Using Transformed Correlations</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/05/tuesday/">Tuesday</a>
       </li>
     
   </ul>
