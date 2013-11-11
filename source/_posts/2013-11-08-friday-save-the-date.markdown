@@ -34,10 +34,19 @@ Are these deleted working directories belong to participants with one of the fir
 [39] 171 173 176 178 180 184 185 186
 ```
 
-### The removed directories had completed functional preprocessing
+### The removed directories completed functional preprocessing
 
 Now I wonder if participant's with deleted working directories have completed workflows. I checked and all the 46 participants had a `functional_mni` that exists. Here is a sample path for the first participant: `/home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-05/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0050642_session_1/scan_rest_1_rest/func/functional_mni.nii.gz`.
 
+### The kept directories also completed functional preprocessing
 
+I thought some of these might have failed at generating the `functional_mni`, however they are all there.
 
 > Note: the relevant script is `x_find_tmps.R`.
+
+
+
+---
+
+
+You regress out the covariates and 
