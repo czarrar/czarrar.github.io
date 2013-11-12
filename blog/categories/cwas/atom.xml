@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-11T18:24:33-05:00</updated>
+  <updated>2013-11-12T16:03:18-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -108,7 +108,7 @@ dmats[,colind] &lt;- as.vector(dmat)
 <h2>In Progress</h2>
 
 <ul>
-<li>Kendall (taking bloody forever…might have to stop this and then switch it to use 0.52GB so stuff is split up)</li>
+<li>Kendall (taking bloody forever…using only 0.52GB so get 7 large blocks)</li>
 </ul>
 
 
@@ -268,7 +268,7 @@ iq_age+sex+meanFD.mdmr
 
 <p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>. All I need to do is re-run these two scripts.</p>
 
-<p><strong>WAITING ON 1st Script TO FINISH</strong></p>
+<p><strong>SCRIPT FINISHED &ndash; NEED TO PLOT</strong></p>
 
 <h2>Figure 5</h2>
 
@@ -333,9 +333,11 @@ iq_age+sex+meanFD.mdmr
 
 <p><code>bash
 cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
-./02a_mdmr.bash
+./02a_mdmr.bash # note ran all combos…relevant for supplementary
 ./04_mdmr_correct.bash
 </code></p>
+
+<p><strong>FINISHING ALL OF MDMR…THEN DO CORRECT</strong></p>
 
 <h4>ADHD</h4>
 
@@ -365,11 +367,25 @@ cd /home2/data/Projects/CWAS/share/ldopa/04_analysis
 
 <p><code>bash
 ./30_mdmr_rois.bash short compcor 0
+./34_mdmr_correct_rois.bash short compcor 0
 </code></p>
 
 <h3>Figure 12</h3>
 
 <p>Here, we&rsquo;ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
+
+<p>``` bash</p>
+
+<h1>Development</h1>
+
+<p>cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
+./02a_mdmr_rois.bash # this runs correction as well</p>
+
+<h1>ADHD</h1>
+
+<h1>LDOPA</h1>
+
+<p>```</p>
 <div class="footnotes">
 <hr/>
 <ol>

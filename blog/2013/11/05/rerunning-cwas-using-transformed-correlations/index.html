@@ -276,7 +276,7 @@ Supplementary Figures</p></li>
 
 <p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>. All I need to do is re-run these two scripts.</p>
 
-<p><strong>WAITING ON 1st Script TO FINISH</strong></p>
+<p><strong>SCRIPT FINISHED &ndash; NEED TO PLOT</strong></p>
 
 <h2>Figure 5</h2>
 
@@ -351,10 +351,12 @@ Supplementary Figures</p></li>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /home2/data/Projects/CWAS/share/development+motion/04_analysis
-</span><span class='line'>./02a_mdmr.bash
+</span><span class='line'>./02a_mdmr.bash <span class="c"># note ran all combos…relevant for supplementary</span>
 </span><span class='line'>./04_mdmr_correct.bash
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p><strong>FINISHING ALL OF MDMR…THEN DO CORRECT</strong></p>
 
 <h4>ADHD</h4>
 
@@ -389,13 +391,34 @@ Supplementary Figures</p></li>
 <p>Below are the commands that I ran. Note that the mdmr commands will also transform the previous distances.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>./30_mdmr_rois.bash short compcor 0
+</span><span class='line'>./34_mdmr_correct_rois.bash short compcor 0
 </span></code></pre></td></tr></table></div></figure>
 
 
 <h3>Figure 12</h3>
 
 <p>Here, we&rsquo;ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Development</span>
+</span><span class='line'><span class="nb">cd</span> /home2/data/Projects/CWAS/share/development+motion/04_analysis
+</span><span class='line'>./02a_mdmr_rois.bash <span class="c"># this runs correction as well</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ADHD</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># LDOPA</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 <div class="footnotes">
 <hr/>
 <ol>
@@ -467,6 +490,10 @@ Supplementary Figures</p></li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/12/abide-sge-debug/">ABIDE SGE Debug</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a>
       </li>
     
@@ -480,10 +507,6 @@ Supplementary Figures</p></li>
     
       <li class="post">
         <a href="/blog/2013/11/07/thursday-lib-cmi-nyu/">Thursday Lib Cmi Nyu</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/06/wednesday-nki/">Wednesday Nki</a>
       </li>
     
   </ul>
