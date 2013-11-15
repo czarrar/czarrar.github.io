@@ -4,7 +4,7 @@
   <title><![CDATA[Category: quickpack | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/quickpack/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-12T16:03:18-05:00</updated>
+  <updated>2013-11-13T17:49:19-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,171 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Solving Quick Pack]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/13/solving-quick-pack/"/>
+    <updated>2013-11-13T12:04:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/13/solving-quick-pack</id>
+    <content type="html"><![CDATA[<h1>Running ALFF</h1>
+
+<p>It all appears to run fine except one link node.</p>
+
+<p>```
+131113-12:02:04,683 workflow ERROR:                                                                                                                                     [575/9353]</p>
+
+<pre><code>     ['Node link_16.a0 failed to run on host rocky.']
+</code></pre>
+
+<p>131113-12:02:04,684 workflow INFO:</p>
+
+<pre><code>     Saving crash info to /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131113-120204-milham-link_16.a0.npz
+</code></pre>
+
+<p>131113-12:02:04,685 workflow INFO:</p>
+
+<pre><code>     Traceback (most recent call last):
+</code></pre>
+
+<p>  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/plugins/multiproc.py&rdquo;, line 18, in r
+un_node</p>
+
+<pre><code>result['result'] = node.run(updatehash=updatehash)
+</code></pre>
+
+<p>  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 1282, in run</p>
+
+<pre><code>self._run_interface()
+</code></pre>
+
+<p>  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 1380, in _run_inter
+face</p>
+
+<pre><code>self._result = self._run_command(execute)
+</code></pre>
+
+<p>  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 1504, in _run_comma
+nd</p>
+
+<pre><code>result = self._interface.run()
+</code></pre>
+
+<p>  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/interfaces/base.py&rdquo;, line 895, in run</p>
+
+<pre><code>runtime = self._run_interface(runtime)
+</code></pre>
+
+<p>  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/interfaces/utility.py&rdquo;, line 412, in _run_int
+erface</p>
+
+<pre><code>out = function_handle(**args)
+</code></pre>
+
+<p>  File &ldquo;<string>&rdquo;, line 16, in prepare_symbolic_links
+  File &ldquo;/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC/CPAC/utils/utils.py&rdquo;, line 562, in create_symbolic_links</p>
+
+<pre><code>ext = fname.split('.', 1)[1]
+</code></pre>
+
+<p>IndexError: list index out of range
+Interface Function failed to run.
+```</p>
+
+<p>The error occurs because a path without a file is passed. It&rsquo;s a little unclear why this link is even being run? Let&rsquo;s get some background straight.</p>
+
+<h1>What is sinked and linked?</h1>
+
+<p>So we can see what&rsquo;s being synced with the following line of code towards the end:</p>
+
+<p>``` python
+for strat in strat_list:</p>
+
+<pre><code>rp = strat.get_resource_pool()
+# …
+</code></pre>
+
+<p>```</p>
+
+<p>The variable <code>rp</code> is basically a dictionary with the key being a node name (e.g., <code>functional_mni</code>) and the value being a tuple with the actual node and the actual out_file. With my run of ALFF, below are the values of rp:</p>
+
+<p><code>
+{'alff_Z_img': (resting_preproc_0051466_session_1.alff_falff_0,
+  'outputspec.alff_Z_img'),
+ 'alff_Z_smooth': (resting_preproc_0051466_session_1.alff_Z_smooth_0,
+  'out_file'),
+ 'alff_Z_to_standard': (resting_preproc_0051466_session_1.alff_Z_to_standard_0,
+  'outputspec.out_file'),
+ 'alff_Z_to_standard_smooth': (resting_preproc_0051466_session_1.alff_Z_to_standard_smooth_0,
+  'out_file'),
+ 'alff_img': (resting_preproc_0051466_session_1.alff_falff_0,
+  'outputspec.alff_img'),
+ 'anatomical_brain': (resting_preproc_0051466_session_1.anatomical_brain_gather_0,
+  'outputspec.anat'),
+ 'anatomical_reorient': (anatomical_reorient_gather_0, 'outputspec.anat'),
+ 'anatomical_to_mni_nonlinear_xfm': (resting_preproc_0051466_session_1.anatomical_to_mni_nonlinear_xfm_gather_0,
+  'outputspec.anat'),
+ 'ants_affine_xfm': (resting_preproc_0051466_session_1.ants_affine_xfm_gather_0,
+  'outputspec.anat'),
+ 'falff_Z_img': (resting_preproc_0051466_session_1.alff_falff_0,
+  'outputspec.falff_Z_img'),
+ 'falff_Z_smooth': (resting_preproc_0051466_session_1.falff_Z_smooth_0,
+  'out_file'),
+ 'falff_Z_to_standard': (resting_preproc_0051466_session_1.falff_Z_to_standard_0,
+  'outputspec.out_file'),
+ 'falff_Z_to_standard_smooth': (resting_preproc_0051466_session_1.falff_Z_to_standard_smooth_0,
+  'out_file'),
+ 'falff_img': (resting_preproc_0051466_session_1.alff_falff_0,
+  'outputspec.falff_img'),
+ 'functional_brain_mask': (resting_preproc_0051466_session_1.functional_brain_mask_gather_0,
+  'outputspec.rest'),
+ 'functional_brain_mask_to_standard': (resting_preproc_0051466_session_1.functional_brain_mask_to_standard_gather_0,
+  'outputspec.rest'),
+ 'functional_freq_filtered': (resting_preproc_0051466_session_1.functional_freq_filtered_gather_0,
+  'outputspec.rest'),
+ 'functional_mni': (functional_mni_gather_0, 'outputspec.rest'),
+ 'functional_nuisance_residuals': (resting_preproc_0051466_session_1.functional_nuisance_residuals_gather_0,
+  'outputspec.rest'),
+ 'functional_to_anat_linear_xfm': (resting_preproc_0051466_session_1.functional_to_anat_linear_xfm_gather_0,
+  'outputspec.rest'),
+ 'mean_functional': (mean_functional_gather_0, 'outputspec.rest'),
+ 'mni_normalized_anatomical': (resting_preproc_0051466_session_1.mni_normalized_anatomical_gather_0,
+  'outputspec.anat'),
+ 'preprocessed': (resting_preproc_0051466_session_1.preprocessed_gather_0,
+  'outputspec.rest')}
+</code></p>
+
+<p>With that in mind, we can try to understand for the link error, what&rsquo;s the related node. It appears that it is related to the functional_freq_filtered node name as the input path for linking is <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_me/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>.</p>
+
+<p>Since the actually input files like functional_freq_filtered are not copied into the working directory, the sink and link will not work as there is nothing to sink/link from the working directory. How can I tackle this issue?</p>
+
+<ul>
+<li>I could create a workaround to not run sinking/linking for these particular strategies. For instance if preprocessing or what not were not turned on.</li>
+<li>In my get_func… function, I could do a soft-link inside the current directory. However this would need to be a second step, no?</li>
+</ul>
+
+
+<h1>Issues</h1>
+
+<h2>Fix Error</h2>
+
+<p>Spoke to Cameron and will be creating an exclusion or stop list. I&rsquo;m thinking that as I&rsquo;m adding the particular files to the strategy pool, I want to add the node name to an exclusion list as well. Yup these set of changes got it going.</p>
+
+<h2>Symlinks Error</h2>
+
+<p>After fixing the prior issue, I then noticed that the symlinks directory is sort-of weird. There&rsquo;s a lot of repetition. For instance, here are some of the main directories:</p>
+
+<ul>
+<li>scan_rest_1_rest_rest_1_rest</li>
+<li>scan_rest_1_rest_rest_1_rest_rest_1_rest</li>
+<li>scan_rest_1_rest_rest_1_rest_rest_1_rest_rest_1_rest</li>
+</ul>
+
+
+<p>One of these directories as the alff/falff output for native space and with/without smoothing. The second is the output in standard space while the third is the same thing but with smoothing. A little obtuse.</p>
+
+<p>The sink directory on the other hand is fairly normal and easy to work through. So my current thought is to simply use this going forward and make my own symlinks generation script.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tuesday]]></title>

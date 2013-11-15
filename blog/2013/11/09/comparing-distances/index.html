@@ -142,6 +142,19 @@
 
 <p><a href="http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325">http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</a></p>
 
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>library<span class="p">(</span>connectir<span class="p">)</span>
+</span><span class='line'>seedMaps <span class="o">&lt;-</span> t<span class="p">(</span>matrix<span class="p">(</span>runif<span class="p">(</span><span class="m">500</span><span class="p">,</span> min<span class="o">=</span><span class="m">0</span><span class="p">,</span> max<span class="o">=</span><span class="m">2</span><span class="p">),</span> <span class="m">100</span><span class="p">,</span> <span class="m">5</span><span class="p">))</span>
+</span><span class='line'>invCov <span class="o">&lt;-</span> ginv<span class="p">(</span>cov<span class="p">(</span>seedMaps<span class="p">))</span>
+</span><span class='line'>SQRT <span class="o">&lt;-</span> with<span class="p">(</span>svd<span class="p">(</span>invCov<span class="p">),</span> u <span class="o">%*%</span> diag<span class="p">(</span>d<span class="o">^</span><span class="m">0.5</span><span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>v<span class="p">))</span>
+</span><span class='line'>dmat <span class="o">&lt;-</span> as.matrix<span class="p">(</span>dist<span class="p">(</span>seedMaps <span class="o">%*%</span> SQRT<span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h3>Others</h3>
 
 <p>Here&rsquo;s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
@@ -186,6 +199,7 @@
 <li>Spearman (2.5 mins)</li>
 <li>Chebyshev (25 mins)</li>
 <li>Euclidean (6.8 mins)</li>
+<li>Kendall (1883.3 mins)</li>
 </ul>
 
 
@@ -270,6 +284,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/12/abide-sge-debug/">ABIDE SGE Debug</a>
       </li>
     
@@ -283,10 +301,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/07/thursday-lib-cmi-nyu/">Thursday Lib Cmi Nyu</a>
       </li>
     
   </ul>

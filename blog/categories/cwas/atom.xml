@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-12T16:03:18-05:00</updated>
+  <updated>2013-11-13T17:49:19-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -61,6 +61,14 @@
 
 <p><a href="http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325">http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</a></p>
 
+<p><code>r
+library(connectir)
+seedMaps &lt;- t(matrix(runif(500, min=0, max=2), 100, 5))
+invCov &lt;- ginv(cov(seedMaps))
+SQRT &lt;- with(svd(invCov), u %*% diag(d^0.5) %*% t(v))
+dmat &lt;- as.matrix(dist(seedMaps %*% SQRT))
+</code></p>
+
 <h3>Others</h3>
 
 <p>Here&rsquo;s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
@@ -102,6 +110,7 @@ dmats[,colind] &lt;- as.vector(dmat)
 <li>Spearman (2.5 mins)</li>
 <li>Chebyshev (25 mins)</li>
 <li>Euclidean (6.8 mins)</li>
+<li>Kendall (1883.3 mins)</li>
 </ul>
 
 
