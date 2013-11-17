@@ -7,6 +7,8 @@ categories: cwas
 toc: true
 ---
 
+{% flickr_image 10896013916 z %}
+
 We had previously been using the semi-metric `1-r`, however are now with a reviewer's suggestion switching to a metric using a slight transformation of the prior person correlation `sqrt(2*1-r)`[^1]. This change although simple will require a massive effort to semi-reanalyze everything.
 
 [^1]: I am still working on getting latex to work so these math equations will be not be displayed well for now.
@@ -33,7 +35,7 @@ The actual command can be called from bash with the following usage:
 
 I made an addition to the MDMR model generation functions and made the new residual based approach of generating permuted hat matrices, the default. Below is the function (added within two functions). The critical new lines are highlighted.
 
-``` R mark:5-9
+``` r mark:5-9
 permute_rhs_residuals <- function() {
     # H
     Xj      <- rhs
@@ -129,21 +131,68 @@ Then with `36_mdmr_correct_runner.bash`, I ran the following lines:
 ./34_mdmr_correct.bash medium compcor 8
 ```
 
+### Plots
+
+Ran the same two set of scripts
+
+``` bash
+cd /home2/data/Projects/CWAS/share/figures/fig_03
+./A1_cwas_iq_pysurfer_easythresh.py
+./B1_cwas_iq_overlap_easythresh.py
+```
+
+**DONE**
+
 ## Figure 4
 
 This figure examines the percent of significant associations for each permutation (false positives) and creates a histogram.
 
-To generate the false positives, see `/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R`. Then to plot the histogram, see `/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R`. All I need to do is re-run these two scripts.
+### Setup
 
-**WAITING ON 1st Script TO FINISH**
+I use a reference set of permutations or my null distribution. I re-ran:
+
+``` bash
+cd /home2/data/Projects/CWAS/share/nki/05_cwas
+# I set the reference mdmr in these scripts
+./30_mdmr.bash short compcor 8
+./30_mdmr.bash medium compcor 8
+```
+
+### Analysis
+
+To generate the false positives, see `/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R`. 
+
+**RUNNING THIS STEP on 11/16/13 6:20pm**
+
+### Plot
+
+Then to plot the histogram, see `/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R`.
+
 
 ## Figure 5
 
 The relevant files for plotting are located in this directory `/home2/data/Projects/CWAS/share/figures/sfig_yeo`.
 
+``` bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_yeo
+./A_pysurfer_yeo_and_cwas_iq.py
+./B1_network_byarea.R
+./B2_cropify.py
+```
+
+**DONE**
+
 ## Figure 6
 
 The files for plotting are located in `/home2/data/Projects/CWAS/share/figures/sfig_neurosynth`. Note that you will need to first plot the elements of Figure 3.
+
+``` bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_neurosynth
+./10_combine_pysurfer.py
+```
+
+**DONE**
+
 
 ## Figure 7
 
@@ -174,15 +223,60 @@ The below script will run MDMR for IQ using GSR corrected data.
 ./34_mdmr_correct_gsr.bash medium compcor 8
 ```
 
+### Plots
+
+This is a 3 x 2 plot with 
+
+* rows = type of processing (GSR, Mean Connectivity, No Correction)
+* cols = scan (1, 2)
+
+``` bash
+cd /home2/data/Projects/CWAS/share/figures/fig_04
+# Row 1: GSR
+./Aa_cwas_gsr_pysurfer_easythresh.py
+
+# Row 2: Mean Connectivity
+./Ab_cwas_mean_connectivity_pysurfer_easythresh.py
+```
+
+**I NEED TO RUN THE ABOVE IN XTERM**
+
 
 ## Figure 8
 
-The relevant scripts to generate the plots are in `/home2/data/Projects/CWAS/share/figures/fig_05` and `/home2/data/Projects/CWAS/share/results/40_mdmr_glm`.
+The relevant scripts to generate the plots are in `/home2/data/Projects/CWAS/share/figures/fig_05` and `/home2/data/Projects/CWAS/share/results/40_mdmr_glm` (although I'm not too sure how the second folder is relevant).
 
+``` bash
+cd /home2/data/Projects/CWAS/share/figures/fig_05
+./A_glm_vs_mdmr_scatter_plots.R
+./B_surface_glm_vs_mdmr_top_percentiles.py
+```
+
+**I NEED TO RUN THE ABOVE IN XTERM**
 
 ## Figure 9
 
 The relevant analytic and plotting scripts are located in `/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise` and `/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2`. There's actually not much analysis, just compiling the data together.
+
+### Scan 1
+
+``` bash
+cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise
+./10_calc_peaks.bash
+./20_select_rois.R
+./30_sca.R
+./40_plot.R # TODO in XTERM
+```
+
+### Scan 2
+
+``` bash
+cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2
+./10_calc_peaks.bash
+./20_select_rois.R
+./30_sca.R
+./40_plot.R # TODO in XTERM
+```
 
 
 ## Figure 10
@@ -199,9 +293,11 @@ Scripts are in `/home2/data/Projects/CWAS/share/development+motion/04_analysis`.
 
 ``` bash
 cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
-./02a_mdmr.bash
+./02a_mdmr.bash # note ran all combos…relevant for supplementary
 ./04_mdmr_correct.bash
 ```
+
+**FINISHING ALL OF MDMR…THEN DO CORRECT**
 
 #### ADHD
 
@@ -231,8 +327,21 @@ Below are the commands that I ran. Note that the mdmr commands will also transfo
 
 ``` bash
 ./30_mdmr_rois.bash short compcor 0
+./34_mdmr_correct_rois.bash short compcor 0
 ```
 
 ### Figure 12
 
 Here, we'll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.
+
+``` bash
+# Development
+cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
+./02a_mdmr_rois.bash # this runs correction as well
+
+# ADHD
+
+# LDOPA
+
+```
+
