@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nilearn | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/nilearn/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-13T17:49:19-05:00</updated>
+  <updated>2013-11-17T01:47:29-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,25 +18,25 @@
     <link href="http://czarrar.github.io/blog/2013/11/06/wednesday-nki/"/>
     <updated>2013-11-06T14:59:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/06/wednesday-nki</id>
-    <content type="html"><![CDATA[<h1>ABIDE</h1>
+    <content type="html"><![CDATA[<h1 id="abide">ABIDE</h1>
 
-<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a &ldquo;Not Authorized&rdquo; error. I sent an email to Stan with Cameron cc'ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
+<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a “Not Authorized” error. I sent an email to Stan with Cameron cc’ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
 
 <p>Cameron will be getting sudo access and will figure out mounting the drive.</p>
 
-<h1>NiLearn</h1>
+<h1 id="nilearn">NiLearn</h1>
 
 <p>The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir and sent an email to Gael et al. So should be all done here.</p>
 
 <p>I believe I do want to get access to ADHD200 nitrc sftp so I can upload the data to that site. Right now it is on my own connectir nitrc site.</p>
 
-<h1>Emotional-BS</h1>
+<h1 id="emotional-bs">Emotional-BS</h1>
 
 <p>Read some articles. Check the QC.</p>
 
-<h1>Quick-Pack</h1>
+<h1 id="quick-pack">Quick-Pack</h1>
 
-<p>Look into the GUI error&hellip;</p>
+<p>Look into the GUI error…</p>
 ]]></content>
   </entry>
   
@@ -45,90 +45,77 @@
     <link href="http://czarrar.github.io/blog/2013/11/05/tuesday/"/>
     <updated>2013-11-05T15:26:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/05/tuesday</id>
-    <content type="html"><![CDATA[<h1>NiLearn</h1>
+    <content type="html"><![CDATA[<h1 id="nilearn">NiLearn</h1>
 
-<p>I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data&rsquo;s location<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+<p>I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data’s location<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
 
-<p>So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I&rsquo;m rerunning (on top of the old) the participants with nuisance and bandpass turned off.</p>
+<p>So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I’m rerunning (on top of the old) the participants with nuisance and bandpass turned off.</p>
 
 <p>Checking on the preprocessing, it initially skipped a bunch of things but now seems to be running some initial steps again. If this takes too long (i.e., is still going into tomorrow), then I might try to apply the warp myself tomorrow.</p>
 
 <hr />
 
-<h1>ABIDE</h1>
+<h1 id="abide">ABIDE</h1>
 
 <p>Since the QC pages have been fixed, I started to re-run the ABIDE analysis. This time I used 6mm of smoothing, added back the degree centrality, and running each subject with 4 cores on gelert. It is running strong (for now). There are 1102 subjects to run and currently 62 are being run in parallel.</p>
 
 <hr />
 
-<h1>Emotional BS</h1>
+<h1 id="emotional-bs">Emotional BS</h1>
 
 <p>I ran the preprocessing for these participants before the QC issue for CPAC was fixed. Now I want to rebuild just the QC as follows:</p>
 
 <p>``` python
 import sys
-sys.path.insert(0, &lsquo;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&rsquo;)
-sys.path.insert(1, &ldquo;/home/milham/Downloads/cpac_master&rdquo;)</p>
+sys.path.insert(0, ‘/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages’)
+sys.path.insert(1, “/home/milham/Downloads/cpac_master”)</p>
 
 <p>import CPAC
-CPAC.utils.create_all_qc.run(&lsquo;/home2/data/Projects/Emotional-BS/processed_data&rsquo;)
+CPAC.utils.create_all_qc.run(‘/home2/data/Projects/Emotional-BS/processed_data’)
 ```</p>
 
-<p>This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I&rsquo;m not really using, then this shouldn&rsquo;t be an issue.</p>
+<p>This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I’m not really using, then this shouldn’t be an issue.</p>
 
 <p>I also looked into co-registering the two anatomicals. I ended up dropping this endeavor for now since the gain in SNR and benefit to any results should not be too great. In looking at the QC, one possibility is that we may want to replace one of our anatomicals with the other anatomical.</p>
 
-<h2>Multi-Instance Learning</h2>
+<h2 id="multi-instance-learning">Multi-Instance Learning</h2>
 
 <p>I did a basic search for relevant reading material. I found the following:</p>
 
 <p><em>A paper outlining the approach in a seemingly easy manner.</em>
-<a href="http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf">http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf</a></p>
+http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf</p>
 
 <p><em>Very detailed slides that appear to give a good overview.</em>
-<a href="http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf">http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf</a></p>
+http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf</p>
 
-<p><em>Two links with relevant python code</em><br/>
-<a href="http://engr.case.edu/doran_gary/code.html  ">http://engr.case.edu/doran_gary/code.html  </a>
-<a href="https://github.com/garydoranjr/misvm">https://github.com/garydoranjr/misvm</a></p>
+<p><em>Two links with relevant python code</em><br />
+http://engr.case.edu/doran_gary/code.html<br />
+https://github.com/garydoranjr/misvm</p>
 
 <hr />
 
-<h1>TODO</h1>
+<h1 id="todo">TODO</h1>
 
-<p>```
-[] NiLearn Test Data</p>
-
-<pre><code>[x] Sent email confirming that band-pass filtering is required
-[] Get the pre-nuisance variables
-</code></pre>
-
-<p>[x] ABIDE Preprocessing</p>
-
-<pre><code>[x] Restart the preprocessing using 4 cores (everything except eigen)
-</code></pre>
-
-<p>[x] Emotional BS</p>
-
-<pre><code>[x] Try to regenerate the QC pages based on current output
-[x] Lookup some multi-instance learning stuff
-[] QC
-</code></pre>
-
-<p>[] QuickPack</p>
-
-<pre><code>[] ? (not enough time today to make substantial progress)
-</code></pre>
-
-<p>```</p>
+<p><code>
+[] NiLearn Test Data
+	[x] Sent email confirming that band-pass filtering is required
+	[] Get the pre-nuisance variables
+[x] ABIDE Preprocessing
+	[x] Restart the preprocessing using 4 cores (everything except eigen)
+[x] Emotional BS
+	[x] Try to regenerate the QC pages based on current output
+	[x] Lookup some multi-instance learning stuff
+	[] QC
+[] QuickPack
+	[] ? (not enough time today to make substantial progress)
+</code></p>
 <div class="footnotes">
-<hr/>
-<ol>
-<li id="fn:1">
-<p><code>/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code><a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
-</ol>
+  <ol>
+    <li id="fn:1">
+      <p><code>/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code><a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
 </div>
-
 ]]></content>
   </entry>
   
@@ -137,134 +124,110 @@ CPAC.utils.create_all_qc.run(&lsquo;/home2/data/Projects/Emotional-BS/processed_
     <link href="http://czarrar.github.io/blog/2013/11/04/monday/"/>
     <updated>2013-11-04T12:20:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/04/monday</id>
-    <content type="html"><![CDATA[<h1>NiLearn Test Data</h1>
+    <content type="html"><![CDATA[<h1 id="nilearn-test-data">NiLearn Test Data</h1>
 
 <p>Note that the code to generate all this is as well as the actual package is in <code>/home/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code>.</p>
 
-<p>I&rsquo;ve already gotten the subject data and regressors. I am left to create the group phenotypic file. It appears that I don&rsquo;t need to duplicate the previous setup so I can use what we have on motion per subject. With this new data packaged up, I uploaded it to my connectir repository as I still don&rsquo;t have access to the ADHD200 repository.</p>
+<p>I’ve already gotten the subject data and regressors. I am left to create the group phenotypic file. It appears that I don’t need to duplicate the previous setup so I can use what we have on motion per subject. With this new data packaged up, I uploaded it to my connectir repository as I still don’t have access to the ADHD200 repository.</p>
 
 <p>The download links are below:</p>
 
-<p><a href="http://connectir.projects.nitrc.org/adhd40_p1.nii.gz">http://connectir.projects.nitrc.org/adhd40_p1.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p2.nii.gz">http://connectir.projects.nitrc.org/adhd40_p2.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p3.nii.gz">http://connectir.projects.nitrc.org/adhd40_p3.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p4.nii.gz">http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</a></p>
+<p>http://connectir.projects.nitrc.org/adhd40_p1.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p2.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p3.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</p>
 
 <p>And I have contacted the other peeps about this. So DONE.</p>
 
 <hr />
 
-<h1>ABIDE Preprocessing</h1>
+<h1 id="abide-preprocessing">ABIDE Preprocessing</h1>
 
 <p>I found out that the QC pages are a little broken. So this will have to wait.</p>
 
-<h2>Run Config Setup</h2>
+<h2 id="run-config-setup">Run Config Setup</h2>
 
-<p>I have adjusted this file to run one subject for every two nodes. I am using FSL5 now. Preprocessing will be run as well as all the derivatives except centrality (degree or eigen). This is because they both need a decent amount of RAM and computational time so I&rsquo;ll wait to run them separately later.</p>
+<p>I have adjusted this file to run one subject for every two nodes. I am using FSL5 now. Preprocessing will be run as well as all the derivatives except centrality (degree or eigen). This is because they both need a decent amount of RAM and computational time so I’ll wait to run them separately later.</p>
 
 <hr />
 
-<h1>QuickPack</h1>
+<h1 id="quickpack">QuickPack</h1>
 
-<p>So the first general issue that I&rsquo;m experiencing is that if I run everything (no quick-pack), then I don&rsquo;t get any of the sym links. However, in my Emotional-BS run, the symlinks all seem to be fine! A little weird. I&rsquo;m not sure what is causing the problem.</p>
+<p>So the first general issue that I’m experiencing is that if I run everything (no quick-pack), then I don’t get any of the sym links. However, in my Emotional-BS run, the symlinks all seem to be fine! A little weird. I’m not sure what is causing the problem.</p>
 
-<h2>Running with just CPAC</h2>
+<h2 id="running-with-just-cpac">Running with just CPAC</h2>
 
-<p>I&rsquo;m focusing on why I&rsquo;m getting symlink issues when I run internally with CPAC. I think the reasons that no files are being symlinked is because there might be single quotes in the strategy part of the path.</p>
+<p>I’m focusing on why I’m getting symlink issues when I run internally with CPAC. I think the reasons that no files are being symlinked is because there might be single quotes in the strategy part of the path.</p>
 
 <p><code>bash
 ln -s /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_RameyBorough/0051466_session_1/qc/mni_normalized_anatomical_a/mni_anat_a.png /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_RameyBorough/_compcor_'ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.csf0'_CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan/qc/mni_anat_a.png
 </code></p>
 
-<p>If I run this command that was spit out from CPAC, then I get a &ldquo;No such file or directory&rdquo; error. This error doesn&rsquo;t appear with CPAC but this might explain why no symlinks were generated.</p>
+<p>If I run this command that was spit out from CPAC, then I get a “No such file or directory” error. This error doesn’t appear with CPAC but this might explain why no symlinks were generated.</p>
 
 <p>Now we must understand why those single quotes are there. We should note that there were actually 2 strategies that I had given but only one strategy folder in the symlinks directory folder was created. I wonder if this has to do with some error?</p>
 
-<p>I tried to open the config file with the GUI and re-save it, seeing if that would help but it didn&rsquo;t. Now I&rsquo;ll try to run the pipeline from the GUI. Yup that fixed the issue and it isn&rsquo;t related to the fact that I&rsquo;m using Dan&rsquo;s path and shiz. Running this one subject through the GUI.</p>
+<p>I tried to open the config file with the GUI and re-save it, seeing if that would help but it didn’t. Now I’ll try to run the pipeline from the GUI. Yup that fixed the issue and it isn’t related to the fact that I’m using Dan’s path and shiz. Running this one subject through the GUI.</p>
 
-<h2>Running ALFF</h2>
+<h2 id="running-alff">Running ALFF</h2>
 
-<p>There was one previous and confusing link issue. However, another issue that I didn&rsquo;t notice was the ALFF output directory using single quotes in its symlinks strategy directory and only has one of the two strategies. This suggests a potential benefit in running this through the GUI.</p>
+<p>There was one previous and confusing link issue. However, another issue that I didn’t notice was the ALFF output directory using single quotes in its symlinks strategy directory and only has one of the two strategies. This suggests a potential benefit in running this through the GUI.</p>
 
-<h3>GUI</h3>
+<h3 id="gui">GUI</h3>
 
-<p>This run failed. The error message is below. I am not sure what&rsquo;s going on.</p>
+<p>This run failed. The error message is below. I am not sure what’s going on.</p>
 
-<p>```
+<p><code>
 Invalid Connection: ALFF: 0  resource_pool:  {}
 Process Process-3:
 Traceback (most recent call last):
-  File &ldquo;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&rdquo;, line 258, in _bootstrap</p>
+  File "/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py", line 114, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/CPAC/pipeline/cpac_pipeline.py", line 1198, in prep_workflow
+    alff, 'inputspec.rest_res')
+  File "/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 306, in connect
+    self._check_nodes(newnodes)
+  File "/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 769, in _check_nodes
+    if node.name in node_names:
+AttributeError: 'NoneType' object has no attribute 'name'
+</code></p>
 
-<pre><code>self.run()
-</code></pre>
+<h3 id="cli">CLI</h3>
 
-<p>  File &ldquo;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&rdquo;, line 114, in run</p>
-
-<pre><code>self._target(*self._args, **self._kwargs)
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/CPAC/pipeline/cpac_pipeline.py&rdquo;, line 1198, in prep_workflow</p>
-
-<pre><code>alff, 'inputspec.rest_res')
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 306, in connect</p>
-
-<pre><code>self._check_nodes(newnodes)
-</code></pre>
-
-<p>  File &ldquo;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&rdquo;, line 769, in _check_nodes</p>
-
-<pre><code>if node.name in node_names:
-</code></pre>
-
-<p>AttributeError: &lsquo;NoneType&rsquo; object has no attribute &lsquo;name&rsquo;
-```</p>
-
-<h3>CLI</h3>
-
-<p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can&rsquo;t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn&rsquo;t work! Ugh so it&rsquo;s specifically related to the command-line, which is doing something differently than the GUI.</p>
+<p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can’t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn’t work! Ugh so it’s specifically related to the command-line, which is doing something differently than the GUI.</p>
 
 <hr />
 
-<h1>Emotional-BS</h1>
+<h1 id="emotional-bs">Emotional-BS</h1>
 
 <p>The preprocessing is done but the QC pages were not generated due to some issue in CPAC. I wish there was some way of running the QC scripts with the current outputs without me having to re-run all of CPAC. Since I ran via gelert using the <code>/tmp</code> directory, it will also need to redo all the processing.</p>
 
 <hr />
 
-<h1>Random</h1>
+<h1 id="random">Random</h1>
 
 <p>I spent a bit of time getting the table of contents to work on these pages. Hopefully it was worth it (I might want to also add a go back to the top link for each header). At the very least it gives a sort-of summary list of what will be on the post.</p>
 
-<p>I think I also had a bit of trouble keeping on track today. It was very frustrating and I&rsquo;m hoping it was just re-adjusting to coming back to work after a brief break.</p>
+<p>I think I also had a bit of trouble keeping on track today. It was very frustrating and I’m hoping it was just re-adjusting to coming back to work after a brief break.</p>
 
 <hr />
 
-<h1>TODO</h1>
+<h1 id="todo">TODO</h1>
 
-<p>```
-[x] NiLearn Test Data</p>
-
-<pre><code>[x] Generate group phenotype file
-</code></pre>
-
-<p>[] ABIDE Preprocessing</p>
-
-<pre><code>[x] Email Cam about next steps
-[x] Setup the pipeline with gelert excluding centrality
-[] Start running the pipeline
-</code></pre>
-
-<p>[] QuickPack</p>
-
-<pre><code>[x] Check that complete run was good
-[x] Try to figure out why the old runs did fine?
-[] Using the new complete run as input for QP
-</code></pre>
-
-<p>```</p>
+<p><code>
+[x] NiLearn Test Data
+	[x] Generate group phenotype file
+[] ABIDE Preprocessing
+	[x] Email Cam about next steps
+	[x] Setup the pipeline with gelert excluding centrality
+	[] Start running the pipeline
+[] QuickPack
+	[x] Check that complete run was good
+	[x] Try to figure out why the old runs did fine?
+	[] Using the new complete run as input for QP
+</code></p>
 ]]></content>
   </entry>
   

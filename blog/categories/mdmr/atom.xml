@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mdmr | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/mdmr/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-13T17:49:19-05:00</updated>
+  <updated>2013-11-17T01:47:29-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,100 +18,94 @@
     <link href="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/"/>
     <updated>2013-11-03T20:06:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+    <content type="html"><![CDATA[<p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
 
 <p>In summary, the complexity (I think) is</p>
 
 <ul>
-<li>O(V*n<sup>2</sup>) for computing the distance matrices</li>
-<li>O(k*n<sup>2</sup>) for creating the hat matrices</li>
-<li>O(n<sup>3</sup>) for gower centering the distance matrices</li>
-<li>O(Pxn<sup>2xV</sup>) for MDMR</li>
+  <li>O(V*n^2) for computing the distance matrices</li>
+  <li>O(k*n^2) for creating the hat matrices</li>
+  <li>O(n^3) for gower centering the distance matrices</li>
+  <li>O(Pxn^2xV) for MDMR</li>
 </ul>
-
 
 <p>where V = # of voxels, n = # of subjects, k = # of regressors, P = # of permutations.</p>
 
-<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn<sup>3xV</sup>) or O(n<sup>3</sup>) whereas ours is O(n<sup>2</sup>).</p>
+<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn^3xV) or O(n^3) whereas ours is O(n^2).</p>
 
-<h1>About Time Complexity</h1>
+<h1 id="about-time-complexity">About Time Complexity</h1>
 
 <p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
 
 <p>Efficiency of an algorithm can be measured by [1]:</p>
 
 <ul>
-<li>Execution time (time complexity)</li>
-<li>Amount of memory required (space complexity)</li>
+  <li>Execution time (time complexity)</li>
+  <li>Amount of memory required (space complexity)</li>
 </ul>
 
+<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There’s other relevant information on the wiki page and some online slides [2,3].</p>
 
-<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There&rsquo;s other relevant information on the wiki page and some online slides [2,3].</p>
+<h2 id="complexity-of-math-operations">Complexity of Math Operations</h2>
 
-<h2>Complexity of Math Operations</h2>
+<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n^2 or n*log(n) (depending on the implementation). Matrix multiplication is n^3. This is a little weird because I think of the correlation coefficient as n^2 since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
 
-<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n<sup>2</sup> or n*log(n) (depending on the implementation). Matrix multiplication is n<sup>3</sup>. This is a little weird because I think of the correlation coefficient as n<sup>2</sup> since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
+<h1 id="cwas-complexity">CWAS Complexity</h1>
 
-<h1>CWAS Complexity</h1>
+<p>So I guess that’s all the background I need. Now let’s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
 
-<p>So I guess that&rsquo;s all the background I need. Now let&rsquo;s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
+<h2 id="distance-matrices">Distance Matrices</h2>
 
-<h2>Distance Matrices</h2>
+<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n^2) change. Thus, this step should be O(V*n^2).</p>
 
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(V*n<sup>2</sup>).</p>
+<h2 id="mdmr">MDMR</h2>
 
-<h2>MDMR</h2>
-
-<h3>Hat Matrix</h3>
+<h3 id="hat-matrix">Hat Matrix</h3>
 
 <p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
 
 <ul>
-<li>3 matrix algebra operations</li>
-<li>1 matrix inversion</li>
-<li>2 transpositions (but I won&rsquo;t count those)</li>
+  <li>3 matrix algebra operations</li>
+  <li>1 matrix inversion</li>
+  <li>2 transpositions (but I won’t count those)</li>
 </ul>
 
+<p>Each of these operations is O(k<em>n^2) [4] so this step has O(k</em>n^2) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
 
-<p>Each of these operations is O(k<em>n<sup>2</sup>) [4] so this step has O(k</em>n<sup>2</sup>) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
+<h3 id="gower-matrix">Gower Matrix</h3>
 
-<h3>Gower Matrix</h3>
-
-<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1&rsquo;s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
+<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1’s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
 
 <ul>
-<li>2 subtractions (additions)</li>
-<li>2 divisions (multiplications)</li>
-<li>2 matrix multiplications</li>
+  <li>2 subtractions (additions)</li>
+  <li>2 divisions (multiplications)</li>
+  <li>2 matrix multiplications</li>
 </ul>
 
+<p>Since the matrix operation will dominate the time, the complexity is O(V*n^3) where V is the number of voxels.</p>
 
-<p>Since the matrix operation will dominate the time, the complexity is O(V*n<sup>3</sup>) where V is the number of voxels.</p>
+<h3 id="pseudo-f-statistic">Pseudo-F Statistic</h3>
 
-<h3>Pseudo-F Statistic</h3>
-
-<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it&rsquo;s a P x n<sup>2</sup> matrix (P = # of permutations) and G is a vector of gower matrices so it&rsquo;s a n<sup>2</sup> x V matrix (V = # of voxels). This means that there are:</p>
+<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it’s a P x n^2 matrix (P = # of permutations) and G is a vector of gower matrices so it’s a n^2 x V matrix (V = # of voxels). This means that there are:</p>
 
 <ul>
-<li>1 subtraction (I-H)</li>
-<li>2 matrix multiplications</li>
-<li>1 division</li>
+  <li>1 subtraction (I-H)</li>
+  <li>2 matrix multiplications</li>
+  <li>1 division</li>
 </ul>
 
+<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn^2xV) so as in the distance matrix step the complexity will scale by n^2.</p>
 
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn<sup>2xV</sup>) so as in the distance matrix step the complexity will scale by n<sup>2</sup>.</p>
-
-<h1>References</h1>
+<h1 id="references">References</h1>
 
 <ol>
-<li><a href="http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf">http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Time_complexity">http://en.wikipedia.org/wiki/Time_complexity</a></li>
-<li><a href="http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf">http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations">http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</a></li>
-<li><a href="http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation">http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</a></li>
-<li><a href="http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation">http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</a></li>
+  <li>http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Time_complexity</li>
+  <li>http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</li>
+  <li>http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</li>
+  <li>http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</li>
 </ol>
-
 ]]></content>
   </entry>
   

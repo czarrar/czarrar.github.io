@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>wednesday nki - Zarrar's Journaling</title>
+  <title>Testing Quick Pack - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="ABIDE We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a &hellip;">
+  <meta name="description" content="Today, I want to test my different quick pack results with the combined preprocessing + derivates run. Note that the files for running the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/06/wednesday-nki">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/15/testing-quick-pack">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
@@ -130,7 +130,7 @@ MathJax.Hub.Config({
   
   <header>
     
-      <h1 class="entry-title">Wednesday Nki</h1>
+      <h1 class="entry-title">Testing Quick Pack</h1>
     
     
       <p class="meta">
@@ -146,32 +146,44 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-11-06T14:59:00-05:00" pubdate data-updated="true">Nov 6<span>th</span>, 2013</time>
+<time datetime="2013-11-15T15:41:00-05:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h1 id="abide">ABIDE</h1>
+<div class="entry-content"><p>Today, I want to test my different quick pack results with the combined preprocessing + derivates run.</p>
 
-<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a “Not Authorized” error. I sent an email to Stan with Cameron cc’ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
+<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_qp</code>.</p>
 
-<p>Cameron will be getting sudo access and will figure out mounting the drive.</p>
+<p>The files for testing the outputs are in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack</code>.</p>
 
-<h1 id="nilearn">NiLearn</h1>
+<h2 id="failed-comparison">Failed Comparison</h2>
 
-<p>The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir and sent an email to Gael et al. So should be all done here.</p>
+<p>My first run at comparing the ALFF/REHO results failed. So now I’m figuring out what was different in their inputs (assuming that actual computation was the same).</p>
 
-<p>I believe I do want to get access to ADHD200 nitrc sftp so I can upload the data to that site. Right now it is on my own connectir nitrc site.</p>
+<p>The complete CPAC run uses that following as input for REHO:</p>
 
-<h1 id="emotional-bs">Emotional-BS</h1>
+<p><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Working/resting_preproc_0051466_session_1/nuisance_0/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global1.motion1.quadratic1.gm0.compcor1.csf0/residuals/residual.nii.gz</code></p>
 
-<p>Read some articles. Check the QC.</p>
+<p>So here it appears there is no frequency filtering that was applied. However, it appears the input used in the reho quick pack is not the same although the path looks similar:</p>
 
-<h1 id="quick-pack">Quick-Pack</h1>
+<p><code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan_rest_1_rest/func/functional_nuisance_residuals.nii.gz</code></p>
 
-<p>Look into the GUI error…</p>
+<p>Now since the above file is in the symlinks directory, I found out the original file and it appears it points to a nuisance residuals that has not had global correction.</p>
+
+<p><code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_nuisance_residuals/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/residual.nii.gz</code></p>
+
+<p>If I use the global1 version of things, the files used with All_Output and Reho_Output are now the same. This implies that the symlinks for All_Output should not be used. So for now use only the working directory outputs!!! I should be able to guess these from the sink outputs?</p>
+
+<h2 id="test-1">Test 1</h2>
+
+<script type="math/tex; mode=display"> \sqrt{2*(1-r)} </script>
+
+<h3 id="greater-test">Greater Test</h3>
+
+<p>Match - Game - Point</p>
 </div>
 
 
@@ -194,12 +206,12 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-11-06T14:59:00-05:00" pubdate data-updated="true">Nov 6<span>th</span>, 2013</time>
+<time datetime="2013-11-15T15:41:00-05:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a>
+    <a class='category' href='/blog/categories/quickpack/'>quickpack</a>
   
 </span>
 
@@ -208,7 +220,7 @@ MathJax.Hub.Config({
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/06/wednesday-nki/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/06/wednesday-nki/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/15/testing-quick-pack/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/15/testing-quick-pack/" >Tweet</a>
   
   
   
@@ -217,10 +229,8 @@ MathJax.Hub.Config({
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/" title="Previous Post: Rerunning CWAS using Transformed Correlations">&laquo; Rerunning CWAS using Transformed Correlations</a>
+        <a class="basic-alignment left" href="/blog/2013/11/13/solving-quick-pack/" title="Previous Post: Solving Quick Pack">&laquo; Solving Quick Pack</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/11/07/thursday-lib-cmi-nyu/" title="Next Post: thursday lib cmi nyu">thursday lib cmi nyu &raquo;</a>
       
     </p>
   </footer>
@@ -231,7 +241,18 @@ MathJax.Hub.Config({
 <aside class="sidebar">
   
     
-  
+  <section>
+  <h1>Contents</h1>
+  <ol class="nested" style="margin-left: 1.3em;">
+<li class="nested" style="list-style:inherit;">
+	<a href="#failed-comparison">Failed Comparison</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#test-1">Test 1</a>
+<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#greater-test">Greater Test</a></li>
+</ul>
+</li></ol>
+  </section>
 
 <section>
   <h1>Tag Cloud</h1>
@@ -502,13 +523,6 @@ $(document).ready(function(){
 
 
 
-
-  <script type="text/javascript">
-  jQuery(document).ready(function() {
-    // Put a TOC right before the entry content.
-    generateTOC('.entry-content', 'Table of Contents');
-  });
-  </script>
 
 
 

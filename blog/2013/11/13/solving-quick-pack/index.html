@@ -66,10 +66,63 @@
   // jQuery(...), instead of $(...) from here on.
   jQuery.noConflict();
 </script>
+
+	<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
+
+<script language="Javascript" type="text/javascript">
+$(document).ready(
+  function() {
+    (function($) {
+      $(".fancybox[data-content-id]").each(function() {
+        this.href = $(this).data('content-id');
+      });
+      $(".fancybox").fancybox({
+        beforeLoad: function() {
+          var el, 
+              id = $(this.element).data('title-id');
+
+          if (id) {
+            el = $('#' + id);
+
+            if (el.length) {
+              this.title = el.html();
+            }
+          }
+          if ($(this).data('content')) {
+            this.content = $(this).data('content');
+          }
+        },
+        helpers: {
+          title: {
+            type: 'inside'
+          }
+        }
+      });
+    })(jQuery);
+  }
+);
+</script>
+
   
 
 </head>
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 <body   >
   <header role="banner"><hgroup>
   <h1><a href="/">Zarrar's Journaling</a></h1>
@@ -127,201 +180,216 @@
   </header>
 
 
-<div class="entry-content"><h1>Running ALFF</h1>
+<div class="entry-content"><h1 id="running-alff">Running ALFF</h1>
 
 <p>It all appears to run fine except one link node.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>131113-12:02:04,683 workflow ERROR:                                                                                                                                     [575/9353]
-</span><span class='line'>         ['Node link_16.a0 failed to run on host rocky.']
-</span><span class='line'>131113-12:02:04,684 workflow INFO:
-</span><span class='line'>         Saving crash info to /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131113-120204-milham-link_16.a0.npz
-</span><span class='line'>131113-12:02:04,685 workflow INFO:
-</span><span class='line'>         Traceback (most recent call last):
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/plugins/multiproc.py", line 18, in r
-</span><span class='line'>un_node
-</span><span class='line'>    result['result'] = node.run(updatehash=updatehash)
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 1282, in run
-</span><span class='line'>    self._run_interface()
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 1380, in _run_inter
-</span><span class='line'>face
-</span><span class='line'>    self._result = self._run_command(execute)
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 1504, in _run_comma
-</span><span class='line'>nd
-</span><span class='line'>    result = self._interface.run()
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/interfaces/base.py", line 895, in run
-</span><span class='line'>    runtime = self._run_interface(runtime)
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/interfaces/utility.py", line 412, in _run_int
-</span><span class='line'>erface
-</span><span class='line'>    out = function_handle(**args)
-</span><span class='line'>  File "&lt;string&gt;", line 16, in prepare_symbolic_links
-</span><span class='line'>  File "/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC/CPAC/utils/utils.py", line 562, in create_symbolic_links
-</span><span class='line'>    ext = fname.split('.', 1)[1]
-</span><span class='line'>IndexError: list index out of range
-</span><span class='line'>Interface Function failed to run. </span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">131113-12:02:04,683 workflow ERROR:                                                                                                                                     [575/9353]
+</span><span class="line">         ['Node link_16.a0 failed to run on host rocky.']
+</span><span class="line">131113-12:02:04,684 workflow INFO:
+</span><span class="line">         Saving crash info to /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131113-120204-milham-link_16.a0.npz
+</span><span class="line">131113-12:02:04,685 workflow INFO:
+</span><span class="line">         Traceback (most recent call last):
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/plugins/multiproc.py", line 18, in r
+</span><span class="line">un_node
+</span><span class="line">    result['result'] = node.run(updatehash=updatehash)
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 1282, in run
+</span><span class="line">    self._run_interface()
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 1380, in _run_inter
+</span><span class="line">face
+</span><span class="line">    self._result = self._run_command(execute)
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py", line 1504, in _run_comma
+</span><span class="line">nd
+</span><span class="line">    result = self._interface.run()
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/interfaces/base.py", line 895, in run
+</span><span class="line">    runtime = self._run_interface(runtime)
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/interfaces/utility.py", line 412, in _run_int
+</span><span class="line">erface
+</span><span class="line">    out = function_handle(**args)
+</span><span class="line">  File "&lt;string&gt;", line 16, in prepare_symbolic_links
+</span><span class="line">  File "/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC/CPAC/utils/utils.py", line 562, in create_symbolic_links
+</span><span class="line">    ext = fname.split('.', 1)[1]
+</span><span class="line">IndexError: list index out of range
+</span><span class="line">Interface Function failed to run. </span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>The error occurs because a path without a file is passed. It’s a little unclear why this link is even being run? Let’s get some background straight.</p>
 
-<p>The error occurs because a path without a file is passed. It&rsquo;s a little unclear why this link is even being run? Let&rsquo;s get some background straight.</p>
+<h1 id="what-is-sinked-and-linked">What is sinked and linked?</h1>
 
-<h1>What is sinked and linked?</h1>
+<p>So we can see what’s being synced with the following line of code towards the end:</p>
 
-<p>So we can see what&rsquo;s being synced with the following line of code towards the end:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'>for strat in strat_list:
-</span><span class='line'>  rp = strat.get_resource_pool()
-</span><span class='line'>  # …</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">for</span> <span class="n">strat</span> <span class="ow">in</span> <span class="n">strat_list</span><span class="p">:</span>
+</span><span class="line">	<span class="n">rp</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_resource_pool</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>The variable <code>rp</code> is basically a dictionary with the key being a node name (e.g., <code>functional_mni</code>) and the value being a tuple with the actual node and the actual out_file. With my run of ALFF, below are the values of rp:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">{</span><span class="s">&#39;alff_Z_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.alff_Z_img&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;alff_Z_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_Z_smooth_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;alff_Z_to_standard&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_Z_to_standard_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.out_file&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;alff_Z_to_standard_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_Z_to_standard_smooth_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;alff_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.alff_img&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;anatomical_brain&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">anatomical_brain_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;anatomical_reorient&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">anatomical_reorient_gather_0</span><span class="p">,</span> <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;anatomical_to_mni_nonlinear_xfm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">anatomical_to_mni_nonlinear_xfm_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;ants_affine_xfm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">ants_affine_xfm_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;falff_Z_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.falff_Z_img&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;falff_Z_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">falff_Z_smooth_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;falff_Z_to_standard&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">falff_Z_to_standard_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.out_file&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;falff_Z_to_standard_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">falff_Z_to_standard_smooth_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;falff_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.falff_img&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;functional_brain_mask&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_brain_mask_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;functional_brain_mask_to_standard&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_brain_mask_to_standard_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;functional_freq_filtered&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_freq_filtered_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;functional_mni&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">functional_mni_gather_0</span><span class="p">,</span> <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;functional_nuisance_residuals&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_nuisance_residuals_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;functional_to_anat_linear_xfm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_to_anat_linear_xfm_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;mean_functional&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">mean_functional_gather_0</span><span class="p">,</span> <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;mni_normalized_anatomical&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">mni_normalized_anatomical_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
-</span><span class='line'> <span class="s">&#39;preprocessed&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">preprocessed_gather_0</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">)}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="p">{</span><span class="s">&#39;alff_Z_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.alff_Z_img&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;alff_Z_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_Z_smooth_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;alff_Z_to_standard&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_Z_to_standard_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.out_file&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;alff_Z_to_standard_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_Z_to_standard_smooth_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;alff_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.alff_img&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;anatomical_brain&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">anatomical_brain_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;anatomical_reorient&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">anatomical_reorient_gather_0</span><span class="p">,</span> <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;anatomical_to_mni_nonlinear_xfm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">anatomical_to_mni_nonlinear_xfm_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;ants_affine_xfm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">ants_affine_xfm_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;falff_Z_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.falff_Z_img&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;falff_Z_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">falff_Z_smooth_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;falff_Z_to_standard&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">falff_Z_to_standard_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.out_file&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;falff_Z_to_standard_smooth&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">falff_Z_to_standard_smooth_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;out_file&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;falff_img&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">alff_falff_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.falff_img&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;functional_brain_mask&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_brain_mask_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;functional_brain_mask_to_standard&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_brain_mask_to_standard_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;functional_freq_filtered&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_freq_filtered_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;functional_mni&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">functional_mni_gather_0</span><span class="p">,</span> <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;functional_nuisance_residuals&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_nuisance_residuals_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;functional_to_anat_linear_xfm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">functional_to_anat_linear_xfm_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;mean_functional&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">mean_functional_gather_0</span><span class="p">,</span> <span class="s">&#39;outputspec.rest&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;mni_normalized_anatomical&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">mni_normalized_anatomical_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.anat&#39;</span><span class="p">),</span>
+</span><span class="line"> <span class="s">&#39;preprocessed&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">resting_preproc_0051466_session_1</span><span class="o">.</span><span class="n">preprocessed_gather_0</span><span class="p">,</span>
+</span><span class="line">  <span class="s">&#39;outputspec.rest&#39;</span><span class="p">)}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>With that in mind, we can try to understand for the link error, what&rsquo;s the related node. It appears that it is related to the functional_freq_filtered node name as the input path for linking is <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_me/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>.</p>
+<p>With that in mind, we can try to understand for the link error, what’s the related node. It appears that it is related to the functional_freq_filtered node name as the input path for linking is <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_me/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>.</p>
 
 <p>Since the actually input files like functional_freq_filtered are not copied into the working directory, the sink and link will not work as there is nothing to sink/link from the working directory. How can I tackle this issue?</p>
 
 <ul>
-<li>I could create a workaround to not run sinking/linking for these particular strategies. For instance if preprocessing or what not were not turned on.</li>
-<li>In my get_func… function, I could do a soft-link inside the current directory. However this would need to be a second step, no?</li>
+  <li>I could create a workaround to not run sinking/linking for these particular strategies. For instance if preprocessing or what not were not turned on.</li>
+  <li>In my get_func… function, I could do a soft-link inside the current directory. However this would need to be a second step, no?</li>
 </ul>
 
+<h1 id="issues">Issues</h1>
 
-<h1>Issues</h1>
+<h2 id="fix-error">Fix Error</h2>
 
-<h2>Fix Error</h2>
+<p>Spoke to Cameron and will be creating an exclusion or stop list. I’m thinking that as I’m adding the particular files to the strategy pool, I want to add the node name to an exclusion list as well. Yup these set of changes got it going.</p>
 
-<p>Spoke to Cameron and will be creating an exclusion or stop list. I&rsquo;m thinking that as I&rsquo;m adding the particular files to the strategy pool, I want to add the node name to an exclusion list as well. Yup these set of changes got it going.</p>
+<h2 id="symlinks-error">Symlinks Error</h2>
 
-<h2>Symlinks Error</h2>
-
-<p>After fixing the prior issue, I then noticed that the symlinks directory is sort-of weird. There&rsquo;s a lot of repetition. For instance, here are some of the main directories:</p>
+<p>After fixing the prior issue, I then noticed that the symlinks directory is sort-of weird. There’s a lot of repetition. For instance, here are some of the main directories: </p>
 
 <ul>
-<li>scan_rest_1_rest_rest_1_rest</li>
-<li>scan_rest_1_rest_rest_1_rest_rest_1_rest</li>
-<li>scan_rest_1_rest_rest_1_rest_rest_1_rest_rest_1_rest</li>
+  <li>scan_rest<em>1_rest_rest</em>1_rest </li>
+  <li>scan_rest<em>1_rest_rest</em>1<em>rest_rest</em>1_rest</li>
+  <li>scan_rest<em>1_rest_rest</em>1<em>rest_rest</em>1<em>rest_rest</em>1_rest</li>
 </ul>
-
 
 <p>One of these directories as the alff/falff output for native space and with/without smoothing. The second is the output in standard space while the third is the same thing but with smoothing. A little obtuse.</p>
 
 <p>The sink directory on the other hand is fairly normal and easy to work through. So my current thought is to simply use this going forward and make my own symlinks generation script.</p>
+
+<h2 id="duplicate-montage-node-name">Duplicate Montage Node Name</h2>
+
+<p>If I try a config file with all the preprocessing or even one for just alff, I get a similar error.</p>
+
+<p>&#8220;`
+Traceback (most recent call last):
+  File “/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python2.7/multiprocessing/process.py”, line 258, in _bootstrap
+    self.run()
+  File “/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/multiprocessing/process.py”, line 114, in run
+    self.<em>target(*self._args, **self._kwargs)
+  File “/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC/CPAC/pipeline/cpac_pipeline.py”, line 3649, in prep_workflow
+    montage_mni_anat, ‘inputspec.underlay’)
+  File “/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py”, line 306, in connect
+    self._check_nodes(newnodes)
+  File “/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages/nipype/pipeline/engine.py”, line 772, in _check_nodes
+    raise IOError(‘Duplicate node name %s found.’ % node.name)
+IOError: Duplicate node name montage_mni_anat</em>0 found.
+&#8220;</p>
+
+<p>So let’s try to play with the code to see what is going on here. </p>
 </div>
 
 
@@ -370,6 +438,8 @@
         <a class="basic-alignment left" href="/blog/2013/11/12/abide-sge-debug/" title="Previous Post: ABIDE SGE Debug">&laquo; ABIDE SGE Debug</a>
       
       
+        <a class="basic-alignment right" href="/blog/2013/11/15/testing-quick-pack/" title="Next Post: Testing Quick Pack">Testing Quick Pack &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -378,9 +448,192 @@
 
 <aside class="sidebar">
   
-    <section>
+    
+  
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 117.14285714285714%'>cpac(2)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 142.85714285714286%'>quickpack(5)</a> </span>
+</section>
+<!--
+    Calendar aside/plugin for octopress blogging framework.
+    Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<style>
+	.highlighted-calendar-day
+	{
+		color : #CCC;
+		font-weight : bold;
+	}
+	
+	.calendar-header-day{
+		font-weight : bold;
+		color : #AAA;
+		font-size : 14px;
+	}
+	
+	.highlighted-calendar-day a
+	{
+		
+	}
+	
+	.prev-link
+	{
+		float:left;
+	}
+	
+	.next-link
+	{
+		float: right;
+	}
+	.calendar-day
+	{
+		color : #888;
+		font-weight : 12px;
+	}
+	
+	.calendar-table
+	{
+		width : 100%;
+		
+	}
+	
+	.calendar-table td
+	{
+		border-right : dotted 1px lightgrey;
+		text-align : center;
+	}
+	
+	.calendar-table td:last-child
+	{
+		border-right : none;
+	}
+	
+	.calendar-table th
+	{
+		background-color : lightgrey;
+		text-align : center;
+	}
+	.prevCalendarLink img
+	{	
+		
+		width : 20px;
+		height : 20px;
+		border: 0px;
+		float: left;
+		
+	}
+	
+	.nextCalendarLink img
+	{
+		
+		width : 20px;
+		height: 20px;
+		border: 0px;
+		float: right;
+		
+	}
+</style>
+<script type="text/javascript" src="/javascripts/calendar.js"></script>
+<section id="calendarDiv">
+	<h1>Calendar</h1>
+	<span style="display:block" id="calendarSpan"></span>
+	<div>
+		<a href="#" class="previousMonth show"/><a href="#" class="nextMonth hide"/>
+	</div>
+</section>
+<script type="text/javascript">
+  
+monthCalendar = function(id,year,month)
+{
+  var highlightArray = new Array();
+  var hightlightLinks = new Array();
+  
+  highlightArray.push('11/15/2013');
+  hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
+  
+  highlightArray.push('11/13/2013');
+  hightlightLinks.push('/blog/2013/11/13/solving-quick-pack/');
+  
+  highlightArray.push('11/12/2013');
+  hightlightLinks.push('/blog/2013/11/12/abide-sge-debug/');
+  
+  highlightArray.push('11/11/2013');
+  hightlightLinks.push('/blog/2013/11/11/monday-for-veterans/');
+  
+  highlightArray.push('11/09/2013');
+  hightlightLinks.push('/blog/2013/11/09/comparing-distances/');
+  		
+  var cal = new Calendar(month,year,highlightArray,hightlightLinks);
+  cal.generateHTML(id);
+  var element = document.getElementById(id);
+  element.innerHTML = cal.getHTML();
+}
+	
+loadCalendar = function(){
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  monthCalendar('calendarDiv',year,month);
+}
+	
+	if(Array.prototype.indexOf == undefined)
+	{
+		 Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+			"use strict";
+			if (this == null) {
+				throw new TypeError();
+			}
+			var t = Object(this);
+			var len = t.length >>> 0;
+			if (len === 0) {
+				return -1;
+			}
+			var n = 0;
+			if (arguments.length > 0) {
+				n = Number(arguments[1]);
+				if (n != n) { // shortcut for verifying if it's NaN
+					n = 0;
+				} else if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+			if (n >= len) {
+				return -1;
+			}
+			var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+			for (; k < len; k++) {
+				if (k in t && t[k] === searchElement) {
+					return k;
+				}
+			}
+			return -1;
+		}
+	}
+$(document).ready(function(){
+  loadCalendar();
+});
+</script>
+<section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
@@ -398,11 +651,36 @@
         <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a>
-      </li>
-    
   </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 
@@ -442,6 +720,13 @@
 
 
 
+
+  <script type="text/javascript">
+  jQuery(document).ready(function() {
+    // Put a TOC right before the entry content.
+    generateTOC('.entry-content', 'Table of Contents');
+  });
+  </script>
 
 
 

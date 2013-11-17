@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-13T17:49:19-05:00</updated>
+  <updated>2013-11-17T01:47:29-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,22 +18,21 @@
     <link href="http://czarrar.github.io/blog/2013/11/09/comparing-distances/"/>
     <updated>2013-11-09T18:02:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/09/comparing-distances</id>
-    <content type="html"><![CDATA[<p>We want to show that the choice of your distance metric won&rsquo;t substantially change your results. I&rsquo;ll be using the first scan of the IQ dataset. I would like to compare the following measures:</p>
+    <content type="html"><![CDATA[<p>We want to show that the choice of your distance metric won’t substantially change your results. I’ll be using the first scan of the IQ dataset. I would like to compare the following measures:</p>
 
 <ul>
-<li>Pearson Correlation</li>
-<li>Spearman Rank</li>
-<li>Kendall Tau</li>
-<li>Lin&rsquo;s concordance correlation</li>
-<li>Euclidean distance</li>
-<li>Chebychev distance</li>
-<li>Mahalanobis distance</li>
+  <li>Pearson Correlation</li>
+  <li>Spearman Rank</li>
+  <li>Kendall Tau</li>
+  <li>Lin’s concordance correlation</li>
+  <li>Euclidean distance</li>
+  <li>Chebychev distance</li>
+  <li>Mahalanobis distance</li>
 </ul>
 
+<p>All the measures except the last are used in the Zapala et al. (2006) <em>PNAS</em> paper, and the last measure is something used in Kriegeskorte’s work. It is essentially the mean distance between two features/vectors relative to the variance in each of them. Thus, 2 sets of points could be very close on average but have huge variability, meaning that small distance is less meaningful.</p>
 
-<p>All the measures except the last are used in the Zapala et al. (2006) <em>PNAS</em> paper, and the last measure is something used in Kriegeskorte&rsquo;s work. It is essentially the mean distance between two features/vectors relative to the variance in each of them. Thus, 2 sets of points could be very close on average but have huge variability, meaning that small distance is less meaningful.</p>
-
-<h1>Low-Level Code</h1>
+<h1 id="low-level-code">Low-Level Code</h1>
 
 <p>Most of the measures are fairly straightforward. I will add them all to the internal <code>.subdist_distance</code> function, which is called to compute the distance between the different participant connectivity maps for a given voxel. Right now, I have the pearson distance, shrinkage pearson distance, and inverse covariance distance. I added the other distance functions from my list above as additional options.</p>
 
@@ -41,97 +40,122 @@
 
 <p>``` r</p>
 
-<p>.test_sdist(seedMaps, dmats, colind, method=&ldquo;pearson&rdquo;)</p>
+<p>.test_sdist(seedMaps, dmats, colind, method=”pearson”)</p>
 
 <p>```</p>
 
 <p>As you can see, we pass a matrix of participant seed maps (voxels as rows and participants as columns), a big matrix of distances (columns as voxels and rows as the vectorized distance matrix for that voxel), the index of the voxel examined in the distances, and your method of choice.</p>
 
-<h2>Measures</h2>
+<h2 id="measures">Measures</h2>
 
-<h3>Pearson</h3>
+<h3 id="pearson">Pearson</h3>
 
 <p>I updated the connectir pearson distance C function (<code>subdist_pearson_distance</code>) to compute the transformed correlation that has euclidean properties. I should make sure to test this for confirmation.</p>
 
-<h3>Mahalanobis Distance</h3>
+<h3 id="mahalanobis-distance">Mahalanobis Distance</h3>
 
 <p>I borrowed code for this measure from the following two links:</p>
 
-<p><a href="http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r">http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r</a></p>
+<p>http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r</p>
 
-<p><a href="http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325">http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</a></p>
+<p>http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</p>
 
 <p><code>r
 library(connectir)
+library(corpcor)
 seedMaps &lt;- t(matrix(runif(500, min=0, max=2), 100, 5))
-invCov &lt;- ginv(cov(seedMaps))
+# invCov &lt;- ginv(cov(seedMaps))
+invCov &lt;- invcov.shrink(seedMaps)
 SQRT &lt;- with(svd(invCov), u %*% diag(d^0.5) %*% t(v))
 dmat &lt;- as.matrix(dist(seedMaps %*% SQRT))
 </code></p>
 
-<h3>Others</h3>
+<p>Note that here I am using a shrinkage method to deal with the ill-posed problem of inverting a n « p issue. So far it normally fails if I take the traditional approach.</p>
 
-<p>Here&rsquo;s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
+<h3 id="concordance">Concordance</h3>
 
-<p>``` r
-.distance_spearman &lt;&ndash; function(seedMaps, dmats, colind, transpose=FALSE, &hellip;) {</p>
+<p>I took the implementation in the <code>epiR</code> package and made it more suitable for a matrix approach (e.g., correlated everything with everything else). Note that the results using this alternative matrix-based approach are very close to using the epiR function but not exact. Should investigate in the future.</p>
 
-<pre><code>seedMaps &lt;- ifelse(transpose, t(seedMaps[,]), seedMaps[,])
-smat &lt;- cor(seedMaps, method="spearman")
-dmat &lt;- sqrt(2*(1-smat))
-dmats[,colind] &lt;- as.vector(dmat)
-</code></pre>
+<h3 id="others">Others</h3>
 
-<p>}
-```</p>
+<p>Here’s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
 
-<h2>Issues</h2>
+<p><code>r
+.distance_spearman &lt;- function(seedMaps, dmats, colind, transpose=FALSE, ...) {
+    seedMaps &lt;- ifelse(transpose, t(seedMaps[,]), seedMaps[,])
+    smat &lt;- cor(seedMaps, method="spearman")
+    dmat &lt;- sqrt(2*(1-smat))
+    dmats[,colind] &lt;- as.vector(dmat)
+}
+</code></p>
+
+<h2 id="issues">Issues</h2>
 
 <p>I had an NaN error after running the first pearson distance. I realized that this error is related to the fact that the correlation can sometimes go over 1 due to precision errors. To combat this I added a tolerance level, where I adjust the correlation down by 1e-8. This should ensure that no correlation is above 1, which would lead to a negative number in the transformation and a NaN when trying to get the square root. Note that this is really only an issue for the pearson distance.</p>
 
-<h1>Higher-Level Code</h1>
+<h1 id="higher-level-code">Higher-Level Code</h1>
 
-<p>After computing the connectivity maps, I&rsquo;d ideally want to have some manual code that runs all the possible distances and saves them in different file-backed distance matrices. However, this seems to be a bit hairy and would require lots of coding/testing. Main issues are with memory (i.e., holding all the distances in memory or partially in memory). Instead, I&rsquo;ll take the easier but longer approach of running the distances for each method separately. To speed things up, I plan to use the 800 random ROIs.</p>
+<p>After computing the connectivity maps, I’d ideally want to have some manual code that runs all the possible distances and saves them in different file-backed distance matrices. However, this seems to be a bit hairy and would require lots of coding/testing. Main issues are with memory (i.e., holding all the distances in memory or partially in memory). Instead, I’ll take the easier but longer approach of running the distances for each method separately. To speed things up, I plan to use the 800 random ROIs.</p>
 
 <p>The details for this code can be found in <code>10_subdist.bash</code>.</p>
 
-<h1>Running the Analyses</h1>
+<h1 id="running-the-analyses">Running the Analyses</h1>
 
-<p>I&rsquo;ve started to run the analyses. I ended up going with two separate workflows since the kendall was taking forever!</p>
+<p>I’ve started to run the analyses. I ended up going with two separate workflows since the kendall was taking forever!</p>
 
 <p>I will need to re-run the concordance since there was an error in the code. I should make sure to remove the following folder beforehand: <code>/home/data/Projects/CWAS/nki/cwas/short/try_distances/concordance_k0800_to_k0800</code>.</p>
 
-<blockquote><p>Below the time in parentheses represents computation time but excludes setup time (i.e., reading in distance matrix and creating the hat matrix).</p></blockquote>
+<blockquote>
+  <p>Below the time in parentheses represents computation time but excludes setup time (i.e., reading in distance matrix and creating the hat matrix).</p>
+</blockquote>
 
-<h2>Finished</h2>
-
-<ul>
-<li>Pearson (0.9 mins)</li>
-<li>Spearman (2.5 mins)</li>
-<li>Chebyshev (25 mins)</li>
-<li>Euclidean (6.8 mins)</li>
-<li>Kendall (1883.3 mins)</li>
-</ul>
-
-
-<h2>In Progress</h2>
+<h2 id="finished">Finished</h2>
 
 <ul>
-<li>Kendall (taking bloody forever…using only 0.52GB so get 7 large blocks)</li>
+  <li>Pearson (0.9 mins)</li>
+  <li>Spearman (2.5 mins)</li>
+  <li>Chebyshev (25 mins)</li>
+  <li>Euclidean (6.8 mins)</li>
+  <li>Kendall (1883.3 mins)</li>
+  <li>Concordance (0.4 mins)</li>
+  <li>Mahalanobois (14.5 mins)</li>
 </ul>
 
-
-<h2>Waiting</h2>
+<h2 id="in-progress">In Progress</h2>
 
 <ul>
-<li>Mahalanobois (some system is computationally singular error)</li>
+  <li>Mahalanobois</li>
 </ul>
 
-
-<h2>Redo</h2>
+<h2 id="redo">Redo</h2>
 
 <pre><code>* Concordance (will likely take long too)
 </code></pre>
+
+<h1 id="comparing-distances">Comparing Distances</h1>
+
+<p>Here is some quick code to compare the MDMR results using the different distance measures.</p>
+
+<p><code>r
+# Setup
+setwd("/home2/data/Projects/CWAS/nki/cwas/short/try_distances/")
+library(bigmemory)
+dirs &lt;- Sys.glob("*/iq_age+sex+meanFD.mdmr/pvals.desc")
+pvals.mat &lt;- sapply(dirs, function(d) attach.big.matrix(d)[,1])
+colnames(pvals.mat) &lt;- sub("_k0800_to_k0800", "", dirname(dirname(dirs)))
+# Correlate
+cor(pvals.mat, method="s")
+# Dice-esque
+d.mat &lt;- crossprod(pvals.mat&lt;0.05)
+print(d.mat) # counts
+round(sweep(d.mat, 1, diag(d.mat), '/')*100, 2) # percent overlap
+# Voxels present in all distance measures
+sum(rowSums(pvals.mat&lt;0.05)==6)
+</code></p>
+
+<p>Interesting that the correlation-based measures are all alike: concordance, kendall, pearson, and spearman with pearson as the most sensitive (180 significant voxels). Then euclidian and mahalanobois are fairly similar with both being the most sensitive overall (194 and 195 significant voxels, respectively). Significance here is p &lt; 0.05 (uncorrected…running analyses for corrected version now).</p>
+
+<p>It’s also interesting that there are still differences in what voxel’s are identified as significant between the euclidian-based ones and the correlation-ones. For instance about 103 voxels are commonly significant between mahalanobois and pearson distance. If I look at those that are not common between mahalanobois and pearson distance, I do find that some of them are sub-threshold in the other measure. For instance, with p&lt;0.1 for pearson there are now 141 significant voxels in common with mahalanobois of p&lt;0.05.</p>
 ]]></content>
   </entry>
   
@@ -140,15 +164,19 @@ dmats[,colind] &lt;- as.vector(dmat)
     <link href="http://czarrar.github.io/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/"/>
     <updated>2013-11-05T20:26:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/05/rerunning-cwas-using-transformed-correlations</id>
-    <content type="html"><![CDATA[<p>We had previously been using the semi-metric <code>1-r</code>, however are now with a reviewer&rsquo;s suggestion switching to a metric using a slight transformation of the prior person correlation <code>sqrt(2*1-r)</code><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. This change although simple will require a massive effort to semi-reanalyze everything.</p>
+    <content type="html"><![CDATA[<p>We had previously been using the semi-metric <code>1-r</code>, however are now with a reviewer’s suggestion switching to a metric using a slight transformation of the prior person correlation <code>sqrt(2*1-r)</code><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. This change although simple will require a massive effort to semi-reanalyze everything.</p>
 
 <p>We also making another change in the way the permuted hat matrices are generated due to a last minute discovery by Phil. Previously, we had permuted the rows for the columns of interest. The issue with this approach is if the variable of interest is correlated with the covariates, then our permutation will effect both the variable of interest and our covariates. Consequently, we will regress out the covariates of non-interest from our variable of interest. We will then have the fitted response and the residuals. We will permute the order of the residuals and then add back the fitted response.</p>
 
-<blockquote><p>Note: I need to ask Phil what the approach is if your variable of interest has more than one column. I&rsquo;m guessing you apply this procedure to each column of the variable separately?</p></blockquote>
+<blockquote>
+  <p>Note: I need to ask Phil what the approach is if your variable of interest has more than one column. I’m guessing you apply this procedure to each column of the variable separately?</p>
+</blockquote>
 
-<h1>Code</h1>
+<p><figure class="flickr-thumbnail “testing" style="width: 240px;"><a href="http://farm6.staticflickr.com/5510/10896013916_4696b79800_z.jpg" class="fancybox" data-title-id="flickr-photo-10896013916" data-media="photo"><img src="http://farm6.staticflickr.com/5510/10896013916_4696b79800_m.jpg" title="Testing Brain" style="width: 240px; height: 164px;"/></a><figcaption id="flickr-photo-10896013916"><h1><a class="flickr-link" href="http://www.flickr.com/photos/96917171@N07/10896013916">Testing Brain</a> by czarrar</h1><div class="description">my</div></figcaption></figure></p>
 
-<h2>Transformation of Distances</h2>
+<h2 id="code">Code</h2>
+
+<h3 id="transformation-of-distances">Transformation of Distances</h3>
 
 <p>The first order of business is creating a function that easily transforms my big matrices and re-generates the gower centered matrices. A few nuances is that I need to make sure to set the number of threads to use in advance (otherwise all processors will be occupied) and to set the memory limit for gower centering.</p>
 
@@ -157,79 +185,75 @@ dmats[,colind] &lt;- as.vector(dmat)
 <p><code>./transform_cor.R distance-descriptor memlimit nthreads</code></p>
 
 <ul>
-<li><em>distance-descriptor</em>: File path to the subject distances descriptor</li>
-<li><em>memlimit</em>: Upper bound on RAM to use</li>
-<li><em>nthreads</em>: Number of threads to use for matrix algebra operations</li>
+  <li><em>distance-descriptor</em>: File path to the subject distances descriptor</li>
+  <li><em>memlimit</em>: Upper bound on RAM to use</li>
+  <li><em>nthreads</em>: Number of threads to use for matrix algebra operations</li>
 </ul>
 
-
-<h2>Permuting Residuals of Predictor Variable</h2>
+<h3 id="permuting-residuals-of-predictor-variable">Permuting Residuals of Predictor Variable</h3>
 
 <p>I made an addition to the MDMR model generation functions and made the new residual based approach of generating permuted hat matrices, the default. Below is the function (added within two functions). The critical new lines are highlighted.</p>
 
 <p>``` r mark:5-9
-permute_rhs_residuals &lt;&ndash; function() {</p>
+permute_rhs_residuals &lt;- function() {
+    # H
+    Xj      &lt;- rhs
+    cols    &lt;- grps %in% u.grps[f.ind]
+    ## permute residuals
+    for (i in which(cols)) {
+        model   &lt;- lm(Xj[,i] ~ Xj[,!cols])
+        Xj[,i]  &lt;- model$residuals[o.inds] + model$fitted.values
+    }
+    ## hat matrixx
+    qrX     &lt;- qr(Xj, tol=TOL)
+    Q       &lt;- qr.Q(qrX)
+    H       &lt;- tcrossprod(Q[,1:qrX$rank])</p>
 
-<pre><code># H
-Xj      &lt;- rhs
-cols    &lt;- grps %in% u.grps[f.ind]
-## permute residuals
-for (i in which(cols)) {
-    model   &lt;- lm(Xj[,i] ~ Xj[,!cols])
-    Xj[,i]  &lt;- model$residuals[o.inds] + model$fitted.values
-}
-## hat matrixx
-qrX     &lt;- qr(Xj, tol=TOL)
-Q       &lt;- qr.Q(qrX)
-H       &lt;- tcrossprod(Q[,1:qrX$rank])
-
-# H2
+<pre><code># H2
 cols    &lt;- grps %in% u.grps[-f.ind]
 Xj      &lt;- rhs[,cols]
 qrX     &lt;- qr(Xj, tol = TOL)
 Q       &lt;- qr.Q(qrX)
 H2      &lt;- H - tcrossprod(Q[, 1:qrX$rank])
 
-H2
+H2 } ```
 </code></pre>
 
-<p>}
-```</p>
+<h2 id="normandy-aka-redoing-almost-all-figures">Normandy (aka Redoing Almost All Figures)</h2>
 
-<h1>Normandy (aka Redoing Almost All Figures)</h1>
-
-<h2>What Figures</h2>
+<h3 id="what-figures">What Figures</h3>
 
 <p>Below are the list of figures in the main paper and whether I need to redo it or not.</p>
 
 <ol>
-<li><strong>Yes</strong> Since this is an example figure, I don&rsquo;t think I need to redo the particular analysis. However, I do need to edit the figure so it shows <code>sqrt(2*(1-r))</code>.</li>
-<li><strong>No</strong> Just a table.</li>
-<li><strong>Yes</strong> Redo 2 analyses and 3 surface maps.</li>
-<li><strong>Yes</strong> Redo 2 analyses and 2 histograms <em>(depends on 3)</em>.</li>
-<li><strong>Yes</strong> Redo network summary and surface map <em>(depends on 3)</em>.</li>
-<li><strong>Yes</strong> Redo 3 surface maps <em>(depends on 3)</em>.</li>
-<li><strong>Yes</strong> Redo 6 analyses and 6 surface maps <em>(depends on 3)</em>.</li>
-<li><strong>Yes</strong> Redo 2 scatter plots, 2 analyses, and 4 surface maps.</li>
-<li><strong>Yes</strong> Redo 2 bar plots.</li>
-<li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
-<li><strong>Yes</strong> Redo 4 analyses and 4 surface maps.</li>
-<li><p><strong>Yes</strong> Redo 3 analyses and 4 surface maps.
-Supplementary Figures</p></li>
-<li><p><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</p></li>
-<li><strong>Yes</strong> ?</li>
-<li><strong>Yes</strong> 2 analyses and 2 surface maps.</li>
-<li><strong>Yes</strong> 6 analyses and 6 surface maps.</li>
-<li><strong>Yes</strong> 3 analyses and 3 surface maps.</li>
-<li><strong>Yes</strong> 3+ analyses and 3 plots.</li>
+  <li><strong>Yes</strong> Since this is an example figure, I don’t think I need to redo the particular analysis. However, I do need to edit the figure so it shows <code>sqrt(2*(1-r))</code>.</li>
+  <li><strong>No</strong> Just a table.</li>
+  <li><strong>Yes</strong> Redo 2 analyses and 3 surface maps.</li>
+  <li><strong>Yes</strong> Redo 2 analyses and 2 histograms <em>(depends on 3)</em>.</li>
+  <li><strong>Yes</strong> Redo network summary and surface map <em>(depends on 3)</em>.</li>
+  <li><strong>Yes</strong> Redo 3 surface maps <em>(depends on 3)</em>.</li>
+  <li><strong>Yes</strong> Redo 6 analyses and 6 surface maps <em>(depends on 3)</em>.</li>
+  <li><strong>Yes</strong> Redo 2 scatter plots, 2 analyses, and 4 surface maps.</li>
+  <li><strong>Yes</strong> Redo 2 bar plots.</li>
+  <li><strong>Yes</strong> Redo 3 analyses, 3 surface maps, and 3 network summaries.</li>
+  <li><strong>Yes</strong> Redo 4 analyses and 4 surface maps.</li>
+  <li>
+    <p><strong>Yes</strong> Redo 3 analyses and 4 surface maps.
+Supplementary Figures</p>
+  </li>
+  <li><strong>Yes</strong> 3 analyses, 3 surface maps, and 2 scatter plots.</li>
+  <li><strong>Yes</strong> ?</li>
+  <li><strong>Yes</strong> 2 analyses and 2 surface maps.</li>
+  <li><strong>Yes</strong> 6 analyses and 6 surface maps.</li>
+  <li><strong>Yes</strong> 3 analyses and 3 surface maps.</li>
+  <li><strong>Yes</strong> 3+ analyses and 3 plots.</li>
 </ol>
 
+<h3 id="figure-3">Figure 3</h3>
 
-<h2>Figure 3</h2>
+<h4 id="transformation--mdmr">Transformation + MDMR</h4>
 
-<h3>Transformation + MDMR</h3>
-
-<p>I&rsquo;m running <code>32_mdmr_runner.bash</code>, which runs the following two commands:</p>
+<p>I’m running <code>32_mdmr_runner.bash</code>, which runs the following two commands:</p>
 
 <p><code>bash
 ./30_mdmr.bash short compcor 8
@@ -239,30 +263,27 @@ Supplementary Figures</p></li>
 <p>Each of those in turn will run the following commands (excerpt from longer script):</p>
 
 <p>``` bash
-echo &ldquo;Voxelwise&rdquo;
-sdistdir=&ldquo;${distbase}/${strategy}<em>kvoxs${sm}</em>to_kvoxs${sm}&rdquo;
+echo “Voxelwise”
+sdistdir=”${distbase}/${strategy}_kvoxs${sm}_to_kvoxs${sm}”
 curdir=$(pwd)</p>
 
 <p>cd /home2/data/Projects/CWAS/share/lib
 ./transform_cor.R ${sdistdir}/subdist.desc 30 12
 cd $curdir</p>
 
-<p>time connectir_mdmr.R -i ${sdistdir} \</p>
+<p>time connectir_mdmr.R -i ${sdistdir} \
+    –formula “FSIQ + Age + Sex + ${scan}_meanFD” \
+    –model ${subdir}/subject_info_with_iq_and_gcors.csv \
+    –factors2perm “FSIQ” \
+    –permutations 14999 \
+    –forks 1 –threads 12 \
+    –memlimit 12 \
+    –save-perms \
+    –ignoreprocerror \
+    iq_age+sex+meanFD.mdmr
+```</p>
 
-<pre><code>--formula "FSIQ + Age + Sex + ${scan}_meanFD" \
---model ${subdir}/subject_info_with_iq_and_gcors.csv \
---factors2perm "FSIQ" \
---permutations 14999 \
---forks 1 --threads 12 \
---memlimit 12 \
---save-perms \
---ignoreprocerror \
-iq_age+sex+meanFD.mdmr
-</code></pre>
-
-<p>```</p>
-
-<h3>Multiple Comparisons Correction</h3>
+<h4 id="multiple-comparisons-correction">Multiple Comparisons Correction</h4>
 
 <p>Then with <code>36_mdmr_correct_runner.bash</code>, I ran the following lines:</p>
 
@@ -271,23 +292,68 @@ iq_age+sex+meanFD.mdmr
 ./34_mdmr_correct.bash medium compcor 8
 </code></p>
 
-<h2>Figure 4</h2>
+<h4 id="plots">Plots</h4>
+
+<p>Ran the same two set of scripts</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/fig_03
+./A1_cwas_iq_pysurfer_easythresh.py
+./B1_cwas_iq_overlap_easythresh.py
+</code></p>
+
+<p><strong>DONE</strong></p>
+
+<h3 id="figure-4">Figure 4</h3>
 
 <p>This figure examines the percent of significant associations for each permutation (false positives) and creates a histogram.</p>
 
-<p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>. All I need to do is re-run these two scripts.</p>
+<h4 id="setup">Setup</h4>
 
-<p><strong>SCRIPT FINISHED &ndash; NEED TO PLOT</strong></p>
+<p>I use a reference set of permutations or my null distribution. I re-ran:</p>
 
-<h2>Figure 5</h2>
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/nki/05_cwas
+# I set the reference mdmr in these scripts
+./30_mdmr.bash short compcor 8
+./30_mdmr.bash medium compcor 8
+</code></p>
+
+<h4 id="analysis">Analysis</h4>
+
+<p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. </p>
+
+<p><strong>RUNNING THIS STEP on 11/16/13 6:20pm</strong></p>
+
+<h4 id="plot">Plot</h4>
+
+<p>Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>.</p>
+
+<h3 id="figure-5">Figure 5</h3>
 
 <p>The relevant files for plotting are located in this directory <code>/home2/data/Projects/CWAS/share/figures/sfig_yeo</code>.</p>
 
-<h2>Figure 6</h2>
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_yeo
+./A_pysurfer_yeo_and_cwas_iq.py
+./B1_network_byarea.R
+./B2_cropify.py
+</code></p>
+
+<p><strong>DONE</strong></p>
+
+<h3 id="figure-6">Figure 6</h3>
 
 <p>The files for plotting are located in <code>/home2/data/Projects/CWAS/share/figures/sfig_neurosynth</code>. Note that you will need to first plot the elements of Figure 3.</p>
 
-<h2>Figure 7</h2>
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_neurosynth
+./10_combine_pysurfer.py
+</code></p>
+
+<p><strong>DONE</strong></p>
+
+<h3 id="figure-7">Figure 7</h3>
 
 <p>For the mean connectivity regression, I would use the same transformation as redone with Figure 3. I do need to redo the transformation for Figure 7.</p>
 
@@ -296,7 +362,7 @@ iq_age+sex+meanFD.mdmr
 <p><code>bash
 ./30_mdmr_with_gcors.bash short compcor 8; \
 ./30_mdmr_with_gcors.bash medium compcor 8
-</code></p>
+</code> </p>
 
 <p>The below script will run MDMR for IQ using GSR corrected data.</p>
 
@@ -305,38 +371,82 @@ iq_age+sex+meanFD.mdmr
 ./33_mdmr_gsr.bash medium compcor 8
 </code></p>
 
-<h3>Multiple Comparisons</h3>
+<h4 id="multiple-comparisons">Multiple Comparisons</h4>
 
-<p>``` bash</p>
-
-<h1>Mean Connectivity</h1>
-
-<p>./34_mdmr_correct_with_gcors.bash short compcor 8; \
-./34_mdmr_correct_with_gcors.bash medium compcor 8</p>
-
-<h1>GSR</h1>
-
-<p>./34_mdmr_correct_gsr.bash short compcor 8; \
+<p><code>bash
+# Mean Connectivity
+./34_mdmr_correct_with_gcors.bash short compcor 8; \
+./34_mdmr_correct_with_gcors.bash medium compcor 8
+# GSR
+./34_mdmr_correct_gsr.bash short compcor 8; \
 ./34_mdmr_correct_gsr.bash medium compcor 8
-```</p>
+</code></p>
 
-<h2>Figure 8</h2>
+<h4 id="plots-1">Plots</h4>
 
-<p>The relevant scripts to generate the plots are in <code>/home2/data/Projects/CWAS/share/figures/fig_05</code> and <code>/home2/data/Projects/CWAS/share/results/40_mdmr_glm</code>.</p>
+<p>This is a 3 x 2 plot with </p>
 
-<h2>Figure 9</h2>
+<ul>
+  <li>rows = type of processing (GSR, Mean Connectivity, No Correction)</li>
+  <li>cols = scan (1, 2)</li>
+</ul>
 
-<p>The relevant analytic and plotting scripts are located in <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise</code> and <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2</code>. There&rsquo;s actually not much analysis, just compiling the data together.</p>
+<p>``` bash
+cd /home2/data/Projects/CWAS/share/figures/fig_04
+# Row 1: GSR
+./Aa_cwas_gsr_pysurfer_easythresh.py</p>
 
-<h2>Figure 10</h2>
+<h1 id="row-2-mean-connectivity">Row 2: Mean Connectivity</h1>
+<p>./Ab_cwas_mean_connectivity_pysurfer_easythresh.py</p>
+
+<h1 id="row-3-already-run-fig-3">Row 3: Already Run (Fig 3)</h1>
+<p>```</p>
+
+<p><strong>DONE</strong></p>
+
+<h3 id="figure-8">Figure 8</h3>
+
+<p>The relevant scripts to generate the plots are in <code>/home2/data/Projects/CWAS/share/figures/fig_05</code> and <code>/home2/data/Projects/CWAS/share/results/40_mdmr_glm</code> (although I’m not too sure how the second folder is relevant).</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/fig_05
+./A_glm_vs_mdmr_scatter_plots.R
+./B_surface_glm_vs_mdmr_top_percentiles.py
+</code></p>
+
+<p><strong>I NEED TO RUN THE ABOVE IN XTERM</strong></p>
+
+<h3 id="figure-9">Figure 9</h3>
+
+<p>The relevant analytic and plotting scripts are located in <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise</code> and <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2</code>. There’s actually not much analysis, just compiling the data together.</p>
+
+<h4 id="scan-1">Scan 1</h4>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise
+./10_calc_peaks.bash
+./20_select_rois.R
+./30_sca.R
+./40_plot.R # TODO in XTERM
+</code></p>
+
+<h4 id="scan-2">Scan 2</h4>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2
+./10_calc_peaks.bash
+./20_select_rois.R
+./30_sca.R
+./40_plot.R # TODO in XTERM
+</code></p>
+
+<h3 id="figure-10">Figure 10</h3>
 
 <p>This figure covers CWAS for three different datasets.</p>
 
-<h3>CWAS</h3>
+<h4 id="cwas">CWAS</h4>
 
-<p>Right now running development MDMR.</p>
-
-<h4>Development</h4>
+<h5 id="development">Development</h5>
 
 <p>Scripts are in <code>/home2/data/Projects/CWAS/share/development+motion/04_analysis</code>. I ran it as follows:</p>
 
@@ -346,9 +456,9 @@ cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
 ./04_mdmr_correct.bash
 </code></p>
 
-<p><strong>FINISHING ALL OF MDMR…THEN DO CORRECT</strong></p>
+<p><strong>DONE</strong></p>
 
-<h4>ADHD</h4>
+<h5 id="adhd">ADHD</h5>
 
 <p>Scripts are in <code>/home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis</code>. I ran it as follows:</p>
 
@@ -358,7 +468,9 @@ cd /home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis
 ./50_mdmr_correct.bash compcor
 </code></p>
 
-<h4>LDOPA</h4>
+<p><strong>DONE</strong></p>
+
+<h5 id="ldopa">LDOPA</h5>
 
 <p>Scripts are in <code>/home2/data/Projects/CWAS/share/ldopa/04_analysis</code>. I ran it as follows:</p>
 
@@ -368,7 +480,18 @@ cd /home2/data/Projects/CWAS/share/ldopa/04_analysis
 ./04_mdmr_correct.bash compcor
 </code></p>
 
-<h3>Figure 11</h3>
+<p><strong>DONE</strong></p>
+
+<h4 id="plots-2">Plots</h4>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/fig_07
+./A_pysurfer_easythresh.py
+./B1_network_byarea.R
+./B2_cropify.py
+</code></p>
+
+<h3 id="figure-11">Figure 11</h3>
 
 <p>This requires redoing all the ROI-based MDMRs for the IQ analysis. Although this particular figure only shows one of the scans, might as well do both scans here as one of the supplementary figures will depend on it.</p>
 
@@ -379,30 +502,28 @@ cd /home2/data/Projects/CWAS/share/ldopa/04_analysis
 ./34_mdmr_correct_rois.bash short compcor 0
 </code></p>
 
-<h3>Figure 12</h3>
+<h3 id="figure-12">Figure 12</h3>
 
-<p>Here, we&rsquo;ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
+<p>Here, we’ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
 
-<p>``` bash</p>
-
-<h1>Development</h1>
-
-<p>cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
+<p>``` bash
+# Development
+cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
 ./02a_mdmr_rois.bash # this runs correction as well</p>
 
-<h1>ADHD</h1>
+<h1 id="adhd-1">ADHD</h1>
 
-<h1>LDOPA</h1>
+<h1 id="ldopa-1">LDOPA</h1>
 
 <p>```</p>
-<div class="footnotes">
-<hr/>
-<ol>
-<li id="fn:1">
-<p>I am still working on getting latex to work so these math equations will be not be displayed well for now.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
-</ol>
-</div>
 
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>I am still working on getting latex to work so these math equations will be not be displayed well for now.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
 ]]></content>
   </entry>
   
@@ -413,21 +534,47 @@ cd /home2/data/Projects/CWAS/share/ldopa/04_analysis
     <id>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas</id>
     <content type="html"><![CDATA[<p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
 
-<h2>Analysis</h2>
+<h1 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h1>
+
+<p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
+
+<p><strong>RUNNING ON 11/16/13 at 7:20pm</strong></p>
+
+<h1 id="bootstrap-with-replication">Bootstrap with Replication</h1>
+
+<p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
+
+<h2 id="analysis">Analysis</h2>
 
 <p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
 
-<p>After I got the p-values for each bootstrap, I (based on Phil&rsquo;s suggestion):</p>
+<p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
 
-<p><blockquote><p>present some sort of map indicating the proportion of times each voxel comes out as significant. This is similar to the &lsquo;bootstrap inclusion frequency&rsquo; proposed in these references below</p></p><p><p>Royston, P. and Sauerbrei, W. (2008). Multivariable Model-building: a pragmatic approach to regression analysis based on fractional polynomials for modeling continuous variables. Wiley.</p></p><p><p>Sauerbrei, W. and Schumacher, M. (1992). A bootstrap resampling procedure for model building: application to the Cox regression model. Statistics in Medicine 11 2093–2109.</p><footer><strong>Phil Reiss</strong></footer></blockquote></p>
+<h2 id="plotting">Plotting</h2>
 
-<p>I was able to do these steps fairly easily.</p>
+<p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
 
-<h2>Plotting</h2>
+<p><code>r
+mpath &lt;- file.path("/home2/data/Projects/CWAS/nki/cwas", scan,  "compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/mask.nii.gz")
+mask  &lt;- read.mask(mpath)
+hdr   &lt;- read.nifti.header(mpath)
+</code></p>
 
-<p>The basic plots can be found on <a href="http://rpubs.com/czarrar/cwas-bootstrap.">http://rpubs.com/czarrar/cwas-bootstrap.</a> <strong>TODO</strong>: I am still needing to work through the surface rendering.</p>
+<h2 id="histogram-issue">Histogram Issue</h2>
 
-<h2>Code</h2>
+<p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
+
+<p>So my thought now is to see if the bootstrap approach with <code>boot</code> is shifting things in the wrong direction.</p>
+
+<p>My analysis/tests show that bootstrap with replication is not appropriate here and instead we should be using subsampling (bootstrapping without replication).</p>
+
+<p>http://rpubs.com/czarrar/cwas_distributions</p>
+
+<h3 id="older-approach">Older approach</h3>
+
+<p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
+
+<h2 id="code">Code</h2>
 
 <p><div><script src='https://gist.github.com/7164165.js?file=cwas_bootstrap.R'></script>
 <noscript><pre><code>library(connectir)
@@ -516,100 +663,94 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
     <link href="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/"/>
     <updated>2013-11-03T20:06:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+    <content type="html"><![CDATA[<p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
 
 <p>In summary, the complexity (I think) is</p>
 
 <ul>
-<li>O(V*n<sup>2</sup>) for computing the distance matrices</li>
-<li>O(k*n<sup>2</sup>) for creating the hat matrices</li>
-<li>O(n<sup>3</sup>) for gower centering the distance matrices</li>
-<li>O(Pxn<sup>2xV</sup>) for MDMR</li>
+  <li>O(V*n^2) for computing the distance matrices</li>
+  <li>O(k*n^2) for creating the hat matrices</li>
+  <li>O(n^3) for gower centering the distance matrices</li>
+  <li>O(Pxn^2xV) for MDMR</li>
 </ul>
-
 
 <p>where V = # of voxels, n = # of subjects, k = # of regressors, P = # of permutations.</p>
 
-<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn<sup>3xV</sup>) or O(n<sup>3</sup>) whereas ours is O(n<sup>2</sup>).</p>
+<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn^3xV) or O(n^3) whereas ours is O(n^2).</p>
 
-<h1>About Time Complexity</h1>
+<h1 id="about-time-complexity">About Time Complexity</h1>
 
 <p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
 
 <p>Efficiency of an algorithm can be measured by [1]:</p>
 
 <ul>
-<li>Execution time (time complexity)</li>
-<li>Amount of memory required (space complexity)</li>
+  <li>Execution time (time complexity)</li>
+  <li>Amount of memory required (space complexity)</li>
 </ul>
 
+<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There’s other relevant information on the wiki page and some online slides [2,3].</p>
 
-<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There&rsquo;s other relevant information on the wiki page and some online slides [2,3].</p>
+<h2 id="complexity-of-math-operations">Complexity of Math Operations</h2>
 
-<h2>Complexity of Math Operations</h2>
+<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n^2 or n*log(n) (depending on the implementation). Matrix multiplication is n^3. This is a little weird because I think of the correlation coefficient as n^2 since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
 
-<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n<sup>2</sup> or n*log(n) (depending on the implementation). Matrix multiplication is n<sup>3</sup>. This is a little weird because I think of the correlation coefficient as n<sup>2</sup> since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
+<h1 id="cwas-complexity">CWAS Complexity</h1>
 
-<h1>CWAS Complexity</h1>
+<p>So I guess that’s all the background I need. Now let’s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
 
-<p>So I guess that&rsquo;s all the background I need. Now let&rsquo;s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
+<h2 id="distance-matrices">Distance Matrices</h2>
 
-<h2>Distance Matrices</h2>
+<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n^2) change. Thus, this step should be O(V*n^2).</p>
 
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(V*n<sup>2</sup>).</p>
+<h2 id="mdmr">MDMR</h2>
 
-<h2>MDMR</h2>
-
-<h3>Hat Matrix</h3>
+<h3 id="hat-matrix">Hat Matrix</h3>
 
 <p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
 
 <ul>
-<li>3 matrix algebra operations</li>
-<li>1 matrix inversion</li>
-<li>2 transpositions (but I won&rsquo;t count those)</li>
+  <li>3 matrix algebra operations</li>
+  <li>1 matrix inversion</li>
+  <li>2 transpositions (but I won’t count those)</li>
 </ul>
 
+<p>Each of these operations is O(k<em>n^2) [4] so this step has O(k</em>n^2) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
 
-<p>Each of these operations is O(k<em>n<sup>2</sup>) [4] so this step has O(k</em>n<sup>2</sup>) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
+<h3 id="gower-matrix">Gower Matrix</h3>
 
-<h3>Gower Matrix</h3>
-
-<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1&rsquo;s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
+<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1’s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
 
 <ul>
-<li>2 subtractions (additions)</li>
-<li>2 divisions (multiplications)</li>
-<li>2 matrix multiplications</li>
+  <li>2 subtractions (additions)</li>
+  <li>2 divisions (multiplications)</li>
+  <li>2 matrix multiplications</li>
 </ul>
 
+<p>Since the matrix operation will dominate the time, the complexity is O(V*n^3) where V is the number of voxels.</p>
 
-<p>Since the matrix operation will dominate the time, the complexity is O(V*n<sup>3</sup>) where V is the number of voxels.</p>
+<h3 id="pseudo-f-statistic">Pseudo-F Statistic</h3>
 
-<h3>Pseudo-F Statistic</h3>
-
-<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it&rsquo;s a P x n<sup>2</sup> matrix (P = # of permutations) and G is a vector of gower matrices so it&rsquo;s a n<sup>2</sup> x V matrix (V = # of voxels). This means that there are:</p>
+<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it’s a P x n^2 matrix (P = # of permutations) and G is a vector of gower matrices so it’s a n^2 x V matrix (V = # of voxels). This means that there are:</p>
 
 <ul>
-<li>1 subtraction (I-H)</li>
-<li>2 matrix multiplications</li>
-<li>1 division</li>
+  <li>1 subtraction (I-H)</li>
+  <li>2 matrix multiplications</li>
+  <li>1 division</li>
 </ul>
 
+<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn^2xV) so as in the distance matrix step the complexity will scale by n^2.</p>
 
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn<sup>2xV</sup>) so as in the distance matrix step the complexity will scale by n<sup>2</sup>.</p>
-
-<h1>References</h1>
+<h1 id="references">References</h1>
 
 <ol>
-<li><a href="http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf">http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Time_complexity">http://en.wikipedia.org/wiki/Time_complexity</a></li>
-<li><a href="http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf">http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations">http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</a></li>
-<li><a href="http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation">http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</a></li>
-<li><a href="http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation">http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</a></li>
+  <li>http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Time_complexity</li>
+  <li>http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</li>
+  <li>http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</li>
+  <li>http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</li>
 </ol>
-
 ]]></content>
   </entry>
   

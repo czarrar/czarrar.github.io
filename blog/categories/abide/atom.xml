@@ -4,7 +4,7 @@
   <title><![CDATA[Category: abide | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/abide/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-13T17:49:19-05:00</updated>
+  <updated>2013-11-17T01:47:29-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,17 +18,17 @@
     <link href="http://czarrar.github.io/blog/2013/11/12/abide-sge-debug/"/>
     <updated>2013-11-12T13:13:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/12/abide-sge-debug</id>
-    <content type="html"><![CDATA[<h1>Improving Some Log Timing</h1>
+    <content type="html"><![CDATA[<h1 id="improving-some-log-timing">Improving Some Log Timing</h1>
 
-<p>I&rsquo;m wondering if we can log when a workflow begins? Currently we have a <code>create_log_node</code> function that we made to try and better log the progress of a workflow for an html log page. The output from this function to the standard output is what I used for my timing assessment along with some other information, so it&rsquo;s definitely useful.</p>
+<p>I’m wondering if we can log when a workflow begins? Currently we have a <code>create_log_node</code> function that we made to try and better log the progress of a workflow for an html log page. The output from this function to the standard output is what I used for my timing assessment along with some other information, so it’s definitely useful.</p>
 
-<h1>Example Completed Subject: 0050642</h1>
+<h1 id="example-completed-subject-0050642">Example Completed Subject: 0050642</h1>
 
-<p>Right now we will be trying to understand the timing for this participant. Later I&rsquo;ll examine the issue of whether the working directory was deleted or not.</p>
+<p>Right now we will be trying to understand the timing for this participant. Later I’ll examine the issue of whether the working directory was deleted or not.</p>
 
 <p>All the output files appear to be there and this participant appears from the logging information to have started processing at <code>2013-11-11 15:45:33</code> and ended at <code>2013-11-12 09:50:46</code>. Why the huge delay? The big issue towards the end appear as IO problems (takes about 5 hours to finish sink and link type commands). After discussing with Cameron, this huge delay is likely related to running SCA maps for all the ROIs, leading to about 6gb of data in the output.</p>
 
-<h2>CPAC Output/Error</h2>
+<h2 id="cpac-outputerror">CPAC Output/Error</h2>
 
 <p>First thing to note is that working directory was removed seeing the last two lines of the standard output <code>cluster_temp_files/2013-11-11_15-44-04/c-pac_0050642_session_1.out</code>. Note: I assume we are in the <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/20_process</code> directory for this section.</p>
 
@@ -37,59 +37,52 @@ removing dir -&gt;  /tmp/resting_preproc_0050642_session_1
 End of subject workflow  resting_preproc_0050642_session_1
 </code></p>
 
-<h3>Timing</h3>
+<h3 id="timing">Timing</h3>
 
-<p>We can see some bits of timing via two grep commands. It&rsquo;s important to note that this subject was running on one gelert node with 4 processors, meaning some of these workflows were running in parallel.</p>
+<p>We can see some bits of timing via two grep commands. It’s important to note that this subject was running on one gelert node with 4 processors, meaning some of these workflows were running in parallel.</p>
 
-<p>``` bash</p>
-
-<h1>When workflow completed</h1>
-
-<p>grep timestamp cluster_temp_files/2013-11-11_15-44-04/c-pac_0050642_session_1.out</p>
-
-<h1>When node executed</h1>
-
-<p>grep -B 1 -A 1 Executing cluster_temp_files/2013-11-11_15-44-04/c-pac_0050642_session_1.out > tmptmp.out
-```</p>
+<p><code>bash
+# When workflow completed
+grep timestamp cluster_temp_files/2013-11-11_15-44-04/c-pac_0050642_session_1.out
+# When node executed
+grep -B 1 -A 1 Executing cluster_temp_files/2013-11-11_15-44-04/c-pac_0050642_session_1.out &gt; tmptmp.out
+</code></p>
 
 <p>The first command provides information on when workflows completed. The second command provides more detailed information on when different nodes were executed. Output for the first command is given further below, whereas output of the second command has way too many lines.</p>
 
-<h4>Issue with IO at End?</h4>
+<h4 id="issue-with-io-at-end">Issue with IO at End?</h4>
 
-<p>From the first output, we can see towards the end that there&rsquo;s a huge time gap between when network centrality completed <code>2013-11-12 04:45:00</code> and when the whole scan rest workflow completed <code>2013-11-12 09:50:44</code> (~5 hours difference!). It appears from output related to the second command, most of this time was spent on sink/link and qc/montage related commands. I&rsquo;m guessing this might indicate that many of the subjects on gelert were all simultaneously doing IO operations early in the morning, which killed the performance.</p>
+<p>From the first output, we can see towards the end that there’s a huge time gap between when network centrality completed <code>2013-11-12 04:45:00</code> and when the whole scan rest workflow completed <code>2013-11-12 09:50:44</code> (~5 hours difference!). It appears from output related to the second command, most of this time was spent on sink/link and qc/montage related commands. I’m guessing this might indicate that many of the subjects on gelert were all simultaneously doing IO operations early in the morning, which killed the performance.</p>
 
-<h4>Network Centrality</h4>
+<h4 id="network-centrality">Network Centrality</h4>
 
-<p>It&rsquo;s hard for me to examine the timing for every workflow since it is currently not logged in an easy manner. However, I did look at network centrality and here are some critical times:</p>
+<p>It’s hard for me to examine the timing for every workflow since it is currently not logged in an easy manner. However, I did look at network centrality and here are some critical times:</p>
 
 <ul>
-<li><strong>Start (all)</strong>: <code>2013-11-11 17:45:20</code></li>
+  <li><strong>Start (all)</strong>: <code>2013-11-11 17:45:20</code></li>
 </ul>
-
 
 <p>None smoothed data.</p>
 
 <ul>
-<li><strong>End</strong>: <code>2013-11-11 19:48:44</code></li>
-<li><strong>End with global</strong>: <code>2013-11-11 20:32:27</code></li>
-<li><strong>End with filt</strong>: <code>2013-11-11 20:34:10</code></li>
-<li><strong>End with global and filt</strong>: <code>2013-11-11 20:44:55</code></li>
+  <li><strong>End</strong>: <code>2013-11-11 19:48:44</code></li>
+  <li><strong>End with global</strong>: <code>2013-11-11 20:32:27</code></li>
+  <li><strong>End with filt</strong>: <code>2013-11-11 20:34:10</code></li>
+  <li><strong>End with global and filt</strong>: <code>2013-11-11 20:44:55</code></li>
 </ul>
-
 
 <p>Smoothed data.</p>
 
 <ul>
-<li><strong>End</strong>: <code>2013-11-11 22:50:39</code></li>
-<li><strong>End with global</strong>: <code>2013-11-12 01:18:34</code></li>
-<li><strong>End with filt</strong>: <code>2013-11-12 02:23:41</code></li>
-<li><strong>End with global and filt</strong>: <code>2013-11-12 04:45:00</code></li>
+  <li><strong>End</strong>: <code>2013-11-11 22:50:39</code></li>
+  <li><strong>End with global</strong>: <code>2013-11-12 01:18:34</code></li>
+  <li><strong>End with filt</strong>: <code>2013-11-12 02:23:41</code></li>
+  <li><strong>End with global and filt</strong>: <code>2013-11-12 04:45:00</code></li>
 </ul>
 
+<p>So from the beginning when the data is read in for centrality till the end, there’s a pretty big gap in timing. In fact there is even a big gab between when centrality measure for non-smoothed to smoothed data is completed. Not sure what’s going on here.</p>
 
-<p>So from the beginning when the data is read in for centrality till the end, there&rsquo;s a pretty big gap in timing. In fact there is even a big gab between when centrality measure for non-smoothed to smoothed data is completed. Not sure what&rsquo;s going on here.</p>
-
-<h4>Log Timing</h4>
+<h4 id="log-timing">Log Timing</h4>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (abide_0050642_log_timestamps)</span> <a href='/downloads/code/abide_0050642_log_timestamps'>download</a></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -326,9 +319,10 @@ End of subject workflow  resting_preproc_0050642_session_1
 </span><span class='line'>	  <span class="n">version</span> <span class="o">-</span> 0<span class="p">.</span>3<span class="p">.</span>2<span class="p">.</span>1<span class="p">,</span> <span class="n">timestamp</span> <span class="o">-</span>2013<span class="o">-</span>11<span class="o">-</span>12 09<span class="p">:</span>50<span class="p">:</span>46<span class="p">,</span> <span class="n">subject_id</span> <span class="o">-</span>0050642<span class="n">_session_1</span><span class="p">,</span> <span class="n">scan_id</span> <span class="o">-</span> <span class="n">scan_rest_1_rest</span><span class="p">,</span> <span class="n">strategy</span> <span class="o">-</span><span class="p">,</span> <span class="n">workflow</span> <span class="o">-</span> <span class="n">DONE</span><span class="p">,</span> <span class="n">status</span> <span class="o">-</span><span class="n">COMPLETED</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<h2>Nipype Log Output</h2>
+<h2 id="nipype-log-output">Nipype Log Output</h2>
 
 <p>Actually there is not much here. I think maybe a lot of the nipype stuff is also in the standard output/error?</p>
+
 ]]></content>
   </entry>
   
@@ -337,58 +331,55 @@ End of subject workflow  resting_preproc_0050642_session_1
     <link href="http://czarrar.github.io/blog/2013/11/11/monday-for-veterans/"/>
     <updated>2013-11-11T16:26:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/11/monday-for-veterans</id>
-    <content type="html"><![CDATA[<h1>ABIDE</h1>
+    <content type="html"><![CDATA[<h1 id="abide">ABIDE</h1>
 
 <p>I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also check up on the mounted data on rocky.</p>
 
-<h2>Pierre Preprocessed Data</h2>
+<h2 id="pierre-preprocessed-data">Pierre Preprocessed Data</h2>
 
 <p>There are 4 different preprocessed data types.</p>
 
 <ol>
-<li>No GSR and low-pass filter</li>
-<li>No GSR and no low-pass filter</li>
-<li>GSR and low-pass filter</li>
-<li>GSR and no low-pass filter</li>
+  <li>No GSR and low-pass filter</li>
+  <li>No GSR and no low-pass filter</li>
+  <li>GSR and low-pass filter</li>
+  <li>GSR and no low-pass filter</li>
 </ol>
-
 
 <p>A json file is included with each preprocessed data. This has regressor information and time-points (which I guess are the time-points that were kept for the analysis…so there was scrubbing).</p>
 
-<h2>Xinian Preprocessed Data</h2>
+<h2 id="xinian-preprocessed-data">Xinian Preprocessed Data</h2>
 
 <p>Subjects here are labeled by their site. Data includes freesurfer information. For the functional data, I am not totally sure which of the different preprocessed outputs to use. Also will we be making use of the freesurfer registered functional output?</p>
 
 <p>A brief overview shows the following preprocessing factors that were varied:</p>
 
 <ul>
-<li>Temporal Filtering (guessing same way as Pierre&rsquo;s)</li>
-<li>Smoothnesss (0 or 6 mm FWHM)</li>
+  <li>Temporal Filtering (guessing same way as Pierre’s)</li>
+  <li>Smoothnesss (0 or 6 mm FWHM)</li>
 </ul>
-
 
 <p>So for this and the other preprocessed data, I will need to have a working Quick Pack.</p>
 
-<h1>CPAC</h1>
+<h1 id="cpac">CPAC</h1>
 
 <p>To help better understand why some working directories are being deleted but not others, we made a change to the file for standard output and standard error. Previously, this file held information for all participants. Here are the changes I made to running with SGE that did away with this issue:</p>
 
 <ul>
-<li>Run each subject separately with the grid engine (instead of as a job array).</li>
-<li>Use a different standard output and error for each subject</li>
-<li>Save the list of job ids and corresponding subjects</li>
+  <li>Run each subject separately with the grid engine (instead of as a job array).</li>
+  <li>Use a different standard output and error for each subject</li>
+  <li>Save the list of job ids and corresponding subjects</li>
 </ul>
 
+<p>Pretty simple change but big in allowing me to figure out what’s going on. Additionally, I can manually check job ids that have completed and knowing the corresponding subjects, I could manually delete the working directories if they have not been deleted already.</p>
 
-<p>Pretty simple change but big in allowing me to figure out what&rsquo;s going on. Additionally, I can manually check job ids that have completed and knowing the corresponding subjects, I could manually delete the working directories if they have not been deleted already.</p>
+<h1 id="quickpack">QuickPack</h1>
 
-<h1>QuickPack</h1>
+<p>So where did we leave off. It appears like it will run if I use the GUI but throws an error. </p>
 
-<p>So where did we leave off. It appears like it will run if I use the GUI but throws an error.</p>
+<h1 id="other-projects">Other Projects</h1>
 
-<h1>Other Projects</h1>
-
-<p>I&rsquo;m also still looking at EmotionalBS and is there anything else?</p>
+<p>I’m also still looking at EmotionalBS and is there anything else?</p>
 ]]></content>
   </entry>
   
@@ -397,11 +388,11 @@ End of subject workflow  resting_preproc_0050642_session_1
     <link href="http://czarrar.github.io/blog/2013/11/08/friday-save-the-date/"/>
     <updated>2013-11-08T09:28:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/08/friday-save-the-date</id>
-    <content type="html"><![CDATA[<h1>ABIDE</h1>
+    <content type="html"><![CDATA[<h1 id="abide">ABIDE</h1>
 
-<p>I am continuing to look into the &lsquo;no space left on device&rsquo; error on gelert. First, I&rsquo;ll attempt to understand what subject&rsquo;s were deleted if at all.</p>
+<p>I am continuing to look into the ‘no space left on device’ error on gelert. First, I’ll attempt to understand what subject’s were deleted if at all.</p>
 
-<h2>Any Working Directories Deleted?</h2>
+<h2 id="any-working-directories-deleted">Any Working Directories Deleted?</h2>
 
 <p>I want to first figure out if the working directories are never deleted on gelert, which is potentially an easy fix, or if it is more sporadic. To test this, I will look at the subjects in the output directory but not in any of the working directories on gelert. Below are the 46 subjects that fall in that category indicating that some subjects are at least deleted.</p>
 
@@ -415,7 +406,7 @@ End of subject workflow  resting_preproc_0050642_session_1
 [43] "0051487" "0051491" "0051492" "0051493"
 </code></p>
 
-<h3>A mix of working directories were removed</h3>
+<h3 id="a-mix-of-working-directories-were-removed">A mix of working directories were removed</h3>
 
 <p>Are these deleted working directories belong to participants with one of the first subject ids? That is are these the first subjects that were run? The answer appears both a yes and no, as you can see from the subject indices.</p>
 
@@ -425,19 +416,21 @@ End of subject workflow  resting_preproc_0050642_session_1
 [39] 171 173 176 178 180 184 185 186
 </code></p>
 
-<h3>The removed directories completed functional preprocessing</h3>
+<h3 id="the-removed-directories-completed-functional-preprocessing">The removed directories completed functional preprocessing</h3>
 
-<p>Now I wonder if participant&rsquo;s with deleted working directories have completed workflows. I checked and all the 46 participants had a <code>functional_mni</code> that exists. Here is a sample path for the first participant: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-05/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0050642_session_1/scan_rest_1_rest/func/functional_mni.nii.gz</code>.</p>
+<p>Now I wonder if participant’s with deleted working directories have completed workflows. I checked and all the 46 participants had a <code>functional_mni</code> that exists. Here is a sample path for the first participant: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-05/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0050642_session_1/scan_rest_1_rest/func/functional_mni.nii.gz</code>.</p>
 
-<h3>The kept directories also completed functional preprocessing</h3>
+<h3 id="the-kept-directories-also-completed-functional-preprocessing">The kept directories also completed functional preprocessing</h3>
 
 <p>I thought some of these might have failed at generating the <code>functional_mni</code>, however they are all there.</p>
 
-<blockquote><p>Note: the relevant script is <code>x_find_tmps.R</code>.</p></blockquote>
+<blockquote>
+  <p>Note: the relevant script is <code>x_find_tmps.R</code>.</p>
+</blockquote>
 
 <hr />
 
-<p>You regress out the covariates and</p>
+<p>You regress out the covariates and </p>
 ]]></content>
   </entry>
   
@@ -446,7 +439,7 @@ End of subject workflow  resting_preproc_0050642_session_1
     <link href="http://czarrar.github.io/blog/2013/11/07/thursday-lib-cmi-nyu/"/>
     <updated>2013-11-07T11:17:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/07/thursday-lib-cmi-nyu</id>
-    <content type="html"><![CDATA[<h1>ABIDE</h1>
+    <content type="html"><![CDATA[<h1 id="abide">ABIDE</h1>
 
 <p>On gelert, it has been over 2 days and it is now (morning of the 7th) on the 125th to 186th participant. However, it appears that there were many crashes for some participants.</p>
 
@@ -455,20 +448,19 @@ End of subject workflow  resting_preproc_0050642_session_1
 <p>On rocky, the removal of the working directory works fine. I thought I had tried it for gelert too and found it was fine. I see a few possibilities.</p>
 
 <ol>
-<li>Some error might occur as CPAC runs, which might lead it to skip removing the directory.</li>
-<li>It doesn&rsquo;t actually remove the directory when running through SGE (maybe because it is using a different function). Note that removal of the working directory occurs at the very end in the cpac runner run function.</li>
-<li>There&rsquo;s some issue with permissions and so a /tmp directory can be created but not removed. This can be easily tested.</li>
+  <li>Some error might occur as CPAC runs, which might lead it to skip removing the directory.</li>
+  <li>It doesn’t actually remove the directory when running through SGE (maybe because it is using a different function). Note that removal of the working directory occurs at the very end in the cpac runner run function.</li>
+  <li>There’s some issue with permissions and so a /tmp directory can be created but not removed. This can be easily tested.</li>
 </ol>
 
-
-<h2>Sample Crash File A</h2>
+<h2 id="sample-crash-file-a">Sample Crash File A</h2>
 
 <p>``` python
 import os
-os.chdir(&lsquo;/data/Projects/ABIDE_Initiative/CPAC/crash&rsquo;)</p>
+os.chdir(‘/data/Projects/ABIDE_Initiative/CPAC/crash’)</p>
 
 <p>from nipype.utils.filemanip import loadflat
-crashfile = loadflat(&lsquo;crash-20131107-103920-qli-_apply_ants_3d_warp149.npz&rsquo;)
+crashfile = loadflat(‘crash-20131107-103920-qli-<em>apply_ants</em>3d_warp149.npz’)
 ```</p>
 
 <p>This gives the following error</p>
@@ -478,22 +470,21 @@ TraitError: Each element of the 'transformation_series' trait of a WarpImageMult
 50699_session_1/anat_mni_ants_register_0/warp_brain/ants_Warp.nii.gz' &lt;type 'str'&gt; was specified.
 </code></p>
 
-<p>It seems like a working directory file for this particular subject does not exist from this error. However, looking at the various functional/derivative outputs in subject&rsquo;s folder that are in standard space, stuff appears the fine:</p>
+<p>It seems like a working directory file for this particular subject does not exist from this error. However, looking at the various functional/derivative outputs in subject’s folder that are in standard space, stuff appears the fine:</p>
 
 <ul>
-<li>functional: <strong>good</strong></li>
-<li>alff: <strong>good</strong></li>
-<li>centrality: <strong>good</strong></li>
-<li>reho: <strong>good</strong></li>
-<li>sca_roi: Is there no standard space SCA map?</li>
-<li>dr: Is there no standard space SCA map?</li>
-<li>vmhc: <strong>good</strong></li>
+  <li>functional: <strong>good</strong></li>
+  <li>alff: <strong>good</strong></li>
+  <li>centrality: <strong>good</strong></li>
+  <li>reho: <strong>good</strong></li>
+  <li>sca_roi: Is there no standard space SCA map?</li>
+  <li>dr: Is there no standard space SCA map?</li>
+  <li>vmhc: <strong>good</strong></li>
 </ul>
-
 
 <p>I believe I might be missing some other relevant outputs.</p>
 
-<h2>Sample Crash File B</h2>
+<h2 id="sample-crash-file-b">Sample Crash File B</h2>
 
 <p>I get the following error for this crash file <code>crash-20131107-114514-qli-_network_centrality_smooth_10.npz</code>.</p>
 
@@ -501,13 +492,13 @@ TraitError: Each element of the 'transformation_series' trait of a WarpImageMult
 TraitError: The 'in_file' trait of a MultiImageMathsInput instance must be an existing file name, but a value of '/tmp/resting_preproc_0050702_session_1/centrality_zscore_1/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/_bandpass_freqs_0.01.0.1/_mask_mask_abide_90percent_gm/z_score/mapflow/_z_score0/degree_centrality_binarize_maths.nii.gz' &lt;type 'str'&gt; was specified.
 </code></p>
 
-<p>So it seems like for this participant the fslmaths command was not run on the centrality outputs and later the smoothing was not applied.</p>
+<p>So it seems like for this participant the fslmaths command was not run on the centrality outputs and later the smoothing was not applied. </p>
 
-<h1>Quick Pack</h1>
+<h1 id="quick-pack">Quick Pack</h1>
 
-<p>Let&rsquo;s recre</p>
+<p>Let’s recre</p>
 
-<h1>Emotional-BS</h1>
+<h1 id="emotional-bs">Emotional-BS</h1>
 
 <p>I want to focus on the QC to get that out of the way.</p>
 ]]></content>
@@ -518,25 +509,25 @@ TraitError: The 'in_file' trait of a MultiImageMathsInput instance must be an ex
     <link href="http://czarrar.github.io/blog/2013/11/06/wednesday-nki/"/>
     <updated>2013-11-06T14:59:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/06/wednesday-nki</id>
-    <content type="html"><![CDATA[<h1>ABIDE</h1>
+    <content type="html"><![CDATA[<h1 id="abide">ABIDE</h1>
 
-<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a &ldquo;Not Authorized&rdquo; error. I sent an email to Stan with Cameron cc'ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
+<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a “Not Authorized” error. I sent an email to Stan with Cameron cc’ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
 
 <p>Cameron will be getting sudo access and will figure out mounting the drive.</p>
 
-<h1>NiLearn</h1>
+<h1 id="nilearn">NiLearn</h1>
 
 <p>The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir and sent an email to Gael et al. So should be all done here.</p>
 
 <p>I believe I do want to get access to ADHD200 nitrc sftp so I can upload the data to that site. Right now it is on my own connectir nitrc site.</p>
 
-<h1>Emotional-BS</h1>
+<h1 id="emotional-bs">Emotional-BS</h1>
 
 <p>Read some articles. Check the QC.</p>
 
-<h1>Quick-Pack</h1>
+<h1 id="quick-pack">Quick-Pack</h1>
 
-<p>Look into the GUI error&hellip;</p>
+<p>Look into the GUI error…</p>
 ]]></content>
   </entry>
   

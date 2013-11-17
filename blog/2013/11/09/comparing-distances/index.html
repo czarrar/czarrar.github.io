@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="We want to show that the choice of your distance metric won&rsquo;t substantially change your results. I&rsquo;ll be using the first scan of the IQ &hellip;">
+  <meta name="description" content="We want to show that the choice of your distance metric won’t substantially change your results. I’ll be using the first scan of the IQ dataset. I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -39,10 +39,63 @@
   // jQuery(...), instead of $(...) from here on.
   jQuery.noConflict();
 </script>
+
+	<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
+
+<script language="Javascript" type="text/javascript">
+$(document).ready(
+  function() {
+    (function($) {
+      $(".fancybox[data-content-id]").each(function() {
+        this.href = $(this).data('content-id');
+      });
+      $(".fancybox").fancybox({
+        beforeLoad: function() {
+          var el, 
+              id = $(this.element).data('title-id');
+
+          if (id) {
+            el = $('#' + id);
+
+            if (el.length) {
+              this.title = el.html();
+            }
+          }
+          if ($(this).data('content')) {
+            this.content = $(this).data('content');
+          }
+        },
+        helpers: {
+          title: {
+            type: 'inside'
+          }
+        }
+      });
+    })(jQuery);
+  }
+);
+</script>
+
   
 
 </head>
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 <body   >
   <header role="banner"><hgroup>
   <h1><a href="/">Zarrar's Journaling</a></h1>
@@ -100,127 +153,166 @@
   </header>
 
 
-<div class="entry-content"><p>We want to show that the choice of your distance metric won&rsquo;t substantially change your results. I&rsquo;ll be using the first scan of the IQ dataset. I would like to compare the following measures:</p>
+<div class="entry-content"><p>We want to show that the choice of your distance metric won’t substantially change your results. I’ll be using the first scan of the IQ dataset. I would like to compare the following measures:</p>
 
 <ul>
-<li>Pearson Correlation</li>
-<li>Spearman Rank</li>
-<li>Kendall Tau</li>
-<li>Lin&rsquo;s concordance correlation</li>
-<li>Euclidean distance</li>
-<li>Chebychev distance</li>
-<li>Mahalanobis distance</li>
+  <li>Pearson Correlation</li>
+  <li>Spearman Rank</li>
+  <li>Kendall Tau</li>
+  <li>Lin’s concordance correlation</li>
+  <li>Euclidean distance</li>
+  <li>Chebychev distance</li>
+  <li>Mahalanobis distance</li>
 </ul>
 
+<p>All the measures except the last are used in the Zapala et al. (2006) <em>PNAS</em> paper, and the last measure is something used in Kriegeskorte’s work. It is essentially the mean distance between two features/vectors relative to the variance in each of them. Thus, 2 sets of points could be very close on average but have huge variability, meaning that small distance is less meaningful.</p>
 
-<p>All the measures except the last are used in the Zapala et al. (2006) <em>PNAS</em> paper, and the last measure is something used in Kriegeskorte&rsquo;s work. It is essentially the mean distance between two features/vectors relative to the variance in each of them. Thus, 2 sets of points could be very close on average but have huge variability, meaning that small distance is less meaningful.</p>
-
-<h1>Low-Level Code</h1>
+<h1 id="low-level-code">Low-Level Code</h1>
 
 <p>Most of the measures are fairly straightforward. I will add them all to the internal <code>.subdist_distance</code> function, which is called to compute the distance between the different participant connectivity maps for a given voxel. Right now, I have the pearson distance, shrinkage pearson distance, and inverse covariance distance. I added the other distance functions from my list above as additional options.</p>
 
 <p>How do you call the different distances? Note that I have made all of these functions internal so you would call it internally (within the package) as <code>.subdist_distance</code>. However, below I will use the globally accessible <code>test_sdist</code> function that is a simple wrapper around <code>.subdist_distance</code>.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='r'><span class='line'>.test_sdist<span class="p">(</span>seedMaps<span class="p">,</span> dmats<span class="p">,</span> colind<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;pearson&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">.test_sdist<span class="p">(</span>seedMaps<span class="p">,</span> dmats<span class="p">,</span> colind<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;pearson&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>As you can see, we pass a matrix of participant seed maps (voxels as rows and participants as columns), a big matrix of distances (columns as voxels and rows as the vectorized distance matrix for that voxel), the index of the voxel examined in the distances, and your method of choice.</p>
 
-<h2>Measures</h2>
+<h2 id="measures">Measures</h2>
 
-<h3>Pearson</h3>
+<h3 id="pearson">Pearson</h3>
 
 <p>I updated the connectir pearson distance C function (<code>subdist_pearson_distance</code>) to compute the transformed correlation that has euclidean properties. I should make sure to test this for confirmation.</p>
 
-<h3>Mahalanobis Distance</h3>
+<h3 id="mahalanobis-distance">Mahalanobis Distance</h3>
 
 <p>I borrowed code for this measure from the following two links:</p>
 
-<p><a href="http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r">http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r</a></p>
+<p>http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r</p>
 
-<p><a href="http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325">http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</a></p>
+<p>http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='r'><span class='line'>library<span class="p">(</span>connectir<span class="p">)</span>
-</span><span class='line'>seedMaps <span class="o">&lt;-</span> t<span class="p">(</span>matrix<span class="p">(</span>runif<span class="p">(</span><span class="m">500</span><span class="p">,</span> min<span class="o">=</span><span class="m">0</span><span class="p">,</span> max<span class="o">=</span><span class="m">2</span><span class="p">),</span> <span class="m">100</span><span class="p">,</span> <span class="m">5</span><span class="p">))</span>
-</span><span class='line'>invCov <span class="o">&lt;-</span> ginv<span class="p">(</span>cov<span class="p">(</span>seedMaps<span class="p">))</span>
-</span><span class='line'>SQRT <span class="o">&lt;-</span> with<span class="p">(</span>svd<span class="p">(</span>invCov<span class="p">),</span> u <span class="o">%*%</span> diag<span class="p">(</span>d<span class="o">^</span><span class="m">0.5</span><span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>v<span class="p">))</span>
-</span><span class='line'>dmat <span class="o">&lt;-</span> as.matrix<span class="p">(</span>dist<span class="p">(</span>seedMaps <span class="o">%*%</span> SQRT<span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">library<span class="p">(</span>connectir<span class="p">)</span>
+</span><span class="line">library<span class="p">(</span>corpcor<span class="p">)</span>
+</span><span class="line">seedMaps <span class="o">&lt;-</span> t<span class="p">(</span>matrix<span class="p">(</span>runif<span class="p">(</span><span class="m">500</span><span class="p">,</span> min<span class="o">=</span><span class="m">0</span><span class="p">,</span> max<span class="o">=</span><span class="m">2</span><span class="p">),</span> <span class="m">100</span><span class="p">,</span> <span class="m">5</span><span class="p">))</span>
+</span><span class="line"><span class="c1"># invCov &lt;- ginv(cov(seedMaps))</span>
+</span><span class="line">invCov <span class="o">&lt;-</span> invcov.shrink<span class="p">(</span>seedMaps<span class="p">)</span>
+</span><span class="line">SQRT <span class="o">&lt;-</span> with<span class="p">(</span>svd<span class="p">(</span>invCov<span class="p">),</span> u <span class="o">%*%</span> diag<span class="p">(</span>d<span class="o">^</span><span class="m">0.5</span><span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>v<span class="p">))</span>
+</span><span class="line">dmat <span class="o">&lt;-</span> as.matrix<span class="p">(</span>dist<span class="p">(</span>seedMaps <span class="o">%*%</span> SQRT<span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>Note that here I am using a shrinkage method to deal with the ill-posed problem of inverting a n « p issue. So far it normally fails if I take the traditional approach.</p>
 
-<h3>Others</h3>
+<h3 id="concordance">Concordance</h3>
 
-<p>Here&rsquo;s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
+<p>I took the implementation in the <code>epiR</code> package and made it more suitable for a matrix approach (e.g., correlated everything with everything else). Note that the results using this alternative matrix-based approach are very close to using the epiR function but not exact. Should investigate in the future.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='r'><span class='line'>.distance_spearman <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>seedMaps<span class="p">,</span> dmats<span class="p">,</span> colind<span class="p">,</span> transpose<span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    seedMaps <span class="o">&lt;-</span> ifelse<span class="p">(</span>transpose<span class="p">,</span> t<span class="p">(</span>seedMaps<span class="p">[,]),</span> seedMaps<span class="p">[,])</span>
-</span><span class='line'>    smat <span class="o">&lt;-</span> cor<span class="p">(</span>seedMaps<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;spearman&quot;</span><span class="p">)</span>
-</span><span class='line'>    dmat <span class="o">&lt;-</span> sqrt<span class="p">(</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">-</span>smat<span class="p">))</span>
-</span><span class='line'>    dmats<span class="p">[,</span>colind<span class="p">]</span> <span class="o">&lt;-</span> as.vector<span class="p">(</span>dmat<span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<h3 id="others">Others</h3>
 
+<p>Here’s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
 
-<h2>Issues</h2>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">.distance_spearman <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>seedMaps<span class="p">,</span> dmats<span class="p">,</span> colind<span class="p">,</span> transpose<span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">    seedMaps <span class="o">&lt;-</span> ifelse<span class="p">(</span>transpose<span class="p">,</span> t<span class="p">(</span>seedMaps<span class="p">[,]),</span> seedMaps<span class="p">[,])</span>
+</span><span class="line">    smat <span class="o">&lt;-</span> cor<span class="p">(</span>seedMaps<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;spearman&quot;</span><span class="p">)</span>
+</span><span class="line">    dmat <span class="o">&lt;-</span> sqrt<span class="p">(</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">-</span>smat<span class="p">))</span>
+</span><span class="line">    dmats<span class="p">[,</span>colind<span class="p">]</span> <span class="o">&lt;-</span> as.vector<span class="p">(</span>dmat<span class="p">)</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="issues">Issues</h2>
 
 <p>I had an NaN error after running the first pearson distance. I realized that this error is related to the fact that the correlation can sometimes go over 1 due to precision errors. To combat this I added a tolerance level, where I adjust the correlation down by 1e-8. This should ensure that no correlation is above 1, which would lead to a negative number in the transformation and a NaN when trying to get the square root. Note that this is really only an issue for the pearson distance.</p>
 
-<h1>Higher-Level Code</h1>
+<h1 id="higher-level-code">Higher-Level Code</h1>
 
-<p>After computing the connectivity maps, I&rsquo;d ideally want to have some manual code that runs all the possible distances and saves them in different file-backed distance matrices. However, this seems to be a bit hairy and would require lots of coding/testing. Main issues are with memory (i.e., holding all the distances in memory or partially in memory). Instead, I&rsquo;ll take the easier but longer approach of running the distances for each method separately. To speed things up, I plan to use the 800 random ROIs.</p>
+<p>After computing the connectivity maps, I’d ideally want to have some manual code that runs all the possible distances and saves them in different file-backed distance matrices. However, this seems to be a bit hairy and would require lots of coding/testing. Main issues are with memory (i.e., holding all the distances in memory or partially in memory). Instead, I’ll take the easier but longer approach of running the distances for each method separately. To speed things up, I plan to use the 800 random ROIs.</p>
 
 <p>The details for this code can be found in <code>10_subdist.bash</code>.</p>
 
-<h1>Running the Analyses</h1>
+<h1 id="running-the-analyses">Running the Analyses</h1>
 
-<p>I&rsquo;ve started to run the analyses. I ended up going with two separate workflows since the kendall was taking forever!</p>
+<p>I’ve started to run the analyses. I ended up going with two separate workflows since the kendall was taking forever!</p>
 
 <p>I will need to re-run the concordance since there was an error in the code. I should make sure to remove the following folder beforehand: <code>/home/data/Projects/CWAS/nki/cwas/short/try_distances/concordance_k0800_to_k0800</code>.</p>
 
-<blockquote><p>Below the time in parentheses represents computation time but excludes setup time (i.e., reading in distance matrix and creating the hat matrix).</p></blockquote>
+<blockquote>
+  <p>Below the time in parentheses represents computation time but excludes setup time (i.e., reading in distance matrix and creating the hat matrix).</p>
+</blockquote>
 
-<h2>Finished</h2>
-
-<ul>
-<li>Pearson (0.9 mins)</li>
-<li>Spearman (2.5 mins)</li>
-<li>Chebyshev (25 mins)</li>
-<li>Euclidean (6.8 mins)</li>
-<li>Kendall (1883.3 mins)</li>
-</ul>
-
-
-<h2>In Progress</h2>
+<h2 id="finished">Finished</h2>
 
 <ul>
-<li>Kendall (taking bloody forever…using only 0.52GB so get 7 large blocks)</li>
+  <li>Pearson (0.9 mins)</li>
+  <li>Spearman (2.5 mins)</li>
+  <li>Chebyshev (25 mins)</li>
+  <li>Euclidean (6.8 mins)</li>
+  <li>Kendall (1883.3 mins)</li>
+  <li>Concordance (0.4 mins)</li>
+  <li>Mahalanobois (14.5 mins)</li>
 </ul>
 
-
-<h2>Waiting</h2>
+<h2 id="in-progress">In Progress</h2>
 
 <ul>
-<li>Mahalanobois (some system is computationally singular error)</li>
+  <li>Mahalanobois</li>
 </ul>
 
-
-<h2>Redo</h2>
+<h2 id="redo">Redo</h2>
 
 <pre><code>* Concordance (will likely take long too)
 </code></pre>
+
+<h1 id="comparing-distances">Comparing Distances</h1>
+
+<p>Here is some quick code to compare the MDMR results using the different distance measures.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line"><span class="c1"># Setup</span>
+</span><span class="line">setwd<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas/short/try_distances/&quot;</span><span class="p">)</span>
+</span><span class="line">library<span class="p">(</span>bigmemory<span class="p">)</span>
+</span><span class="line">dirs <span class="o">&lt;-</span> Sys.glob<span class="p">(</span><span class="s">&quot;*/iq_age+sex+meanFD.mdmr/pvals.desc&quot;</span><span class="p">)</span>
+</span><span class="line">pvals.mat <span class="o">&lt;-</span> sapply<span class="p">(</span>dirs<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>d<span class="p">)</span> attach.big.matrix<span class="p">(</span>d<span class="p">)[,</span><span class="m">1</span><span class="p">])</span>
+</span><span class="line">colnames<span class="p">(</span>pvals.mat<span class="p">)</span> <span class="o">&lt;-</span> sub<span class="p">(</span><span class="s">&quot;_k0800_to_k0800&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> dirname<span class="p">(</span>dirname<span class="p">(</span>dirs<span class="p">)))</span>
+</span><span class="line"><span class="c1"># Correlate</span>
+</span><span class="line">cor<span class="p">(</span>pvals.mat<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="c1"># Dice-esque</span>
+</span><span class="line">d.mat <span class="o">&lt;-</span> crossprod<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span>
+</span><span class="line">print<span class="p">(</span>d.mat<span class="p">)</span> <span class="c1"># counts</span>
+</span><span class="line">round<span class="p">(</span>sweep<span class="p">(</span>d.mat<span class="p">,</span> <span class="m">1</span><span class="p">,</span> diag<span class="p">(</span>d.mat<span class="p">),</span> <span class="s">&#39;/&#39;</span><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span> <span class="c1"># percent overlap</span>
+</span><span class="line"><span class="c1"># Voxels present in all distance measures</span>
+</span><span class="line">sum<span class="p">(</span>rowSums<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span><span class="o">==</span><span class="m">6</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Interesting that the correlation-based measures are all alike: concordance, kendall, pearson, and spearman with pearson as the most sensitive (180 significant voxels). Then euclidian and mahalanobois are fairly similar with both being the most sensitive overall (194 and 195 significant voxels, respectively). Significance here is p &lt; 0.05 (uncorrected…running analyses for corrected version now).</p>
+
+<p>It’s also interesting that there are still differences in what voxel’s are identified as significant between the euclidian-based ones and the correlation-ones. For instance about 103 voxels are commonly significant between mahalanobois and pearson distance. If I look at those that are not common between mahalanobois and pearson distance, I do find that some of them are sub-threshold in the other measure. For instance, with p&lt;0.1 for pearson there are now 141 significant voxels in common with mahalanobois of p&lt;0.05.</p>
 </div>
 
 
@@ -279,9 +371,192 @@
 
 <aside class="sidebar">
   
-    <section>
+    
+  
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 117.14285714285714%'>cpac(2)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 142.85714285714286%'>quickpack(5)</a> </span>
+</section>
+<!--
+    Calendar aside/plugin for octopress blogging framework.
+    Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<style>
+	.highlighted-calendar-day
+	{
+		color : #CCC;
+		font-weight : bold;
+	}
+	
+	.calendar-header-day{
+		font-weight : bold;
+		color : #AAA;
+		font-size : 14px;
+	}
+	
+	.highlighted-calendar-day a
+	{
+		
+	}
+	
+	.prev-link
+	{
+		float:left;
+	}
+	
+	.next-link
+	{
+		float: right;
+	}
+	.calendar-day
+	{
+		color : #888;
+		font-weight : 12px;
+	}
+	
+	.calendar-table
+	{
+		width : 100%;
+		
+	}
+	
+	.calendar-table td
+	{
+		border-right : dotted 1px lightgrey;
+		text-align : center;
+	}
+	
+	.calendar-table td:last-child
+	{
+		border-right : none;
+	}
+	
+	.calendar-table th
+	{
+		background-color : lightgrey;
+		text-align : center;
+	}
+	.prevCalendarLink img
+	{	
+		
+		width : 20px;
+		height : 20px;
+		border: 0px;
+		float: left;
+		
+	}
+	
+	.nextCalendarLink img
+	{
+		
+		width : 20px;
+		height: 20px;
+		border: 0px;
+		float: right;
+		
+	}
+</style>
+<script type="text/javascript" src="/javascripts/calendar.js"></script>
+<section id="calendarDiv">
+	<h1>Calendar</h1>
+	<span style="display:block" id="calendarSpan"></span>
+	<div>
+		<a href="#" class="previousMonth show"/><a href="#" class="nextMonth hide"/>
+	</div>
+</section>
+<script type="text/javascript">
+  
+monthCalendar = function(id,year,month)
+{
+  var highlightArray = new Array();
+  var hightlightLinks = new Array();
+  
+  highlightArray.push('11/15/2013');
+  hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
+  
+  highlightArray.push('11/13/2013');
+  hightlightLinks.push('/blog/2013/11/13/solving-quick-pack/');
+  
+  highlightArray.push('11/12/2013');
+  hightlightLinks.push('/blog/2013/11/12/abide-sge-debug/');
+  
+  highlightArray.push('11/11/2013');
+  hightlightLinks.push('/blog/2013/11/11/monday-for-veterans/');
+  
+  highlightArray.push('11/09/2013');
+  hightlightLinks.push('/blog/2013/11/09/comparing-distances/');
+  		
+  var cal = new Calendar(month,year,highlightArray,hightlightLinks);
+  cal.generateHTML(id);
+  var element = document.getElementById(id);
+  element.innerHTML = cal.getHTML();
+}
+	
+loadCalendar = function(){
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  monthCalendar('calendarDiv',year,month);
+}
+	
+	if(Array.prototype.indexOf == undefined)
+	{
+		 Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+			"use strict";
+			if (this == null) {
+				throw new TypeError();
+			}
+			var t = Object(this);
+			var len = t.length >>> 0;
+			if (len === 0) {
+				return -1;
+			}
+			var n = 0;
+			if (arguments.length > 0) {
+				n = Number(arguments[1]);
+				if (n != n) { // shortcut for verifying if it's NaN
+					n = 0;
+				} else if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+			if (n >= len) {
+				return -1;
+			}
+			var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+			for (; k < len; k++) {
+				if (k in t && t[k] === searchElement) {
+					return k;
+				}
+			}
+			return -1;
+		}
+	}
+$(document).ready(function(){
+  loadCalendar();
+});
+</script>
+<section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
@@ -299,11 +574,36 @@
         <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a>
-      </li>
-    
   </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 

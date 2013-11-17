@@ -2,65 +2,69 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey/</loc>
-        <lastmod>2013-11-04T14:49:45-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/</loc>
-        <lastmod>2013-11-04T22:24:53-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/04/monday/</loc>
-        <lastmod>2013-11-05T15:29:38-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/</loc>
-        <lastmod>2013-11-05T20:24:51-05:00</lastmod>
+        <lastmod>2013-11-16T19:23:21-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/05/tuesday/</loc>
-        <lastmod>2013-11-05T19:09:20-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>
             http://czarrar.github.io/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/
         </loc>
-        <lastmod>2013-11-11T23:52:06-05:00</lastmod>
+        <lastmod>2013-11-17T01:38:12-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/06/wednesday-nki/</loc>
-        <lastmod>2013-11-07T11:27:36-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/07/thursday-lib-cmi-nyu/</loc>
-        <lastmod>2013-11-08T09:27:22-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/08/friday-save-the-date/</loc>
-        <lastmod>2013-11-08T12:30:14-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/09/comparing-distances/</loc>
-        <lastmod>2013-11-12T23:49:16-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/11/monday-for-veterans/</loc>
-        <lastmod>2013-11-11T17:15:14-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/12/abide-sge-debug/</loc>
-        <lastmod>2013-11-12T16:02:57-05:00</lastmod>
+        <lastmod>2013-11-16T15:51:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/2013/11/13/solving-quick-pack/</loc>
-        <lastmod>2013-11-13T17:48:33-05:00</lastmod>
+        <lastmod>2013-11-16T21:52:08-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://czarrar.github.io/blog/2013/11/15/testing-quick-pack/</loc>
+        <lastmod>2013-11-17T00:33:57-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/blog/archives/</loc>
-        <lastmod>2013-11-13T17:48:33-05:00</lastmod>
+        <lastmod>2013-11-17T01:38:12-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/</loc>
-        <lastmod>2013-11-13T17:48:33-05:00</lastmod>
+        <lastmod>2013-11-17T01:38:12-05:00</lastmod>
     </url>
     <url>
         <loc>http://czarrar.github.io/robots.txt</loc>

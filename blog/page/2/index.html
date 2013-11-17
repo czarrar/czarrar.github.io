@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="NiLearn Test Data Note that the code to generate all this is as well as the actual package is in /home/data/Projects/CPAC_Regression_Test/2013-10- &hellip;">
+  <meta name="description" content="As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -39,10 +39,63 @@
   // jQuery(...), instead of $(...) from here on.
   jQuery.noConflict();
 </script>
+
+	<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
+
+<script language="Javascript" type="text/javascript">
+$(document).ready(
+  function() {
+    (function($) {
+      $(".fancybox[data-content-id]").each(function() {
+        this.href = $(this).data('content-id');
+      });
+      $(".fancybox").fancybox({
+        beforeLoad: function() {
+          var el, 
+              id = $(this.element).data('title-id');
+
+          if (id) {
+            el = $('#' + id);
+
+            if (el.length) {
+              this.title = el.html();
+            }
+          }
+          if ($(this).data('content')) {
+            this.content = $(this).data('content');
+          }
+        },
+        helpers: {
+          title: {
+            type: 'inside'
+          }
+        }
+      });
+    })(jQuery);
+  }
+);
+</script>
+
   
 
 </head>
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 <body   >
   <header role="banner"><hgroup>
   <h1><a href="/">Zarrar's Journaling</a></h1>
@@ -80,6 +133,166 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2013/11/04/bootstrap-of-iq-cwas/">Bootstrap of IQ CWAS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-04T23:38:00-05:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
+
+<h1 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h1>
+
+<p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
+
+<p><strong>RUNNING ON 11/16/13 at 7:20pm</strong></p>
+
+<h1 id="bootstrap-with-replication">Bootstrap with Replication</h1>
+
+<p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
+
+<h2 id="analysis">Analysis</h2>
+
+<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
+
+<p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
+
+<h2 id="plotting">Plotting</h2>
+
+<p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">mpath <span class="o">&lt;-</span> file.path<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas&quot;</span><span class="p">,</span> scan<span class="p">,</span>  <span class="s">&quot;compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/mask.nii.gz&quot;</span><span class="p">)</span>
+</span><span class="line">mask  <span class="o">&lt;-</span> read.mask<span class="p">(</span>mpath<span class="p">)</span>
+</span><span class="line">hdr   <span class="o">&lt;-</span> read.nifti.header<span class="p">(</span>mpath<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="histogram-issue">Histogram Issue</h2>
+
+<p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
+
+<p>So my thought now is to see if the bootstrap approach with <code>boot</code> is shifting things in the wrong direction.</p>
+
+<p>My analysis/tests show that bootstrap with replication is not appropriate here and instead we should be using subsampling (bootstrapping without replication).</p>
+
+<p>http://rpubs.com/czarrar/cwas_distributions</p>
+
+<h3 id="older-approach">Older approach</h3>
+
+<p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
+
+<h2 id="code">Code</h2>
+
+<div><script src="https://gist.github.com/7164165.js?file=cwas_bootstrap.R"></script>
+<noscript><pre><code>library(connectir)
+library(boot)
+
+# data = model
+boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
+    ###
+    # Distances
+    ###
+    
+    # We need to sample the distances based on the indices
+    # that is we will create a new set of distances with subject indices based on indices
+    # This will also create a local copy of the big matrix
+    cat(&quot;Subset of subjects in distances\n&quot;)
+    sdist &lt;- filter_subdist(sdist, subs=indices)
+    
+    # Now we can gowerify
+    cat(&quot;Gowerify\n&quot;)
+    gmat &lt;- gower.subdist2(sdist)
+    
+    # Info
+    nvoxs &lt;- ncol(gmat)
+    nsubs &lt;- sqrt(nrow(gmat))
+    nperms &lt;- 4999
+    nfactors &lt;- 1
+    
+    
+    ###
+    # Calculate memory demands
+    ###
+    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
+    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
+    # this will give opts$blocksize and opts$superblocksize that will
+    # limit total RAM usage to 20GB
+    
+    ###
+    # Get the model ready
+    ###
+    
+    cat(&quot;Subset of subjects in model\n&quot;)
+    model &lt;- data.frame(data[indices,])
+    
+    
+    ###
+    # Call MDMR
+    ###
+    
+    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
+                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
+    
+    -log10(ret$pvals[,]) # or should I just return p-values?
+}
+
+
+###
+# Bootstrap ROI-based IQ Results
+###
+
+# Set parallel processing
+nthreads &lt;- 8
+set_parallel_procs(1, nthreads, TRUE)
+
+# Read in the distances (using ROI-based distances and not voxelwise here)
+#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
+dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
+sdist &lt;- attach.big.matrix(dpath)
+
+# Read in the model
+mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
+model &lt;- read.csv(mpath)
+model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
+
+# Set the formula
+f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
+
+# Call
+results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
+</code></pre></noscript></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2013/11/04/monday/">Monday</a></h1>
     
     
@@ -103,135 +316,132 @@
   </header>
 
 
-  <div class="entry-content"><h1>NiLearn Test Data</h1>
+  <div class="entry-content"><h1 id="nilearn-test-data">NiLearn Test Data</h1>
 
 <p>Note that the code to generate all this is as well as the actual package is in <code>/home/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code>.</p>
 
-<p>I&rsquo;ve already gotten the subject data and regressors. I am left to create the group phenotypic file. It appears that I don&rsquo;t need to duplicate the previous setup so I can use what we have on motion per subject. With this new data packaged up, I uploaded it to my connectir repository as I still don&rsquo;t have access to the ADHD200 repository.</p>
+<p>I’ve already gotten the subject data and regressors. I am left to create the group phenotypic file. It appears that I don’t need to duplicate the previous setup so I can use what we have on motion per subject. With this new data packaged up, I uploaded it to my connectir repository as I still don’t have access to the ADHD200 repository.</p>
 
 <p>The download links are below:</p>
 
-<p><a href="http://connectir.projects.nitrc.org/adhd40_p1.nii.gz">http://connectir.projects.nitrc.org/adhd40_p1.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p2.nii.gz">http://connectir.projects.nitrc.org/adhd40_p2.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p3.nii.gz">http://connectir.projects.nitrc.org/adhd40_p3.nii.gz</a>
-<a href="http://connectir.projects.nitrc.org/adhd40_p4.nii.gz">http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</a></p>
+<p>http://connectir.projects.nitrc.org/adhd40_p1.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p2.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p3.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</p>
 
 <p>And I have contacted the other peeps about this. So DONE.</p>
 
 <hr />
 
-<h1>ABIDE Preprocessing</h1>
+<h1 id="abide-preprocessing">ABIDE Preprocessing</h1>
 
 <p>I found out that the QC pages are a little broken. So this will have to wait.</p>
 
-<h2>Run Config Setup</h2>
+<h2 id="run-config-setup">Run Config Setup</h2>
 
-<p>I have adjusted this file to run one subject for every two nodes. I am using FSL5 now. Preprocessing will be run as well as all the derivatives except centrality (degree or eigen). This is because they both need a decent amount of RAM and computational time so I&rsquo;ll wait to run them separately later.</p>
+<p>I have adjusted this file to run one subject for every two nodes. I am using FSL5 now. Preprocessing will be run as well as all the derivatives except centrality (degree or eigen). This is because they both need a decent amount of RAM and computational time so I’ll wait to run them separately later.</p>
 
 <hr />
 
-<h1>QuickPack</h1>
+<h1 id="quickpack">QuickPack</h1>
 
-<p>So the first general issue that I&rsquo;m experiencing is that if I run everything (no quick-pack), then I don&rsquo;t get any of the sym links. However, in my Emotional-BS run, the symlinks all seem to be fine! A little weird. I&rsquo;m not sure what is causing the problem.</p>
+<p>So the first general issue that I’m experiencing is that if I run everything (no quick-pack), then I don’t get any of the sym links. However, in my Emotional-BS run, the symlinks all seem to be fine! A little weird. I’m not sure what is causing the problem.</p>
 
-<h2>Running with just CPAC</h2>
+<h2 id="running-with-just-cpac">Running with just CPAC</h2>
 
-<p>I&rsquo;m focusing on why I&rsquo;m getting symlink issues when I run internally with CPAC. I think the reasons that no files are being symlinked is because there might be single quotes in the strategy part of the path.</p>
+<p>I’m focusing on why I’m getting symlink issues when I run internally with CPAC. I think the reasons that no files are being symlinked is because there might be single quotes in the strategy part of the path.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_RameyBorough/0051466_session_1/qc/mni_normalized_anatomical_a/mni_anat_a.png /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_RameyBorough/_compcor_<span class="s1">&#39;ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.csf0&#39;</span>_CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan/qc/mni_anat_a.png
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">ln -s /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_RameyBorough/0051466_session_1/qc/mni_normalized_anatomical_a/mni_anat_a.png /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_RameyBorough/_compcor_<span class="s1">&#39;ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.csf0&#39;</span>_CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan/qc/mni_anat_a.png
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>If I run this command that was spit out from CPAC, then I get a &ldquo;No such file or directory&rdquo; error. This error doesn&rsquo;t appear with CPAC but this might explain why no symlinks were generated.</p>
+<p>If I run this command that was spit out from CPAC, then I get a “No such file or directory” error. This error doesn’t appear with CPAC but this might explain why no symlinks were generated.</p>
 
 <p>Now we must understand why those single quotes are there. We should note that there were actually 2 strategies that I had given but only one strategy folder in the symlinks directory folder was created. I wonder if this has to do with some error?</p>
 
-<p>I tried to open the config file with the GUI and re-save it, seeing if that would help but it didn&rsquo;t. Now I&rsquo;ll try to run the pipeline from the GUI. Yup that fixed the issue and it isn&rsquo;t related to the fact that I&rsquo;m using Dan&rsquo;s path and shiz. Running this one subject through the GUI.</p>
+<p>I tried to open the config file with the GUI and re-save it, seeing if that would help but it didn’t. Now I’ll try to run the pipeline from the GUI. Yup that fixed the issue and it isn’t related to the fact that I’m using Dan’s path and shiz. Running this one subject through the GUI.</p>
 
-<h2>Running ALFF</h2>
+<h2 id="running-alff">Running ALFF</h2>
 
-<p>There was one previous and confusing link issue. However, another issue that I didn&rsquo;t notice was the ALFF output directory using single quotes in its symlinks strategy directory and only has one of the two strategies. This suggests a potential benefit in running this through the GUI.</p>
+<p>There was one previous and confusing link issue. However, another issue that I didn’t notice was the ALFF output directory using single quotes in its symlinks strategy directory and only has one of the two strategies. This suggests a potential benefit in running this through the GUI.</p>
 
-<h3>GUI</h3>
+<h3 id="gui">GUI</h3>
 
-<p>This run failed. The error message is below. I am not sure what&rsquo;s going on.</p>
+<p>This run failed. The error message is below. I am not sure what’s going on.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Invalid Connection: ALFF: 0  resource_pool:  <span class="o">{}</span>
-</span><span class='line'>Process Process-3:
-</span><span class='line'>Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
-</span><span class='line'>  File <span class="s2">&quot;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&quot;</span>, line 258, in _bootstrap
-</span><span class='line'>    self.run<span class="o">()</span>
-</span><span class='line'>  File <span class="s2">&quot;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&quot;</span>, line 114, in run
-</span><span class='line'>    self._target<span class="o">(</span>*self._args, **self._kwargs<span class="o">)</span>
-</span><span class='line'>  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/CPAC/pipeline/cpac_pipeline.py&quot;</span>, line 1198, in prep_workflow
-</span><span class='line'>    alff, <span class="s1">&#39;inputspec.rest_res&#39;</span><span class="o">)</span>
-</span><span class='line'>  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&quot;</span>, line 306, in connect
-</span><span class='line'>    self._check_nodes<span class="o">(</span>newnodes<span class="o">)</span>
-</span><span class='line'>  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&quot;</span>, line 769, in _check_nodes
-</span><span class='line'>    <span class="k">if </span>node.name in node_names:
-</span><span class='line'>AttributeError: <span class="s1">&#39;NoneType&#39;</span> object has no attribute <span class="s1">&#39;name&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">Invalid Connection: ALFF: 0  resource_pool:  <span class="o">{}</span>
+</span><span class="line">Process Process-3:
+</span><span class="line">Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&quot;</span>, line 258, in _bootstrap
+</span><span class="line">    self.run<span class="o">()</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&quot;</span>, line 114, in run
+</span><span class="line">    self._target<span class="o">(</span>*self._args, **self._kwargs<span class="o">)</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/CPAC/pipeline/cpac_pipeline.py&quot;</span>, line 1198, in prep_workflow
+</span><span class="line">    alff, <span class="s1">&#39;inputspec.rest_res&#39;</span><span class="o">)</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&quot;</span>, line 306, in connect
+</span><span class="line">    self._check_nodes<span class="o">(</span>newnodes<span class="o">)</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&quot;</span>, line 769, in _check_nodes
+</span><span class="line">    <span class="k">if </span>node.name in node_names:
+</span><span class="line">AttributeError: <span class="s1">&#39;NoneType&#39;</span> object has no attribute <span class="s1">&#39;name&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h3 id="cli">CLI</h3>
 
-<h3>CLI</h3>
-
-<p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can&rsquo;t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn&rsquo;t work! Ugh so it&rsquo;s specifically related to the command-line, which is doing something differently than the GUI.</p>
+<p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can’t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn’t work! Ugh so it’s specifically related to the command-line, which is doing something differently than the GUI.</p>
 
 <hr />
 
-<h1>Emotional-BS</h1>
+<h1 id="emotional-bs">Emotional-BS</h1>
 
 <p>The preprocessing is done but the QC pages were not generated due to some issue in CPAC. I wish there was some way of running the QC scripts with the current outputs without me having to re-run all of CPAC. Since I ran via gelert using the <code>/tmp</code> directory, it will also need to redo all the processing.</p>
 
 <hr />
 
-<h1>Random</h1>
+<h1 id="random">Random</h1>
 
 <p>I spent a bit of time getting the table of contents to work on these pages. Hopefully it was worth it (I might want to also add a go back to the top link for each header). At the very least it gives a sort-of summary list of what will be on the post.</p>
 
-<p>I think I also had a bit of trouble keeping on track today. It was very frustrating and I&rsquo;m hoping it was just re-adjusting to coming back to work after a brief break.</p>
+<p>I think I also had a bit of trouble keeping on track today. It was very frustrating and I’m hoping it was just re-adjusting to coming back to work after a brief break.</p>
 
 <hr />
 
-<h1>TODO</h1>
+<h1 id="todo">TODO</h1>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>x<span class="o">]</span> NiLearn Test Data
-</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Generate group phenotype file
-</span><span class='line'><span class="o">[]</span> ABIDE Preprocessing
-</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Email Cam about next steps
-</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Setup the pipeline with gelert excluding centrality
-</span><span class='line'>  <span class="o">[]</span> Start running the pipeline
-</span><span class='line'><span class="o">[]</span> QuickPack
-</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Check that <span class="nb">complete </span>run was good
-</span><span class='line'>  <span class="o">[</span>x<span class="o">]</span> Try to figure out why the old runs did fine?
-</span><span class='line'>  <span class="o">[]</span> Using the new <span class="nb">complete </span>run as input <span class="k">for </span>QP
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="o">[</span>x<span class="o">]</span> NiLearn Test Data
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Generate group phenotype file
+</span><span class="line"><span class="o">[]</span> ABIDE Preprocessing
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Email Cam about next steps
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Setup the pipeline with gelert excluding centrality
+</span><span class="line">	<span class="o">[]</span> Start running the pipeline
+</span><span class="line"><span class="o">[]</span> QuickPack
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Check that <span class="nb">complete </span>run was good
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Try to figure out why the old runs did fine?
+</span><span class="line">	<span class="o">[]</span> Using the new <span class="nb">complete </span>run as input <span class="k">for </span>QP
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 </div>
   
   
@@ -267,100 +477,94 @@
   </header>
 
 
-  <div class="entry-content"><p>I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+  <div class="entry-content"><p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
 
 <p>In summary, the complexity (I think) is</p>
 
 <ul>
-<li>O(V*n<sup>2</sup>) for computing the distance matrices</li>
-<li>O(k*n<sup>2</sup>) for creating the hat matrices</li>
-<li>O(n<sup>3</sup>) for gower centering the distance matrices</li>
-<li>O(Pxn<sup>2xV</sup>) for MDMR</li>
+  <li>O(V*n^2) for computing the distance matrices</li>
+  <li>O(k*n^2) for creating the hat matrices</li>
+  <li>O(n^3) for gower centering the distance matrices</li>
+  <li>O(Pxn^2xV) for MDMR</li>
 </ul>
-
 
 <p>where V = # of voxels, n = # of subjects, k = # of regressors, P = # of permutations.</p>
 
-<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn<sup>3xV</sup>) or O(n<sup>3</sup>) whereas ours is O(n<sup>2</sup>).</p>
+<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn^3xV) or O(n^3) whereas ours is O(n^2).</p>
 
-<h1>About Time Complexity</h1>
+<h1 id="about-time-complexity">About Time Complexity</h1>
 
 <p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
 
 <p>Efficiency of an algorithm can be measured by [1]:</p>
 
 <ul>
-<li>Execution time (time complexity)</li>
-<li>Amount of memory required (space complexity)</li>
+  <li>Execution time (time complexity)</li>
+  <li>Amount of memory required (space complexity)</li>
 </ul>
 
+<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There’s other relevant information on the wiki page and some online slides [2,3].</p>
 
-<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There&rsquo;s other relevant information on the wiki page and some online slides [2,3].</p>
+<h2 id="complexity-of-math-operations">Complexity of Math Operations</h2>
 
-<h2>Complexity of Math Operations</h2>
+<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n^2 or n*log(n) (depending on the implementation). Matrix multiplication is n^3. This is a little weird because I think of the correlation coefficient as n^2 since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
 
-<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n<sup>2</sup> or n*log(n) (depending on the implementation). Matrix multiplication is n<sup>3</sup>. This is a little weird because I think of the correlation coefficient as n<sup>2</sup> since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
+<h1 id="cwas-complexity">CWAS Complexity</h1>
 
-<h1>CWAS Complexity</h1>
+<p>So I guess that’s all the background I need. Now let’s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
 
-<p>So I guess that&rsquo;s all the background I need. Now let&rsquo;s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
+<h2 id="distance-matrices">Distance Matrices</h2>
 
-<h2>Distance Matrices</h2>
+<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n^2) change. Thus, this step should be O(V*n^2).</p>
 
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(V*n<sup>2</sup>).</p>
+<h2 id="mdmr">MDMR</h2>
 
-<h2>MDMR</h2>
-
-<h3>Hat Matrix</h3>
+<h3 id="hat-matrix">Hat Matrix</h3>
 
 <p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
 
 <ul>
-<li>3 matrix algebra operations</li>
-<li>1 matrix inversion</li>
-<li>2 transpositions (but I won&rsquo;t count those)</li>
+  <li>3 matrix algebra operations</li>
+  <li>1 matrix inversion</li>
+  <li>2 transpositions (but I won’t count those)</li>
 </ul>
 
+<p>Each of these operations is O(k<em>n^2) [4] so this step has O(k</em>n^2) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
 
-<p>Each of these operations is O(k<em>n<sup>2</sup>) [4] so this step has O(k</em>n<sup>2</sup>) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
+<h3 id="gower-matrix">Gower Matrix</h3>
 
-<h3>Gower Matrix</h3>
-
-<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1&rsquo;s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
+<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1’s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
 
 <ul>
-<li>2 subtractions (additions)</li>
-<li>2 divisions (multiplications)</li>
-<li>2 matrix multiplications</li>
+  <li>2 subtractions (additions)</li>
+  <li>2 divisions (multiplications)</li>
+  <li>2 matrix multiplications</li>
 </ul>
 
+<p>Since the matrix operation will dominate the time, the complexity is O(V*n^3) where V is the number of voxels.</p>
 
-<p>Since the matrix operation will dominate the time, the complexity is O(V*n<sup>3</sup>) where V is the number of voxels.</p>
+<h3 id="pseudo-f-statistic">Pseudo-F Statistic</h3>
 
-<h3>Pseudo-F Statistic</h3>
-
-<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it&rsquo;s a P x n<sup>2</sup> matrix (P = # of permutations) and G is a vector of gower matrices so it&rsquo;s a n<sup>2</sup> x V matrix (V = # of voxels). This means that there are:</p>
+<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it’s a P x n^2 matrix (P = # of permutations) and G is a vector of gower matrices so it’s a n^2 x V matrix (V = # of voxels). This means that there are:</p>
 
 <ul>
-<li>1 subtraction (I-H)</li>
-<li>2 matrix multiplications</li>
-<li>1 division</li>
+  <li>1 subtraction (I-H)</li>
+  <li>2 matrix multiplications</li>
+  <li>1 division</li>
 </ul>
 
+<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn^2xV) so as in the distance matrix step the complexity will scale by n^2.</p>
 
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn<sup>2xV</sup>) so as in the distance matrix step the complexity will scale by n<sup>2</sup>.</p>
-
-<h1>References</h1>
+<h1 id="references">References</h1>
 
 <ol>
-<li><a href="http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf">http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Time_complexity">http://en.wikipedia.org/wiki/Time_complexity</a></li>
-<li><a href="http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf">http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations">http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</a></li>
-<li><a href="http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation">http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</a></li>
-<li><a href="http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation">http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</a></li>
+  <li>http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Time_complexity</li>
+  <li>http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</li>
+  <li>http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</li>
+  <li>http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</li>
 </ol>
-
 </div>
   
   
@@ -396,19 +600,19 @@
   </header>
 
 
-  <div class="entry-content"><p>Today, I&rsquo;ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for</p>
+  <div class="entry-content"><p>Today, I’ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for </p>
 
 <p>Some minor things, I helped Krishna with some ROI error he had in CPAC. It turned out that his issue was due to incorrectly binarizing the mask.</p>
 
-<h1>QuickPack</h1>
+<h1 id="quickpack">QuickPack</h1>
 
-<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn&rsquo;t track. I am re-running the complete run to see what errors I get again and try to figure those out. I&rsquo;m also rerunning the alff to see what happens there.</p>
+<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn’t track. I am re-running the complete run to see what errors I get again and try to figure those out. I’m also rerunning the alff to see what happens there.</p>
 
-<h2>Complete Run</h2>
+<h2 id="complete-run">Complete Run</h2>
 
 <p>This appears to be re-running smoothly (knock on wood). The last time I ran a complete (preprocessing + derivatives) run, it led to some unclear problems.</p>
 
-<h2>ALFF QP</h2>
+<h2 id="alff-qp">ALFF QP</h2>
 
 <p>I get the same link error as I did before. The error occurs on line 562 in <code>utils.py</code> within the <code>create_symbolic_links</code>. The line and error are</p>
 
@@ -416,24 +620,23 @@
 IndexError: list index out of range
 </code></pre>
 
-<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don&rsquo;t have much sense about what is going on with this file.</p>
+<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don’t have much sense about what is going on with this file.</p>
 
 <p>Other bits of information:</p>
 
 <ul>
-<li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
+  <li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
 z</code>.</li>
-<li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
+  <li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
 </ul>
 
-
-<h3>Steve Talk</h3>
+<h3 id="steve-talk">Steve Talk</h3>
 
 <p>I discussed this issue with Steve and it seems I will need to get down and dirty with nipype to understand the origin of this problem.</p>
 
-<h2>REHO QP</h2>
+<h2 id="reho-qp">REHO QP</h2>
 
-<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link_16 it is link_5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
+<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link<em>16 it is link</em>5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
 
 <p>A snapshot of the error is given below:</p>
 
@@ -452,53 +655,49 @@ Interface Function failed to run.
 
 <p>To run the crash file, see the code below.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">CPAC</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">CPAC.reho.utils</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">nipype.utils.filemanip</span> <span class="kn">import</span> <span class="n">loadflat</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">crashinfo</span> <span class="o">=</span> <span class="n">loadflat</span><span class="p">(</span><span class="s">&quot;/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">crashinfo</span><span class="p">[</span><span class="s">&#39;node&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC.reho.utils</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">nipype.utils.filemanip</span> <span class="kn">import</span> <span class="n">loadflat</span>
+</span><span class="line">
+</span><span class="line"><span class="n">crashinfo</span> <span class="o">=</span> <span class="n">loadflat</span><span class="p">(</span><span class="s">&quot;/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">crashinfo</span><span class="p">[</span><span class="s">&#39;node&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<h1>Preprocessing EmotionalBS</h1>
+<h1 id="preprocessing-emotionalbs">Preprocessing EmotionalBS</h1>
 
 <p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
 
 <ul>
-<li>Used ANTS for registration</li>
-<li>Two nuisance correction strategies
-
-<pre><code>  * compcor+motion+linear+quadratic
-  * compcor+global+motion+linear+quadratic
-</code></pre></li>
-<li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
-<li>Smoothing of 4.5mm (only for derivatives)</li>
-<li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
+  <li>Used ANTS for registration</li>
+  <li>Two nuisance correction strategies
+      * compcor+motion+linear+quadratic
+      * compcor+global+motion+linear+quadratic</li>
+  <li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
+  <li>Smoothing of 4.5mm (only for derivatives)</li>
+  <li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
 </ul>
 
+<h2 id="install-fsl-5-for-gelert">Install FSL 5 for Gelert</h2>
 
-<h2>Install FSL 5 for Gelert</h2>
+<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike’s account didn’t have. And even if I had those, it wasn’t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so </p>
 
-<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike&rsquo;s account didn&rsquo;t have. And even if I had those, it wasn&rsquo;t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so</p>
-
-<h1>New Journal</h1>
+<h1 id="new-journal">New Journal</h1>
 
 <p>I also worked on setting up this blog/journal with github user account. The goal is to chronicle my work efforts with particular thought on any issues I encounter. A major side benefit will be easier communication with others in the lab (e.g., was able to easily show the error for ALFF quick pack to Steve). Previously, I had been using different journal pages for each of my projects. I ended up being a big confused where to post stuff and often lost track of the markdown pages that I had created before they were published. With one journal site, this should all be easier.</p>
 
-<p>I&rsquo;m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
+<p>I’m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
 </div>
   
   
@@ -516,9 +715,192 @@ Interface Function failed to run.
 </div>
 <aside class="sidebar">
   
-    <section>
+    
+  
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 117.14285714285714%'>cpac(2)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 142.85714285714286%'>quickpack(5)</a> </span>
+</section>
+<!--
+    Calendar aside/plugin for octopress blogging framework.
+    Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+&#8211;>
+<style>
+	.highlighted-calendar-day
+	{
+		color : #CCC;
+		font-weight : bold;
+	}
+	
+	.calendar-header-day{
+		font-weight : bold;
+		color : #AAA;
+		font-size : 14px;
+	}
+	
+	.highlighted-calendar-day a
+	{
+		
+	}
+	
+	.prev-link
+	{
+		float:left;
+	}
+	
+	.next-link
+	{
+		float: right;
+	}
+	.calendar-day
+	{
+		color : #888;
+		font-weight : 12px;
+	}
+	
+	.calendar-table
+	{
+		width : 100%;
+		
+	}
+	
+	.calendar-table td
+	{
+		border-right : dotted 1px lightgrey;
+		text-align : center;
+	}
+	
+	.calendar-table td:last-child
+	{
+		border-right : none;
+	}
+	
+	.calendar-table th
+	{
+		background-color : lightgrey;
+		text-align : center;
+	}
+	.prevCalendarLink img
+	{	
+		
+		width : 20px;
+		height : 20px;
+		border: 0px;
+		float: left;
+		
+	}
+	
+	.nextCalendarLink img
+	{
+		
+		width : 20px;
+		height: 20px;
+		border: 0px;
+		float: right;
+		
+	}
+</style>
+<script type="text/javascript" src="/javascripts/calendar.js"></script>
+<section id="calendarDiv">
+	<h1>Calendar</h1>
+	<span style="display:block" id="calendarSpan"></span>
+	<div>
+		<a href="#" class="previousMonth show"/><a href="#" class="nextMonth hide"/>
+	</div>
+</section>
+<script type="text/javascript">
+  
+monthCalendar = function(id,year,month)
+{
+  var highlightArray = new Array();
+  var hightlightLinks = new Array();
+  
+  highlightArray.push('11/15/2013');
+  hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
+  
+  highlightArray.push('11/13/2013');
+  hightlightLinks.push('/blog/2013/11/13/solving-quick-pack/');
+  
+  highlightArray.push('11/12/2013');
+  hightlightLinks.push('/blog/2013/11/12/abide-sge-debug/');
+  
+  highlightArray.push('11/11/2013');
+  hightlightLinks.push('/blog/2013/11/11/monday-for-veterans/');
+  
+  highlightArray.push('11/09/2013');
+  hightlightLinks.push('/blog/2013/11/09/comparing-distances/');
+  		
+  var cal = new Calendar(month,year,highlightArray,hightlightLinks);
+  cal.generateHTML(id);
+  var element = document.getElementById(id);
+  element.innerHTML = cal.getHTML();
+}
+	
+loadCalendar = function(){
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  monthCalendar('calendarDiv',year,month);
+}
+	
+	if(Array.prototype.indexOf == undefined)
+	{
+		 Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+			"use strict";
+			if (this == null) {
+				throw new TypeError();
+			}
+			var t = Object(this);
+			var len = t.length >>> 0;
+			if (len === 0) {
+				return -1;
+			}
+			var n = 0;
+			if (arguments.length > 0) {
+				n = Number(arguments[1]);
+				if (n != n) { // shortcut for verifying if it's NaN
+					n = 0;
+				} else if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+			if (n >= len) {
+				return -1;
+			}
+			var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+			for (; k < len; k++) {
+				if (k in t && t[k] === searchElement) {
+					return k;
+				}
+			}
+			return -1;
+		}
+	}
+$(document).ready(function(){
+  loadCalendar();
+});
+</script>
+<section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
@@ -536,11 +918,36 @@ Interface Function failed to run.
         <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a>
-      </li>
-    
   </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 

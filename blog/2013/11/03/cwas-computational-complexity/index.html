@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step. In summary, the &hellip;">
+  <meta name="description" content="I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step. In summary, the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -39,10 +39,63 @@
   // jQuery(...), instead of $(...) from here on.
   jQuery.noConflict();
 </script>
+
+	<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
+
+<script language="Javascript" type="text/javascript">
+$(document).ready(
+  function() {
+    (function($) {
+      $(".fancybox[data-content-id]").each(function() {
+        this.href = $(this).data('content-id');
+      });
+      $(".fancybox").fancybox({
+        beforeLoad: function() {
+          var el, 
+              id = $(this.element).data('title-id');
+
+          if (id) {
+            el = $('#' + id);
+
+            if (el.length) {
+              this.title = el.html();
+            }
+          }
+          if ($(this).data('content')) {
+            this.content = $(this).data('content');
+          }
+        },
+        helpers: {
+          title: {
+            type: 'inside'
+          }
+        }
+      });
+    })(jQuery);
+  }
+);
+</script>
+
   
 
 </head>
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 <body   >
   <header role="banner"><hgroup>
   <h1><a href="/">Zarrar's Journaling</a></h1>
@@ -100,100 +153,94 @@
   </header>
 
 
-<div class="entry-content"><p>I&rsquo;m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+<div class="entry-content"><p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
 
 <p>In summary, the complexity (I think) is</p>
 
 <ul>
-<li>O(V*n<sup>2</sup>) for computing the distance matrices</li>
-<li>O(k*n<sup>2</sup>) for creating the hat matrices</li>
-<li>O(n<sup>3</sup>) for gower centering the distance matrices</li>
-<li>O(Pxn<sup>2xV</sup>) for MDMR</li>
+  <li>O(V*n^2) for computing the distance matrices</li>
+  <li>O(k*n^2) for creating the hat matrices</li>
+  <li>O(n^3) for gower centering the distance matrices</li>
+  <li>O(Pxn^2xV) for MDMR</li>
 </ul>
-
 
 <p>where V = # of voxels, n = # of subjects, k = # of regressors, P = # of permutations.</p>
 
-<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn<sup>3xV</sup>) or O(n<sup>3</sup>) whereas ours is O(n<sup>2</sup>).</p>
+<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn^3xV) or O(n^3) whereas ours is O(n^2).</p>
 
-<h1>About Time Complexity</h1>
+<h1 id="about-time-complexity">About Time Complexity</h1>
 
 <p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
 
 <p>Efficiency of an algorithm can be measured by [1]:</p>
 
 <ul>
-<li>Execution time (time complexity)</li>
-<li>Amount of memory required (space complexity)</li>
+  <li>Execution time (time complexity)</li>
+  <li>Amount of memory required (space complexity)</li>
 </ul>
 
+<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There’s other relevant information on the wiki page and some online slides [2,3].</p>
 
-<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There&rsquo;s other relevant information on the wiki page and some online slides [2,3].</p>
+<h2 id="complexity-of-math-operations">Complexity of Math Operations</h2>
 
-<h2>Complexity of Math Operations</h2>
+<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n^2 or n*log(n) (depending on the implementation). Matrix multiplication is n^3. This is a little weird because I think of the correlation coefficient as n^2 since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
 
-<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n<sup>2</sup> or n*log(n) (depending on the implementation). Matrix multiplication is n<sup>3</sup>. This is a little weird because I think of the correlation coefficient as n<sup>2</sup> since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
+<h1 id="cwas-complexity">CWAS Complexity</h1>
 
-<h1>CWAS Complexity</h1>
+<p>So I guess that’s all the background I need. Now let’s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
 
-<p>So I guess that&rsquo;s all the background I need. Now let&rsquo;s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
+<h2 id="distance-matrices">Distance Matrices</h2>
 
-<h2>Distance Matrices</h2>
+<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n^2) change. Thus, this step should be O(V*n^2).</p>
 
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n<sup>2</sup>) change. Thus, this step should be O(V*n<sup>2</sup>).</p>
+<h2 id="mdmr">MDMR</h2>
 
-<h2>MDMR</h2>
-
-<h3>Hat Matrix</h3>
+<h3 id="hat-matrix">Hat Matrix</h3>
 
 <p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
 
 <ul>
-<li>3 matrix algebra operations</li>
-<li>1 matrix inversion</li>
-<li>2 transpositions (but I won&rsquo;t count those)</li>
+  <li>3 matrix algebra operations</li>
+  <li>1 matrix inversion</li>
+  <li>2 transpositions (but I won’t count those)</li>
 </ul>
 
+<p>Each of these operations is O(k<em>n^2) [4] so this step has O(k</em>n^2) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
 
-<p>Each of these operations is O(k<em>n<sup>2</sup>) [4] so this step has O(k</em>n<sup>2</sup>) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
+<h3 id="gower-matrix">Gower Matrix</h3>
 
-<h3>Gower Matrix</h3>
-
-<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1&rsquo;s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
+<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1’s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
 
 <ul>
-<li>2 subtractions (additions)</li>
-<li>2 divisions (multiplications)</li>
-<li>2 matrix multiplications</li>
+  <li>2 subtractions (additions)</li>
+  <li>2 divisions (multiplications)</li>
+  <li>2 matrix multiplications</li>
 </ul>
 
+<p>Since the matrix operation will dominate the time, the complexity is O(V*n^3) where V is the number of voxels.</p>
 
-<p>Since the matrix operation will dominate the time, the complexity is O(V*n<sup>3</sup>) where V is the number of voxels.</p>
+<h3 id="pseudo-f-statistic">Pseudo-F Statistic</h3>
 
-<h3>Pseudo-F Statistic</h3>
-
-<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it&rsquo;s a P x n<sup>2</sup> matrix (P = # of permutations) and G is a vector of gower matrices so it&rsquo;s a n<sup>2</sup> x V matrix (V = # of voxels). This means that there are:</p>
+<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it’s a P x n^2 matrix (P = # of permutations) and G is a vector of gower matrices so it’s a n^2 x V matrix (V = # of voxels). This means that there are:</p>
 
 <ul>
-<li>1 subtraction (I-H)</li>
-<li>2 matrix multiplications</li>
-<li>1 division</li>
+  <li>1 subtraction (I-H)</li>
+  <li>2 matrix multiplications</li>
+  <li>1 division</li>
 </ul>
 
+<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn^2xV) so as in the distance matrix step the complexity will scale by n^2.</p>
 
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn<sup>2xV</sup>) so as in the distance matrix step the complexity will scale by n<sup>2</sup>.</p>
-
-<h1>References</h1>
+<h1 id="references">References</h1>
 
 <ol>
-<li><a href="http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf">http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Time_complexity">http://en.wikipedia.org/wiki/Time_complexity</a></li>
-<li><a href="http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf">http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations">http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</a></li>
-<li><a href="http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation">http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</a></li>
-<li><a href="http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation">http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</a></li>
+  <li>http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Time_complexity</li>
+  <li>http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</li>
+  <li>http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</li>
+  <li>http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</li>
+  <li>http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</li>
 </ol>
-
 </div>
 
 
@@ -252,9 +299,192 @@
 
 <aside class="sidebar">
   
-    <section>
+    
+  
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 117.14285714285714%'>cpac(2)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 142.85714285714286%'>quickpack(5)</a> </span>
+</section>
+<!--
+    Calendar aside/plugin for octopress blogging framework.
+    Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<style>
+	.highlighted-calendar-day
+	{
+		color : #CCC;
+		font-weight : bold;
+	}
+	
+	.calendar-header-day{
+		font-weight : bold;
+		color : #AAA;
+		font-size : 14px;
+	}
+	
+	.highlighted-calendar-day a
+	{
+		
+	}
+	
+	.prev-link
+	{
+		float:left;
+	}
+	
+	.next-link
+	{
+		float: right;
+	}
+	.calendar-day
+	{
+		color : #888;
+		font-weight : 12px;
+	}
+	
+	.calendar-table
+	{
+		width : 100%;
+		
+	}
+	
+	.calendar-table td
+	{
+		border-right : dotted 1px lightgrey;
+		text-align : center;
+	}
+	
+	.calendar-table td:last-child
+	{
+		border-right : none;
+	}
+	
+	.calendar-table th
+	{
+		background-color : lightgrey;
+		text-align : center;
+	}
+	.prevCalendarLink img
+	{	
+		
+		width : 20px;
+		height : 20px;
+		border: 0px;
+		float: left;
+		
+	}
+	
+	.nextCalendarLink img
+	{
+		
+		width : 20px;
+		height: 20px;
+		border: 0px;
+		float: right;
+		
+	}
+</style>
+<script type="text/javascript" src="/javascripts/calendar.js"></script>
+<section id="calendarDiv">
+	<h1>Calendar</h1>
+	<span style="display:block" id="calendarSpan"></span>
+	<div>
+		<a href="#" class="previousMonth show"/><a href="#" class="nextMonth hide"/>
+	</div>
+</section>
+<script type="text/javascript">
+  
+monthCalendar = function(id,year,month)
+{
+  var highlightArray = new Array();
+  var hightlightLinks = new Array();
+  
+  highlightArray.push('11/15/2013');
+  hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
+  
+  highlightArray.push('11/13/2013');
+  hightlightLinks.push('/blog/2013/11/13/solving-quick-pack/');
+  
+  highlightArray.push('11/12/2013');
+  hightlightLinks.push('/blog/2013/11/12/abide-sge-debug/');
+  
+  highlightArray.push('11/11/2013');
+  hightlightLinks.push('/blog/2013/11/11/monday-for-veterans/');
+  
+  highlightArray.push('11/09/2013');
+  hightlightLinks.push('/blog/2013/11/09/comparing-distances/');
+  		
+  var cal = new Calendar(month,year,highlightArray,hightlightLinks);
+  cal.generateHTML(id);
+  var element = document.getElementById(id);
+  element.innerHTML = cal.getHTML();
+}
+	
+loadCalendar = function(){
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  monthCalendar('calendarDiv',year,month);
+}
+	
+	if(Array.prototype.indexOf == undefined)
+	{
+		 Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+			"use strict";
+			if (this == null) {
+				throw new TypeError();
+			}
+			var t = Object(this);
+			var len = t.length >>> 0;
+			if (len === 0) {
+				return -1;
+			}
+			var n = 0;
+			if (arguments.length > 0) {
+				n = Number(arguments[1]);
+				if (n != n) { // shortcut for verifying if it's NaN
+					n = 0;
+				} else if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+			if (n >= len) {
+				return -1;
+			}
+			var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+			for (; k < len; k++) {
+				if (k in t && t[k] === searchElement) {
+					return k;
+				}
+			}
+			return -1;
+		}
+	}
+$(document).ready(function(){
+  loadCalendar();
+});
+</script>
+<section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
@@ -272,11 +502,36 @@
         <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a>
-      </li>
-    
   </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 
