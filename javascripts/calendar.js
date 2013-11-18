@@ -106,7 +106,8 @@ Calendar.prototype.generateHTML = function(id) {
 	prevMonth = this.month - 1;
 	nextMonth = this.month + 1;
   }
-  var html = '<table id="'+id+'-calendar-table" class="calendar-table">';
+  var html = "<h1>Calendar</h1>\n";
+  html += '<table id="'+id+'-calendar-table" class="calendar-table">';
   html += '<tr><th colspan="7">';
   html += '<a id="'+this.id+'-prev-calendar-link" class="prev-link" style="height:25px;width:25px" href="#" onclick="monthCalendar(\''+this.guid+'\','+prevYear+','+prevMonth+');return false;" ><img class="prevCalendarLink" style="height:25px;width:25px;border:none 0px;padding-top:2px" src="/images/prev.png"></img></a>';
   html +=  monthName + "&nbsp;" + this.year;

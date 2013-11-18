@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-17T01:47:29-05:00</updated>
+  <updated>2013-11-17T22:44:56-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -249,7 +249,7 @@ Supplementary Figures</p>
   <li><strong>Yes</strong> 3+ analyses and 3 plots.</li>
 </ol>
 
-<h3 id="figure-3">Figure 3</h3>
+<h3 id="figure-3-done">Figure 3 (DONE)</h3>
 
 <h4 id="transformation--mdmr">Transformation + MDMR</h4>
 
@@ -302,9 +302,7 @@ cd /home2/data/Projects/CWAS/share/figures/fig_03
 ./B1_cwas_iq_overlap_easythresh.py
 </code></p>
 
-<p><strong>DONE</strong></p>
-
-<h3 id="figure-4">Figure 4</h3>
+<h3 id="figure-4-done">Figure 4 (DONE)</h3>
 
 <p>This figure examines the percent of significant associations for each permutation (false positives) and creates a histogram.</p>
 
@@ -323,13 +321,11 @@ cd /home2/data/Projects/CWAS/share/nki/05_cwas
 
 <p>To generate the false positives, see <code>/home2/data/Projects/CWAS/share/results/20_cwas_iq/40_false_positives.R</code>. </p>
 
-<p><strong>RUNNING THIS STEP on 11/16/13 6:20pm</strong></p>
-
 <h4 id="plot">Plot</h4>
 
-<p>Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/fig_03/D_signif_hists.R</code>.</p>
+<p>Then to plot the histogram, see <code>/home2/data/Projects/CWAS/share/figures/fig_03/D_signif_hists.R</code>.</p>
 
-<h3 id="figure-5">Figure 5</h3>
+<h3 id="figure-5-done">Figure 5 (DONE)</h3>
 
 <p>The relevant files for plotting are located in this directory <code>/home2/data/Projects/CWAS/share/figures/sfig_yeo</code>.</p>
 
@@ -340,9 +336,7 @@ cd /home2/data/Projects/CWAS/share/figures/sfig_yeo
 ./B2_cropify.py
 </code></p>
 
-<p><strong>DONE</strong></p>
-
-<h3 id="figure-6">Figure 6</h3>
+<h3 id="figure-6-done">Figure 6 (DONE)</h3>
 
 <p>The files for plotting are located in <code>/home2/data/Projects/CWAS/share/figures/sfig_neurosynth</code>. Note that you will need to first plot the elements of Figure 3.</p>
 
@@ -351,9 +345,7 @@ cd /home2/data/Projects/CWAS/share/figures/sfig_neurosynth
 ./10_combine_pysurfer.py
 </code></p>
 
-<p><strong>DONE</strong></p>
-
-<h3 id="figure-7">Figure 7</h3>
+<h3 id="figure-7-done">Figure 7 (DONE)</h3>
 
 <p>For the mean connectivity regression, I would use the same transformation as redone with Figure 3. I do need to redo the transformation for Figure 7.</p>
 
@@ -402,9 +394,7 @@ cd /home2/data/Projects/CWAS/share/figures/fig_04
 <h1 id="row-3-already-run-fig-3">Row 3: Already Run (Fig 3)</h1>
 <p>```</p>
 
-<p><strong>DONE</strong></p>
-
-<h3 id="figure-8">Figure 8</h3>
+<h3 id="figure-8-done">Figure 8 (DONE)</h3>
 
 <p>The relevant scripts to generate the plots are in <code>/home2/data/Projects/CWAS/share/figures/fig_05</code> and <code>/home2/data/Projects/CWAS/share/results/40_mdmr_glm</code> (although I’m not too sure how the second folder is relevant).</p>
 
@@ -414,11 +404,11 @@ cd /home2/data/Projects/CWAS/share/figures/fig_05
 ./B_surface_glm_vs_mdmr_top_percentiles.py
 </code></p>
 
-<p><strong>I NEED TO RUN THE ABOVE IN XTERM</strong></p>
-
-<h3 id="figure-9">Figure 9</h3>
+<h3 id="figure-9-done">Figure 9 (DONE)</h3>
 
 <p>The relevant analytic and plotting scripts are located in <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise</code> and <code>/home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2</code>. There’s actually not much analysis, just compiling the data together.</p>
+
+<p>Note that I will need to also redo the statistics on this graph comparing the different ROI groups within each scan.</p>
 
 <h4 id="scan-1">Scan 1</h4>
 
@@ -427,7 +417,7 @@ cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise
 ./10_calc_peaks.bash
 ./20_select_rois.R
 ./30_sca.R
-./40_plot.R # TODO in XTERM
+./40_plot.R
 </code></p>
 
 <h4 id="scan-2">Scan 2</h4>
@@ -437,10 +427,14 @@ cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2
 ./10_calc_peaks.bash
 ./20_select_rois.R
 ./30_sca.R
-./40_plot.R # TODO in XTERM
+./40_plot.R
 </code></p>
 
-<h3 id="figure-10">Figure 10</h3>
+<h4 id="outputs">Outputs</h4>
+
+<p>The images for both scans should be in <code>figures/fig_06</code>.</p>
+
+<h3 id="figure-10-redo">Figure 10 (REDO)</h3>
 
 <p>This figure covers CWAS for three different datasets.</p>
 
@@ -491,18 +485,30 @@ cd /home2/data/Projects/CWAS/share/figures/fig_07
 ./B2_cropify.py
 </code></p>
 
-<h3 id="figure-11">Figure 11</h3>
+<h3 id="figure-11-done">Figure 11 (DONE)</h3>
 
 <p>This requires redoing all the ROI-based MDMRs for the IQ analysis. Although this particular figure only shows one of the scans, might as well do both scans here as one of the supplementary figures will depend on it.</p>
 
 <p>Below are the commands that I ran. Note that the mdmr commands will also transform the previous distances.</p>
 
 <p><code>bash
+cd /home2/data/Projects/CWAS/share/nki/05_cwas
 ./30_mdmr_rois.bash short compcor 0
 ./34_mdmr_correct_rois.bash short compcor 0
 </code></p>
 
-<h3 id="figure-12">Figure 12</h3>
+<p>To plot the data in surface space, I need to run the following</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_roi_comparison
+./30_parcellations_pysurfer.py
+</code></p>
+
+<p>The results will be in <code>/home2/data/Projects/CWAS/figures/sfig_roi_comparison</code>.</p>
+
+<h3 id="figure-12-redo">Figure 12 (REDO)</h3>
+
+<p><strong>I need to redo the MDMR Analyses</strong></p>
 
 <p>Here, we’ll need to redo the 800 parcellations for the other 3 datasets. I should have the IQ results from Figure 11.</p>
 
@@ -512,11 +518,102 @@ cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
 ./02a_mdmr_rois.bash # this runs correction as well</p>
 
 <h1 id="adhd-1">ADHD</h1>
+<p>cd /home2/data/Projects/CWAS/share/adhd200_rerun/05_analysis
+./30_mdmr_combined_rois.bash compcor</p>
 
 <h1 id="ldopa-1">LDOPA</h1>
+<p>cd /home2/data/Projects/CWAS/share/ldopa/04_analysis
+./02a_mdmr_rois.bash
+```</p>
 
-<p>```</p>
+<p>To generate the images, do the following:</p>
 
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_roi_comparison
+./40_comparison_datasets_pysurfer.py
+</code></p>
+
+<p>Output can be found in <code>/home2/data/Projects/CWAS/figures/sfig_roi_comparison</code>.</p>
+
+<h3 id="supp-figure-1-done">Supp Figure 1 (DONE)</h3>
+
+<p>This one definitely needs redoing as it directly displays the distances.</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/nki/06_stability
+./14_stability_N104.R
+./24_zscore_N104.R
+</code></p>
+
+<p>Output can be found in <code>/home2/data/Projects/CWAS/nki/stability/N104_compcor_kvoxs_fwhm08_to_kvoxs_fwhm08</code>.</p>
+
+<p>To generate the plots run:</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/fig_02
+./A_pysurfer_cv_zscore.py
+./B_pysurfer_consistency_zscore.py
+./C_scatter_plot_cv_vs_consistency.R
+</code></p>
+
+<p>The output will be in <code>figures/fig_02</code>.</p>
+
+<h3 id="supp-figure-2-redo">Supp Figure 2 (REDO)</h3>
+
+<p><strong>REDO DUE TO OTHER 3 DATASETS</strong></p>
+
+<p>This figure shows each of the dataset results using the permutation-based correction.</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_permutation
+./A_iq_pysurfer_perms.py
+./B_others_pysurfer_perms.py
+</code></p>
+
+<p>Output can be found in <code>/home2/data/Projects/CWAS/figures/sfig_permutations</code>.</p>
+
+<h3 id="supp-figure-3-done">Supp Figure 3 (DONE)</h3>
+
+<p>Shows the mean connectivity for IQ dataset.</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/fig_04
+./B_cwas_global_pysurfer_easythresh.py
+</code></p>
+
+<p>Output can be found in <code>figures/fig_04</code>.</p>
+
+<h3 id="supp-figure-4-redo">Supp Figure 4 (REDO)</h3>
+
+<p>This compares preprocessing effects on CWAS for age looking at inclusion/exclusion of global and motion covariates.</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_dev_global
+./A_pysurfer_easythresh.py
+./x_comparison.R
+</code></p>
+
+<p>Output is in <code>figures/sfig_dev_motion_global</code>.</p>
+
+<h3 id="supp-figure-5-redo">Supp Figure 5 (REDO)</h3>
+
+<p>This directly examines the effect of motion across different global correction strategies.</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_motion
+./A_pysurfer_easythresh.py
+</code></p>
+
+<h3 id="supp-figure-6-done">Supp Figure 6 (DONE)</h3>
+
+<p>Last one that varies the number of parcellations and examines the effect of parcellation set on 3 different measures.</p>
+
+<p><code>bash
+cd /home2/data/Projects/CWAS/share/figures/sfig_roi_comparison
+./10_plot_parcel_metrics.R
+</code></p>
+
+<p>Output is in <code>figures/sfig_roi_comparison</code>.</p>
 <div class="footnotes">
   <ol>
     <li id="fn:1">
@@ -538,7 +635,23 @@ cd /home2/data/Projects/CWAS/share/development+motion/04_analysis
 
 <p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
 
-<p><strong>RUNNING ON 11/16/13 at 7:20pm</strong></p>
+<p><strong>DONE</strong></p>
+
+<p>Now we want to represent a few aspects of the data. The easiest approach here is for us to plot the correlation and dice values comparing the different subsamples. This could help show how reproducible the different bootstrap samples are for our data. We can also further visualize this with surface maps of two of the samples with a median dice coefficient. In summary, todo:</p>
+
+<ul>
+  <li>Histogram of percent significant results (just for reference)</li>
+  <li>Correlate and dice</li>
+  <li>Plot two samples on brain</li>
+</ul>
+
+<h2 id="code-to-plot">Code to Plot</h2>
+
+<p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
+
+<p>The relevant scripts to plot are in <code>/home2/data/Projects/CWAS/share/figures/sfig_bootstrap</code> with output directed to <code>/home2/data/Projects/CWAS/figures/sfig_bootstrap</code>.</p>
+
+<hr />
 
 <h1 id="bootstrap-with-replication">Bootstrap with Replication</h1>
 

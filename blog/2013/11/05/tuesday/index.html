@@ -18,90 +18,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/05/tuesday">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/05/tuesday/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-<script src="/javascripts/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script src="/javascripts/jquery.tableofcontents.min.js" type="text/javascript"></script>
-<script src="/javascripts/generate-toc.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-  // Revert jQuery's '$' alias, to avoid clashes with ender.js. NOTE: Use
-  // jQuery(...), instead of $(...) from here on.
-  jQuery.noConflict();
-</script>
-
-	<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
-<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
-
-<script language="Javascript" type="text/javascript">
-$(document).ready(
-  function() {
-    (function($) {
-      $(".fancybox[data-content-id]").each(function() {
-        this.href = $(this).data('content-id');
-      });
-      $(".fancybox").fancybox({
-        beforeLoad: function() {
-          var el, 
-              id = $(this.element).data('title-id');
-
-          if (id) {
-            el = $('#' + id);
-
-            if (el.length) {
-              this.title = el.html();
-            }
-          }
-          if ($(this).data('content')) {
-            this.content = $(this).data('content');
-          }
-        },
-        helpers: {
-          title: {
-            type: 'inside'
-          }
-        }
-      });
-    })(jQuery);
-  }
-);
-</script>
 
   
 
 </head>
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 <body   >
   <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">mob</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
   <h1><a href="/">Zarrar's Journaling</a></h1>
   
     <h2>To the edge and beyond</h2>
   
+  <div class="clear"></div>
 </hgroup>
 
 </header>
@@ -130,7 +75,9 @@ MathJax.Hub.Config({
   
   <header>
     
-      <h1 class="entry-title">Tuesday</h1>
+      
+        <h1 class="entry-title">Tuesday</h1>
+      
     
     
       <p class="meta">
@@ -275,7 +222,7 @@ https://github.com/garydoranjr/misvm</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/05/tuesday/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/05/tuesday/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/05/tuesday/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/05/tuesday/" >Tweet</a>
   
   
   
@@ -284,10 +231,10 @@ https://github.com/garydoranjr/misvm</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/11/04/bootstrap-of-iq-cwas/" title="Previous Post: Bootstrap of IQ CWAS">&laquo; Bootstrap of IQ CWAS</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/04/bootstrap-of-iq-cwas/" title="Previous Post: Bootstrap of IQ CWAS">&laquo; Bootstrap of IQ CWAS</a>
       
       
-        <a class="basic-alignment right" href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/" title="Next Post: Rerunning CWAS using Transformed Correlations">Rerunning CWAS using Transformed Correlations &raquo;</a>
+        <a class="basic-alignment right articlenav" href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/" title="Next Post: Rerunning CWAS using Transformed Correlations">Rerunning CWAS using Transformed Correlations &raquo;</a>
       
     </p>
   </footer>
@@ -304,6 +251,81 @@ https://github.com/garydoranjr/misvm</p>
   <h1>Tag Cloud</h1>
     <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 117.14285714285714%'>cpac(2)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 142.85714285714286%'>quickpack(5)</a> </span>
 </section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/12/abide-sge-debug/">ABIDE SGE Debug</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:czarrar">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "czarrar"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
 <!--
     Calendar aside/plugin for octopress blogging framework.
     Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
@@ -476,65 +498,6 @@ $(document).ready(function(){
   loadCalendar();
 });
 </script>
-<section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/12/abide-sge-debug/">ABIDE SGE Debug</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'czarrar',
-            count: 5,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-
-
 
   
 </aside>
@@ -561,21 +524,12 @@ $(document).ready(function(){
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
 
 
-
-
-
-  <script type="text/javascript">
-  jQuery(document).ready(function() {
-    // Put a TOC right before the entry content.
-    generateTOC('.entry-content', 'Table of Contents');
-  });
-  </script>
 
 
 
