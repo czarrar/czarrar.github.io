@@ -4,7 +4,7 @@
   <title><![CDATA[Category: quickpack | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/quickpack/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-17T22:44:56-05:00</updated>
+  <updated>2013-11-21T11:21:55-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -14,13 +14,121 @@
 
   
   <entry>
+    <title type="html"><![CDATA[More Quick Pack Testing]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/18/more-quick-pack-testing/"/>
+    <updated>2013-11-18T14:01:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/18/more-quick-pack-testing</id>
+    <content type="html"><![CDATA[<h2 id="changing-generation-of-yaml-file">Changing generation of yaml file</h2>
+
+<p>I first worked on correcting the generation of the yml file with the file paths to the intermediate CPAC outputs from another run. I had to move away from using the symlinks folder to the sink folder due to errors in the symlinks folder. This might have also been a good move since hopefully it will make it easier for me to generate a quick pack file for Pierre and Xinian’s data.</p>
+
+<p>Here is the new function that will build the file path to the intermediate files:</p>
+
+<p>``` python
+def build_file_path(init_dir, path_suffixes, templ):
+    # Iterate through path suffixes, only keeping paths that exist
+    if not isinstance(path_suffixes, list):
+        path_suffixes = [path_suffixes]
+    file_path = []
+    for path_suffix in path_suffixes:
+        file_path = file_path + glob(op.join(init_dir, path_suffix % templ))</p>
+
+<pre><code>if len(file_path) &gt; 1:
+    print "WARNING: Currently only one file for '%s' is supported" % file_path
+    print "Choosing first one '%s'" % file_path[0]
+    file_path = file_path[0]
+elif len(file_path) == 0:
+    file_path = ""
+else:
+    file_path = file_path[0]
+return file_path ```
+</code></pre>
+
+<h3 id="sample-yaml-output">Sample Yaml Output</h3>
+
+<p>There’s a bunch of other code that I can get into later but here’s some output from one pipeline and strategy. This is from simply running <code>gen_quick_pack.py</code> in the <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_quick_pack</code> folder.</p>
+
+<p><code>
+- anat: /data/Projects/ABIDE_Initiative/CPAC/RawData/Caltech/0051466/session_1/anat_1/mprage.nii.gz
+  anatomical_brain: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/anatomical_brain/mprage_RPI_3dc.nii.gz
+  anatomical_reorient: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/anatomical_reorient/mprage_RPI.nii.gz
+  anatomical_to_mni_nonlinear_xfm: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/anatomical_to_mni_nonlinear_xfm/ants_Warp.nii.gz
+  ants_affine_xfm: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/ants_affine_xfm/ants_Affine.txt
+  functional_brain_mask: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz}
+  functional_brain_mask_to_standard: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_brain_mask_to_standard/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask_wimt.nii.gz}
+  functional_freq_filtered: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_nuisance_residuals/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/residual.nii.gz}
+  functional_mni: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_mni/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/residual_wtsimt.nii.gz}
+  functional_nuisance_residuals: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_nuisance_residuals/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/residual.nii.gz}
+  functional_to_anat_linear_xfm: {rest_1_rest: ''}
+  mean_functional: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/mean_functional/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_3dc_3dT.nii.gz}
+  mni_normalized_anatomical: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/mni_normalized_anatomical/ants_deformed.nii.gz
+  preprocessed: {rest_1_rest: /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/preprocessed/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_3dc_maths.nii.gz}
+  rest: {rest_1_rest: /data/Projects/ABIDE_Initiative/CPAC/RawData/Caltech/0051466/session_1/rest_1/rest.nii.gz}
+  scan_parameters: {acquisition: alt+z, first_tr: '0', last_tr: None, reference: '17',
+    tr: '2'}
+  subject_id: '0051466'
+  unique_id: session_1
+</code></p>
+
+<h2 id="first-wave-of-testing-using-alff">First Wave of Testing using ALFF</h2>
+
+<p>Now I am trying to test the running of CPAC for the various derivatives using the quick pack generated files like that above. I run quick pack using the following command <code>run_quick_pack.py</code>. I ran the quick pack using inputs where there was no filtering but there was global signal correction.</p>
+
+<p><strong>nofilt_global</strong></p>
+
+<h3 id="first-run">First Run</h3>
+
+<p>I did get an error that ended up being a missing path for <code>functional_to_anat_linear_xfm.mat</code>. I added a warning to deal with a future empty path. I also fixed the path.</p>
+
+<h3 id="second-run">Second Run</h3>
+
+<p>Trying my hand again, it ran smoothly! Woot woot. But wait.</p>
+
+<h3 id="third-run">Third Run</h3>
+
+<p>Ok this time it should be good. I noticed one mistake where for my paths I had inverted global and no global correction. Quick redo and stuff again appears to have run smoothly.</p>
+
+<h3 id="testing">Testing</h3>
+
+<p>I will run the following file in R <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack/compare_10_alff.R</code>.</p>
+
+<p>This was all good.</p>
+
+<h2 id="other-tests">Other Tests</h2>
+
+<p>The tests for all the other derivatives were all good. So we are good to move forward.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>This isn’t really meant for this section but the next items for ABIDE and QuickPack are</p>
+
+<ul>
+  <li>Fix QC Pages</li>
+  <li>Check QC output from Yang</li>
+  <li>
+    <p>Do the QC</p>
+  </li>
+  <li>
+    <p>Look at the centrality code and make more efficient if possible</p>
+  </li>
+  <li>Copy the other data into a new directory</li>
+  <li>Create new generate quick pack scripts for the new data</li>
+</ul>
+
+<h2 id="confirming-input-to-centrality">Confirming input to centrality</h2>
+
+<p>Also should be moved to a different page. But I have confirmed that the centrality node uses the functional data from standard space and at the very least the 4D functional data must be in the same space as the prior mask.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Testing Quick Pack]]></title>
     <link href="http://czarrar.github.io/blog/2013/11/15/testing-quick-pack/"/>
     <updated>2013-11-15T15:41:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/15/testing-quick-pack</id>
     <content type="html"><![CDATA[<p>Today, I want to test my different quick pack results with the combined preprocessing + derivates run.</p>
 
-<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_qp</code>.</p>
+<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_quick_pack</code>.</p>
 
 <p>The files for testing the outputs are in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack</code>.</p>
 
@@ -390,104 +498,6 @@ AttributeError: 'NoneType' object has no attribute 'name'
 	[x] Try to figure out why the old runs did fine?
 	[] Using the new complete run as input for QP
 </code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Another Quick Pack Journey]]></title>
-    <link href="http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey/"/>
-    <updated>2013-10-30T15:55:00-04:00</updated>
-    <id>http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey</id>
-    <content type="html"><![CDATA[<p>Today, I’ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for </p>
-
-<p>Some minor things, I helped Krishna with some ROI error he had in CPAC. It turned out that his issue was due to incorrectly binarizing the mask.</p>
-
-<h1 id="quickpack">QuickPack</h1>
-
-<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn’t track. I am re-running the complete run to see what errors I get again and try to figure those out. I’m also rerunning the alff to see what happens there.</p>
-
-<h2 id="complete-run">Complete Run</h2>
-
-<p>This appears to be re-running smoothly (knock on wood). The last time I ran a complete (preprocessing + derivatives) run, it led to some unclear problems.</p>
-
-<h2 id="alff-qp">ALFF QP</h2>
-
-<p>I get the same link error as I did before. The error occurs on line 562 in <code>utils.py</code> within the <code>create_symbolic_links</code>. The line and error are</p>
-
-<pre><code>ext = fname.split('.', 1)[1]
-IndexError: list index out of range
-</code></pre>
-
-<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don’t have much sense about what is going on with this file.</p>
-
-<p>Other bits of information:</p>
-
-<ul>
-  <li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
-z</code>.</li>
-  <li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
-</ul>
-
-<h3 id="steve-talk">Steve Talk</h3>
-
-<p>I discussed this issue with Steve and it seems I will need to get down and dirty with nipype to understand the origin of this problem.</p>
-
-<h2 id="reho-qp">REHO QP</h2>
-
-<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link<em>16 it is link</em>5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
-
-<p>A snapshot of the error is given below:</p>
-
-<pre><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
-
-/home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
-     37     except KeyError:
-     38         raise ImageFileError('Cannot work out file type of "%s"' %
----&gt; 39                              filename)
-     40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
-     41         klass = class_map[img_type]['class']
-
-ImageFileError: Cannot work out file type of ""
-Interface Function failed to run. 
-</code></pre>
-
-<p>To run the crash file, see the code below.</p>
-
-<p>``` python
-import sys
-sys.path.insert(0, ‘/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages’)
-sys.path.insert(1, “/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC”)
-import CPAC
-import CPAC.reho.utils
-from nipype.utils.filemanip import loadflat</p>
-
-<p>crashinfo = loadflat(“/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz”)
-crashinfo[‘node’].run()
-```</p>
-
-<h1 id="preprocessing-emotionalbs">Preprocessing EmotionalBS</h1>
-
-<p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
-
-<ul>
-  <li>Used ANTS for registration</li>
-  <li>Two nuisance correction strategies
-      * compcor+motion+linear+quadratic
-      * compcor+global+motion+linear+quadratic</li>
-  <li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
-  <li>Smoothing of 4.5mm (only for derivatives)</li>
-  <li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
-</ul>
-
-<h2 id="install-fsl-5-for-gelert">Install FSL 5 for Gelert</h2>
-
-<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike’s account didn’t have. And even if I had those, it wasn’t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so </p>
-
-<h1 id="new-journal">New Journal</h1>
-
-<p>I also worked on setting up this blog/journal with github user account. The goal is to chronicle my work efforts with particular thought on any issues I encounter. A major side benefit will be easier communication with others in the lab (e.g., was able to easily show the error for ALFF quick pack to Steve). Previously, I had been using different journal pages for each of my projects. I ended up being a big confused where to post stuff and often lost track of the markdown pages that I had created before they were published. With one journal site, this should all be easier.</p>
-
-<p>I’m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
 ]]></content>
   </entry>
   

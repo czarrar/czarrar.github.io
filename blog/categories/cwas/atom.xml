@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-17T22:44:56-05:00</updated>
+  <updated>2013-11-21T11:21:55-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -434,7 +434,7 @@ cd /home2/data/Projects/CWAS/share/nki/08_sca_voxelwise_scan2
 
 <p>The images for both scans should be in <code>figures/fig_06</code>.</p>
 
-<h3 id="figure-10-redo">Figure 10 (REDO)</h3>
+<h3 id="figure-10-done">Figure 10 (DONE)</h3>
 
 <p>This figure covers CWAS for three different datasets.</p>
 
@@ -485,6 +485,8 @@ cd /home2/data/Projects/CWAS/share/figures/fig_07
 ./B2_cropify.py
 </code></p>
 
+<p>The output goes to <code>figures/fig_07</code>.</p>
+
 <h3 id="figure-11-done">Figure 11 (DONE)</h3>
 
 <p>This requires redoing all the ROI-based MDMRs for the IQ analysis. Although this particular figure only shows one of the scans, might as well do both scans here as one of the supplementary figures will depend on it.</p>
@@ -506,7 +508,7 @@ cd /home2/data/Projects/CWAS/share/figures/sfig_roi_comparison
 
 <p>The results will be in <code>/home2/data/Projects/CWAS/figures/sfig_roi_comparison</code>.</p>
 
-<h3 id="figure-12-redo">Figure 12 (REDO)</h3>
+<h3 id="figure-12-done">Figure 12 (DONE)</h3>
 
 <p><strong>I need to redo the MDMR Analyses</strong></p>
 
@@ -558,7 +560,7 @@ cd /home2/data/Projects/CWAS/share/figures/fig_02
 
 <p>The output will be in <code>figures/fig_02</code>.</p>
 
-<h3 id="supp-figure-2-redo">Supp Figure 2 (REDO)</h3>
+<h3 id="supp-figure-2-done">Supp Figure 2 (DONE)</h3>
 
 <p><strong>REDO DUE TO OTHER 3 DATASETS</strong></p>
 
@@ -583,7 +585,7 @@ cd /home2/data/Projects/CWAS/share/figures/fig_04
 
 <p>Output can be found in <code>figures/fig_04</code>.</p>
 
-<h3 id="supp-figure-4-redo">Supp Figure 4 (REDO)</h3>
+<h3 id="supp-figure-4-done">Supp Figure 4 (DONE)</h3>
 
 <p>This compares preprocessing effects on CWAS for age looking at inclusion/exclusion of global and motion covariates.</p>
 
@@ -595,7 +597,7 @@ cd /home2/data/Projects/CWAS/share/figures/sfig_dev_global
 
 <p>Output is in <code>figures/sfig_dev_motion_global</code>.</p>
 
-<h3 id="supp-figure-5-redo">Supp Figure 5 (REDO)</h3>
+<h3 id="supp-figure-5-done">Supp Figure 5 (DONE)</h3>
 
 <p>This directly examines the effect of motion across different global correction strategies.</p>
 
@@ -603,6 +605,8 @@ cd /home2/data/Projects/CWAS/share/figures/sfig_dev_global
 cd /home2/data/Projects/CWAS/share/figures/sfig_motion
 ./A_pysurfer_easythresh.py
 </code></p>
+
+<p>Output is in <code>figures/sfig_motion</code>.</p>
 
 <h3 id="supp-figure-6-done">Supp Figure 6 (DONE)</h3>
 

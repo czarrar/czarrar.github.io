@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-17T22:44:56-05:00</updated>
+  <updated>2013-11-21T11:21:55-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -14,13 +14,343 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Wednesday - Week 47]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/20/wednesday-week-47/"/>
+    <updated>2013-11-20T12:01:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/20/wednesday-week-47</id>
+    <content type="html"><![CDATA[<h2 id="todo">TODO</h2>
+
+<h3 id="centrality">Centrality</h3>
+
+<ul>
+  <li>xx Look to using 4mm grey-matter mask</li>
+  <li>xx Run speed test on new analysis</li>
+  <li></li>
+</ul>
+
+<h2 id="centrality-1">Centrality</h2>
+
+<p>There a few issues related to needing to changing the inputs to the centrality nipype node. Those where straightforward.</p>
+
+<p>Now I’m having some weird bug where the centrality outputs are not being saved. Trying to debug at the <code>map_centrality_matrix</code> function. Ended up being a simple typo and returning the template_type instead of centrality file outputs from the <code>calc_centrality</code> command.</p>
+
+<p>I ran a comparison with AFNI’s 3dTcorrMap. When looking at the binarized result, almost all the voxels were the same except 8 in this particular case. I have tried doing centrality manually for those 8 voxels and keep getting the values from CPAC, which are 1 higher than the values from AFNI. I tried different correlation approaches as well as removing any voxel’s with constant time-series. However, since the difference is so small (only 1 for the binarized results) and there are so few voxels involved (8/19+k), I’m leaving it right now as a to be continued.</p>
+
+<p>I ‘ve also changed the way the correlations are calculated. Now the time-series will all be first normalized and then a dot product will be computed. This is in contrast, to doing both steps all at once for each block that the correlation is computed. So this will be a much greater speed boon when there are many blocks. In a small speed comparison using the normalization approach leads to a 2x improvement in speed.</p>
+
+<p>Although the setting of the block size does seem off, I will leave it for now. The actual amount of RAM being used is less than the amount </p>
+
+<blockquote>
+  <p>There were initially a lot more differences but a small change in the code to correct for auto-correlations in centrality took care of that issue.</p>
+</blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Tuesday - Week 47]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/19/tuesday-week-47/"/>
+    <updated>2013-11-19T10:53:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/19/tuesday-week-47</id>
+    <content type="html"><![CDATA[<h2 id="todo">TODO</h2>
+
+<h3 id="qc">QC</h3>
+
+<ul>
+  <li>Fix QC Pages</li>
+  <li>Check QC output from Yang</li>
+  <li>Do the QC</li>
+</ul>
+
+<h3 id="centrality-doneish">Centrality (<strong>DONEISH</strong>)</h3>
+
+<ul>
+  <li>Look at centrality code and diagnose possible improvements in efficiency</li>
+  <li>Write up a bit on possible code changes</li>
+  <li>Implement possible changes</li>
+</ul>
+
+<h3 id="abide-other-processing">ABIDE Other Processing</h3>
+
+<ul>
+  <li><strong>DONE</strong> Copy the other data into a new directory</li>
+  <li>Create new generate quick pack scripts for the new data</li>
+  <li>Talk to Chao-Gan about details of his results (ask him what the </li>
+</ul>
+
+<p>high reproducibility doesn’t necessary correlate with prediction value.</p>
+
+<h2 id="centrality">Centrality</h2>
+
+<h3 id="basics">Basics</h3>
+
+<p>I want to first iron out some general questions:</p>
+
+<ul>
+  <li>What data is used by centrality? And what space is it in?</li>
+  <li>How is the smoothing done?</li>
+</ul>
+
+<p>These steps can be seen in <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/pipeline/cpac_pipeline.py"><code>pipeline/cpac_pipeline.py</code></a>.</p>
+
+<h4 id="dataspace">Data/Space</h4>
+
+<p>First, we find that the 4D functional data in standard space is used as an input as can be seen on line 3212:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_mni&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>But it will resample that output in order to match the mask template based on some of the following lines:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">resample_functional_to_template</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">fsl</span><span class="o">.</span><span class="n">FLIRT</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;resample_functional_to_template_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
+</span><span class="line"><span class="c"># …</span>
+</span><span class="line"><span class="n">template_dataflow</span> <span class="o">=</span> <span class="n">create_mask_dataflow</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">templateSpecificationFile</span><span class="p">,</span> <span class="s">&#39;template_dataflow_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
+</span><span class="line"><span class="c"># …</span>
+</span><span class="line">
+</span><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_mni&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="c"># resample the input functional file to template(roi/mask)</span>
+</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                 <span class="n">resample_functional_to_template</span><span class="p">,</span> <span class="s">&#39;in_file&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">template_dataflow</span><span class="p">,</span> <span class="s">&#39;outputspec.out_file&#39;</span><span class="p">,</span>
+</span><span class="line">                 <span class="n">resample_functional_to_template</span><span class="p">,</span> <span class="s">&#39;reference&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So the space is actually whatever your mask template is in.</p>
+
+<h4 id="smoothing">Smoothing</h4>
+
+<p>If smoothing is required, then it is applied to the centrality outputs from the prior step.</p>
+
+<h3 id="centrality-workflow">Centrality Workflow</h3>
+
+<p>Let’s figure out what’s going on with the centrality workflow located principally in <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/network_centrality/resting_state_centrality.py"><code>network_centrality/resting_state_centrality.py</code></a>. The initial documentation is pretty good.</p>
+
+<h3 id="load">Load</h3>
+
+<p>It loads all the data as 32bit float so memory demands are decreased relative to float 64bit. While loading the data, it appears to save the masked functional time-series data as npy files. It’s not totally clear why this is needed by default. Furthermore, these 32bit files are later </p>
+
+<h3 id="calculate-centrality">Calculate Centrality</h3>
+
+<p>There are actually two functions for this step: <code>get_centrality</code> and <code>get_centrality_opt</code>. The first function saves the correlation matrix while the second function only saves for eigenvector centrality. In both approaches, I should check the correlation calculation and also how the block (to reduce memory) is implemented. It seems like the first function is called when there is need for a sparsity threshold and no memory limit is set.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">n2gb</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line"><span class="n">ntpts</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line"><span class="c">#</span>
+</span><span class="line"><span class="n">mem_func</span> <span class="o">=</span> <span class="n">n2gb</span><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="n">ntpts</span><span class="p">)</span>
+</span><span class="line"><span class="n">mem_result</span> <span class="o">=</span> <span class="n">n2gb</span><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line"><span class="n">mem_cormaps</span> <span class="o">=</span> <span class="n">n2gb</span><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line"><span class="c">#</span>
+</span><span class="line"><span class="c"># mem_limit = mem_func + mem_result + b*mem_cormaps</span>
+</span><span class="line"><span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">mem_limit</span> <span class="o">-</span> <span class="n">mem_func</span> <span class="o">-</span> <span class="n">mem_result</span><span class="p">)</span><span class="o">/</span><span class="n">mem_cormaps</span>
+</span><span class="line"><span class="c">#</span>
+</span><span class="line"><span class="k">return</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="cpac-centrality---code-changes">CPAC Centrality - Code Changes</h2>
+
+<p>Ok so let’s reorient. What do I want to do.</p>
+
+<ul>
+  <li>I want to do away with the step of saving an intermediate functional file. </li>
+  <li>I want to improve the calculation of the memory limit (I think they are being overly conservative before)</li>
+  <li>I want to change how the correlation is calculated</li>
+</ul>
+
+<h3 id="remove-saving-of-functionals">Remove saving of functionals</h3>
+
+<h2 id="opening-writedown-easy">Opening WriteDown Easy</h2>
+
+<p>I figured out that I’m slow and can actually open markdown files into WriteRoom from the command-line. For example:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">open -a WriteDown <span class="nb">source</span>/_posts/2013-11-19-tuesday-week-47.markdown
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I made this even easier with a simple bash script so I can call the above command with</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">writedown <span class="nb">source</span>/_posts/2013-11-19-tuesday-week-47.markdown
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Thanks to the following link http://stackoverflow.com/questions/1308755/launch-an-app-on-os-x-with-command-line.</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[More Quick Pack Testing]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/18/more-quick-pack-testing/"/>
+    <updated>2013-11-18T14:01:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/18/more-quick-pack-testing</id>
+    <content type="html"><![CDATA[<h2 id="changing-generation-of-yaml-file">Changing generation of yaml file</h2>
+
+<p>I first worked on correcting the generation of the yml file with the file paths to the intermediate CPAC outputs from another run. I had to move away from using the symlinks folder to the sink folder due to errors in the symlinks folder. This might have also been a good move since hopefully it will make it easier for me to generate a quick pack file for Pierre and Xinian’s data.</p>
+
+<p>Here is the new function that will build the file path to the intermediate files:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">build_file_path</span><span class="p">(</span><span class="n">init_dir</span><span class="p">,</span> <span class="n">path_suffixes</span><span class="p">,</span> <span class="n">templ</span><span class="p">):</span>
+</span><span class="line">    <span class="c"># Iterate through path suffixes, only keeping paths that exist</span>
+</span><span class="line">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_suffixes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+</span><span class="line">        <span class="n">path_suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="n">path_suffixes</span><span class="p">]</span>
+</span><span class="line">    <span class="n">file_path</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">path_suffix</span> <span class="ow">in</span> <span class="n">path_suffixes</span><span class="p">:</span>
+</span><span class="line">        <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span> <span class="o">+</span> <span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">init_dir</span><span class="p">,</span> <span class="n">path_suffix</span> <span class="o">%</span> <span class="n">templ</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class="line">        <span class="k">print</span> <span class="s">&quot;WARNING: Currently only one file for &#39;</span><span class="si">%s</span><span class="s">&#39; is supported&quot;</span> <span class="o">%</span> <span class="n">file_path</span>
+</span><span class="line">        <span class="k">print</span> <span class="s">&quot;Choosing first one &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line">        <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line">    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class="line">        <span class="n">file_path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class="line">    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">        <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">file_path</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="sample-yaml-output">Sample Yaml Output</h3>
+
+<p>There’s a bunch of other code that I can get into later but here’s some output from one pipeline and strategy. This is from simply running <code>gen_quick_pack.py</code> in the <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_quick_pack</code> folder.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">-</span> <span class="n">anat</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">RawData</span><span class="o">/</span><span class="n">Caltech</span><span class="o">/</span><span class="mo">0051466</span><span class="o">/</span><span class="n">session_1</span><span class="o">/</span><span class="n">anat_1</span><span class="o">/</span><span class="n">mprage</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+</span><span class="line">  <span class="n">anatomical_brain</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">anatomical_brain</span><span class="o">/</span><span class="n">mprage_RPI_3dc</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+</span><span class="line">  <span class="n">anatomical_reorient</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">anatomical_reorient</span><span class="o">/</span><span class="n">mprage_RPI</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+</span><span class="line">  <span class="n">anatomical_to_mni_nonlinear_xfm</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">anatomical_to_mni_nonlinear_xfm</span><span class="o">/</span><span class="n">ants_Warp</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+</span><span class="line">  <span class="n">ants_affine_xfm</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">ants_affine_xfm</span><span class="o">/</span><span class="n">ants_Affine</span><span class="o">.</span><span class="n">txt</span>
+</span><span class="line">  <span class="n">functional_brain_mask</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">functional_brain_mask</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">rest_3dc_tshift_RPI_3dv_automask</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">functional_brain_mask_to_standard</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">functional_brain_mask_to_standard</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">rest_3dc_tshift_RPI_3dv_automask_wimt</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">functional_freq_filtered</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">functional_nuisance_residuals</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">_csf_threshold_0</span><span class="o">.</span><span class="mi">96</span><span class="o">/</span><span class="n">_gm_threshold_0</span><span class="o">.</span><span class="mi">7</span><span class="o">/</span><span class="n">_wm_threshold_0</span><span class="o">.</span><span class="mi">96</span><span class="o">/</span><span class="n">_compcor_ncomponents_5_selector_pc10</span><span class="o">.</span><span class="n">linear1</span><span class="o">.</span><span class="n">wm0</span><span class="o">.</span><span class="n">global0</span><span class="o">.</span><span class="n">motion1</span><span class="o">.</span><span class="n">quadratic1</span><span class="o">.</span><span class="n">gm0</span><span class="o">.</span><span class="n">compcor1</span><span class="o">.</span><span class="n">csf0</span><span class="o">/</span><span class="n">residual</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">functional_mni</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">functional_mni</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">_csf_threshold_0</span><span class="o">.</span><span class="mi">96</span><span class="o">/</span><span class="n">_gm_threshold_0</span><span class="o">.</span><span class="mi">7</span><span class="o">/</span><span class="n">_wm_threshold_0</span><span class="o">.</span><span class="mi">96</span><span class="o">/</span><span class="n">_compcor_ncomponents_5_selector_pc10</span><span class="o">.</span><span class="n">linear1</span><span class="o">.</span><span class="n">wm0</span><span class="o">.</span><span class="n">global0</span><span class="o">.</span><span class="n">motion1</span><span class="o">.</span><span class="n">quadratic1</span><span class="o">.</span><span class="n">gm0</span><span class="o">.</span><span class="n">compcor1</span><span class="o">.</span><span class="n">csf0</span><span class="o">/</span><span class="n">residual_wtsimt</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">functional_nuisance_residuals</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">functional_nuisance_residuals</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">_csf_threshold_0</span><span class="o">.</span><span class="mi">96</span><span class="o">/</span><span class="n">_gm_threshold_0</span><span class="o">.</span><span class="mi">7</span><span class="o">/</span><span class="n">_wm_threshold_0</span><span class="o">.</span><span class="mi">96</span><span class="o">/</span><span class="n">_compcor_ncomponents_5_selector_pc10</span><span class="o">.</span><span class="n">linear1</span><span class="o">.</span><span class="n">wm0</span><span class="o">.</span><span class="n">global0</span><span class="o">.</span><span class="n">motion1</span><span class="o">.</span><span class="n">quadratic1</span><span class="o">.</span><span class="n">gm0</span><span class="o">.</span><span class="n">compcor1</span><span class="o">.</span><span class="n">csf0</span><span class="o">/</span><span class="n">residual</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">functional_to_anat_linear_xfm</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">}</span>
+</span><span class="line">  <span class="n">mean_functional</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">mean_functional</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">rest_3dc_tshift_RPI_3dv_3dc_3dT</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">mni_normalized_anatomical</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">mni_normalized_anatomical</span><span class="o">/</span><span class="n">ants_deformed</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+</span><span class="line">  <span class="n">preprocessed</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">home2</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">test_qp</span><span class="o">/</span><span class="n">All_Output</span><span class="o">/</span><span class="n">pipeline_MerrittIsland</span><span class="o">/</span><span class="mo">0051466</span><span class="n">_session_1</span><span class="o">/</span><span class="n">preprocessed</span><span class="o">/</span><span class="n">_scan_rest_1_rest</span><span class="o">/</span><span class="n">rest_3dc_tshift_RPI_3dv_3dc_maths</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">rest</span><span class="p">:</span> <span class="p">{</span><span class="n">rest_1_rest</span><span class="p">:</span> <span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">ABIDE_Initiative</span><span class="o">/</span><span class="n">CPAC</span><span class="o">/</span><span class="n">RawData</span><span class="o">/</span><span class="n">Caltech</span><span class="o">/</span><span class="mo">0051466</span><span class="o">/</span><span class="n">session_1</span><span class="o">/</span><span class="n">rest_1</span><span class="o">/</span><span class="n">rest</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">}</span>
+</span><span class="line">  <span class="n">scan_parameters</span><span class="p">:</span> <span class="p">{</span><span class="n">acquisition</span><span class="p">:</span> <span class="n">alt</span><span class="o">+</span><span class="n">z</span><span class="p">,</span> <span class="n">first_tr</span><span class="p">:</span> <span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="n">last_tr</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="s">&#39;17&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="n">tr</span><span class="p">:</span> <span class="s">&#39;2&#39;</span><span class="p">}</span>
+</span><span class="line">  <span class="n">subject_id</span><span class="p">:</span> <span class="s">&#39;0051466&#39;</span>
+</span><span class="line">  <span class="n">unique_id</span><span class="p">:</span> <span class="n">session_1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="first-wave-of-testing-using-alff">First Wave of Testing using ALFF</h2>
+
+<p>Now I am trying to test the running of CPAC for the various derivatives using the quick pack generated files like that above. I run quick pack using the following command <code>run_quick_pack.py</code>. I ran the quick pack using inputs where there was no filtering but there was global signal correction.</p>
+
+<p><strong>nofilt_global</strong></p>
+
+<h3 id="first-run">First Run</h3>
+
+<p>I did get an error that ended up being a missing path for <code>functional_to_anat_linear_xfm.mat</code>. I added a warning to deal with a future empty path. I also fixed the path.</p>
+
+<h3 id="second-run">Second Run</h3>
+
+<p>Trying my hand again, it ran smoothly! Woot woot. But wait.</p>
+
+<h3 id="third-run">Third Run</h3>
+
+<p>Ok this time it should be good. I noticed one mistake where for my paths I had inverted global and no global correction. Quick redo and stuff again appears to have run smoothly.</p>
+
+<h3 id="testing">Testing</h3>
+
+<p>I will run the following file in R <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack/compare_10_alff.R</code>.</p>
+
+<p>This was all good.</p>
+
+<h2 id="other-tests">Other Tests</h2>
+
+<p>The tests for all the other derivatives were all good. So we are good to move forward.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>This isn’t really meant for this section but the next items for ABIDE and QuickPack are</p>
+
+<ul>
+  <li>Fix QC Pages</li>
+  <li>Check QC output from Yang</li>
+  <li>
+    <p>Do the QC</p>
+  </li>
+  <li>
+    <p>Look at the centrality code and make more efficient if possible</p>
+  </li>
+  <li>Copy the other data into a new directory</li>
+  <li>Create new generate quick pack scripts for the new data</li>
+</ul>
+
+<h2 id="confirming-input-to-centrality">Confirming input to centrality</h2>
+
+<p>Also should be moved to a different page. But I have confirmed that the centrality node uses the functional data from standard space and at the very least the 4D functional data must be in the same space as the prior mask.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Testing Quick Pack]]></title>
     <link href="http://czarrar.github.io/blog/2013/11/15/testing-quick-pack/"/>
     <updated>2013-11-15T15:41:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/15/testing-quick-pack</id>
     <content type="html"><![CDATA[<p>Today, I want to test my different quick pack results with the combined preprocessing + derivates run.</p>
 
-<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_qp</code>.</p>
+<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_quick_pack</code>.</p>
 
 <p>The files for testing the outputs are in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack</code>.</p>
 
@@ -1320,7 +1650,7 @@ Supplementary Figures</p>
 
 <p>The images for both scans should be in <code>figures/fig_06</code>.</p>
 
-<h3 id="figure-10-redo">Figure 10 (REDO)</h3>
+<h3 id="figure-10-done">Figure 10 (DONE)</h3>
 
 <p>This figure covers CWAS for three different datasets.</p>
 
@@ -1380,6 +1710,8 @@ Supplementary Figures</p>
 </span><span class="line">./B2_cropify.py
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>The output goes to <code>figures/fig_07</code>.</p>
+
 <h3 id="figure-11-done">Figure 11 (DONE)</h3>
 
 <p>This requires redoing all the ROI-based MDMRs for the IQ analysis. Although this particular figure only shows one of the scans, might as well do both scans here as one of the supplementary figures will depend on it.</p>
@@ -1404,7 +1736,7 @@ Supplementary Figures</p>
 
 <p>The results will be in <code>/home2/data/Projects/CWAS/figures/sfig_roi_comparison</code>.</p>
 
-<h3 id="figure-12-redo">Figure 12 (REDO)</h3>
+<h3 id="figure-12-done">Figure 12 (DONE)</h3>
 
 <p><strong>I need to redo the MDMR Analyses</strong></p>
 
@@ -1472,7 +1804,7 @@ Supplementary Figures</p>
 
 <p>The output will be in <code>figures/fig_02</code>.</p>
 
-<h3 id="supp-figure-2-redo">Supp Figure 2 (REDO)</h3>
+<h3 id="supp-figure-2-done">Supp Figure 2 (DONE)</h3>
 
 <p><strong>REDO DUE TO OTHER 3 DATASETS</strong></p>
 
@@ -1500,7 +1832,7 @@ Supplementary Figures</p>
 
 <p>Output can be found in <code>figures/fig_04</code>.</p>
 
-<h3 id="supp-figure-4-redo">Supp Figure 4 (REDO)</h3>
+<h3 id="supp-figure-4-done">Supp Figure 4 (DONE)</h3>
 
 <p>This compares preprocessing effects on CWAS for age looking at inclusion/exclusion of global and motion covariates.</p>
 
@@ -1514,7 +1846,7 @@ Supplementary Figures</p>
 
 <p>Output is in <code>figures/sfig_dev_motion_global</code>.</p>
 
-<h3 id="supp-figure-5-redo">Supp Figure 5 (REDO)</h3>
+<h3 id="supp-figure-5-done">Supp Figure 5 (DONE)</h3>
 
 <p>This directly examines the effect of motion across different global correction strategies.</p>
 
@@ -1523,6 +1855,8 @@ Supplementary Figures</p>
 </pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">cd</span> /home2/data/Projects/CWAS/share/figures/sfig_motion
 </span><span class="line">./A_pysurfer_easythresh.py
 </span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Output is in <code>figures/sfig_motion</code>.</p>
 
 <h3 id="supp-figure-6-done">Supp Figure 6 (DONE)</h3>
 
