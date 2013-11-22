@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="TODO Centrality xx Look to using 4mm grey-matter mask xx Run speed test on new analysis Centrality There a few issues related to needing to changing &hellip;">
+  <meta name="description" content="Today mostly revolved around memory profiling to work in python. Summary is as follows. Looked into memory profiling Had issues with memprof but got &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,96 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-21T11:34:00-05:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today mostly revolved around memory profiling to work in python. Summary is as follows.</p>
+
+<ul>
+  <li>Looked into memory profiling
+    <ul>
+      <li>Had issues with memprof but got heapy to work (links below).</li>
+      <li>Got memprof to work not through numpy</li>
+      <li>Also applied memory_profiler (a little bit more accurate and useful than memprof).</li>
+      <li>Finally also applied memtop (a wrapper around ps)</li>
+    </ul>
+  </li>
+  <li>Attended lab meeting</li>
+  <li>Discussion of ABIDE with Chao-Gan and then Cameron</li>
+</ul>
+
+<h2 id="memory-profiling">Memory Profiling</h2>
+
+<p>Want to examine the memory usage of centrality in CPAC.</p>
+
+<h3 id="choosing-a-package">Choosing a Package</h3>
+
+<p>There are several python packages available with an extensive list available on stackoverflow: http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended.</p>
+
+<p>Some that do not seem appropriate for our purposes:</p>
+
+<ul>
+  <li><a href="https://launchpad.net/meliae">Meliae</a>: No documentation.</li>
+  <li><a href="http://pythonhosted.org/Pympler/muppy.html">Muppy</a>: Not that useful.</li>
+</ul>
+
+<p>One particular issue that I’ll be dealing with are how well it will work with nipype.</p>
+
+<h3 id="path-issue">Path Issue</h3>
+
+<p>The first problem I faced was the memory profiling not being on the path. This wasn’t so obvious because in the interactive shell of python and python, the memory profiling packages that were recently installed were available. However, when running python (the same python) from the command-line, then it couldn’t find it. The fix was simply to add my python site-packages to the path. Should know in the future that the paths for the interactive vs command-line python can be different.</p>
+
+<h3 id="heapy">Heapy</h3>
+
+<p>So when I actually ran memprof, it ended up failing. I went through all the other packages and was able to get <a href="http://smira.ru/wp-content/uploads/2011/08/heapy.html">heapy</a> to work. The approach taken with heapy is to call an individual function to measure the memory usage, whereas the other approaches all use a decorator of some kind. It worked, but the RAM values all seemed a bit low and not very convenient to read, so I tried another approach.</p>
+
+<h3 id="memprof">Memprof</h3>
+
+<p>Now I’ll be looking at <a href="http://jmdana.github.io/memprof">Memprof</a>, recommended by Cameron and also on the <a href="http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended">stackoverflow page</a>. Since it won’t work with nipype, I manually ran the <code>calc_centrality</code> function. This approach gave me some memory read outs. However, because it doesn’t actually record the memory usage of a particular command (when all the correlations are calculated), the maximum memory is about 160 + 11 or 171MB in total. This is a lot lower than I calculated and much lower than what I saw in top, which maxed out at around 4GB.</p>
+
+<p>[add pics]</p>
+
+<h3 id="memory-profiler">Memory Profiler</h3>
+
+<p>The other approach <a href="https://pypi.python.org/pypi/memory_profiler">memory_profiler</a> was a bit more useful. It showed about 1.4gb being used at the peak (around the correlation calculation).</p>
+
+<h3 id="memtop">Memtop</h3>
+
+<p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1519,110 +1609,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/thursday-lib-cmi-nyu/">Thursday Lib Cmi Nyu</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T11:17:00-05:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="abide">ABIDE</h1>
-
-<p>On gelert, it has been over 2 days and it is now (morning of the 7th) on the 125th to 186th participant. However, it appears that there were many crashes for some participants.</p>
-
-<p>Below are some crash files that I tried. Ultimately, it appears that there is no space left on the device for /tmp. This likely implies that the working directory folder is not being removed when it should. Ugh.</p>
-
-<p>On rocky, the removal of the working directory works fine. I thought I had tried it for gelert too and found it was fine. I see a few possibilities.</p>
-
-<ol>
-  <li>Some error might occur as CPAC runs, which might lead it to skip removing the directory.</li>
-  <li>It doesn’t actually remove the directory when running through SGE (maybe because it is using a different function). Note that removal of the working directory occurs at the very end in the cpac runner run function.</li>
-  <li>There’s some issue with permissions and so a /tmp directory can be created but not removed. This can be easily tested.</li>
-</ol>
-
-<h2 id="sample-crash-file-a">Sample Crash File A</h2>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">os</span>
-</span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;/data/Projects/ABIDE_Initiative/CPAC/crash&#39;</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="kn">from</span> <span class="nn">nipype.utils.filemanip</span> <span class="kn">import</span> <span class="n">loadflat</span>
-</span><span class="line"><span class="n">crashfile</span> <span class="o">=</span> <span class="n">loadflat</span><span class="p">(</span><span class="s">&#39;crash-20131107-103920-qli-_apply_ants_3d_warp149.npz&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>This gives the following error</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TraitError</span><span class="p">:</span> <span class="n">Each</span> <span class="n">element</span> <span class="n">of</span> <span class="n">the</span> <span class="s">&#39;transformation_series&#39;</span> <span class="n">trait</span> <span class="n">of</span> <span class="n">a</span> <span class="n">WarpImageMultiTransformInputSpec</span> <span class="n">instance</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">existing</span> <span class="nb">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">but</span> <span class="n">a</span> <span class="n">value</span> <span class="n">of</span> <span class="s">&#39;/tmp/resting_preproc_00</span>
-</span><span class="line"><span class="mi">50699</span><span class="n">_session_1</span><span class="o">/</span><span class="n">anat_mni_ants_register_0</span><span class="o">/</span><span class="n">warp_brain</span><span class="o">/</span><span class="n">ants_Warp</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="s">&#39; &lt;type &#39;</span><span class="nb">str</span><span class="s">&#39;&gt; was specified.</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>It seems like a working directory file for this particular subject does not exist from this error. However, looking at the various functional/derivative outputs in subject’s folder that are in standard space, stuff appears the fine:</p>
-
-<ul>
-  <li>functional: <strong>good</strong></li>
-  <li>alff: <strong>good</strong></li>
-  <li>centrality: <strong>good</strong></li>
-  <li>reho: <strong>good</strong></li>
-  <li>sca_roi: Is there no standard space SCA map?</li>
-  <li>dr: Is there no standard space SCA map?</li>
-  <li>vmhc: <strong>good</strong></li>
-</ul>
-
-<p>I believe I might be missing some other relevant outputs.</p>
-
-<h2 id="sample-crash-file-b">Sample Crash File B</h2>
-
-<p>I get the following error for this crash file <code>crash-20131107-114514-qli-_network_centrality_smooth_10.npz</code>.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TraitError</span><span class="p">:</span> <span class="n">The</span> <span class="s">&#39;in_file&#39;</span> <span class="n">trait</span> <span class="n">of</span> <span class="n">a</span> <span class="n">MultiImageMathsInput</span> <span class="n">instance</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">existing</span> <span class="nb">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">but</span> <span class="n">a</span> <span class="n">value</span> <span class="n">of</span> <span class="s">&#39;/tmp/resting_preproc_0050702_session_1/centrality_zscore_1/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/_bandpass_freqs_0.01.0.1/_mask_mask_abide_90percent_gm/z_score/mapflow/_z_score0/degree_centrality_binarize_maths.nii.gz&#39;</span> <span class="o">&lt;</span><span class="nb">type</span> <span class="s">&#39;str&#39;</span><span class="o">&gt;</span> <span class="n">was</span> <span class="n">specified</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>So it seems like for this participant the fslmaths command was not run on the centrality outputs and later the smoothing was not applied. </p>
-
-<h1 id="quick-pack">Quick Pack</h1>
-
-<p>Let’s recre</p>
-
-<h1 id="emotional-bs">Emotional-BS</h1>
-
-<p>I want to focus on the QC to get that out of the way.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1638,11 +1624,15 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 134.28571428571428%'>cpac(4)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 142.85714285714286%'>cpac(5)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/20/wednesday-week-47/">Wednesday - Week 47</a>
@@ -1658,10 +1648,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
     
       <li class="post">
         <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/13/solving-quick-pack/">Solving Quick Pack</a>
       </li>
     
   </ul>
@@ -1822,6 +1808,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/21/2013');
+  hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
+  
   highlightArray.push('11/20/2013');
   hightlightLinks.push('/blog/2013/11/20/wednesday-week-47/');
   
@@ -1833,9 +1822,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/15/2013');
   hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
-  
-  highlightArray.push('11/13/2013');
-  hightlightLinks.push('/blog/2013/11/13/solving-quick-pack/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

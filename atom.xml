@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-21T11:21:55-05:00</updated>
+  <updated>2013-11-22T00:55:32-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thursday - Week 47]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/21/thursday-week-47/"/>
+    <updated>2013-11-21T11:34:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/21/thursday-week-47</id>
+    <content type="html"><![CDATA[<p>Today mostly revolved around memory profiling to work in python. Summary is as follows.</p>
+
+<ul>
+  <li>Looked into memory profiling
+    <ul>
+      <li>Had issues with memprof but got heapy to work (links below).</li>
+      <li>Got memprof to work not through numpy</li>
+      <li>Also applied memory_profiler (a little bit more accurate and useful than memprof).</li>
+      <li>Finally also applied memtop (a wrapper around ps)</li>
+    </ul>
+  </li>
+  <li>Attended lab meeting</li>
+  <li>Discussion of ABIDE with Chao-Gan and then Cameron</li>
+</ul>
+
+<h2 id="memory-profiling">Memory Profiling</h2>
+
+<p>Want to examine the memory usage of centrality in CPAC.</p>
+
+<h3 id="choosing-a-package">Choosing a Package</h3>
+
+<p>There are several python packages available with an extensive list available on stackoverflow: http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended.</p>
+
+<p>Some that do not seem appropriate for our purposes:</p>
+
+<ul>
+  <li><a href="https://launchpad.net/meliae">Meliae</a>: No documentation.</li>
+  <li><a href="http://pythonhosted.org/Pympler/muppy.html">Muppy</a>: Not that useful.</li>
+</ul>
+
+<p>One particular issue that I’ll be dealing with are how well it will work with nipype.</p>
+
+<h3 id="path-issue">Path Issue</h3>
+
+<p>The first problem I faced was the memory profiling not being on the path. This wasn’t so obvious because in the interactive shell of python and python, the memory profiling packages that were recently installed were available. However, when running python (the same python) from the command-line, then it couldn’t find it. The fix was simply to add my python site-packages to the path. Should know in the future that the paths for the interactive vs command-line python can be different.</p>
+
+<h3 id="heapy">Heapy</h3>
+
+<p>So when I actually ran memprof, it ended up failing. I went through all the other packages and was able to get <a href="http://smira.ru/wp-content/uploads/2011/08/heapy.html">heapy</a> to work. The approach taken with heapy is to call an individual function to measure the memory usage, whereas the other approaches all use a decorator of some kind. It worked, but the RAM values all seemed a bit low and not very convenient to read, so I tried another approach.</p>
+
+<h3 id="memprof">Memprof</h3>
+
+<p>Now I’ll be looking at <a href="http://jmdana.github.io/memprof">Memprof</a>, recommended by Cameron and also on the <a href="http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended">stackoverflow page</a>. Since it won’t work with nipype, I manually ran the <code>calc_centrality</code> function. This approach gave me some memory read outs. However, because it doesn’t actually record the memory usage of a particular command (when all the correlations are calculated), the maximum memory is about 160 + 11 or 171MB in total. This is a lot lower than I calculated and much lower than what I saw in top, which maxed out at around 4GB.</p>
+
+<p>[add pics]</p>
+
+<h3 id="memory-profiler">Memory Profiler</h3>
+
+<p>The other approach <a href="https://pypi.python.org/pypi/memory_profiler">memory_profiler</a> was a bit more useful. It showed about 1.4gb being used at the peak (around the correlation calculation).</p>
+
+<h3 id="memtop">Memtop</h3>
+
+<p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Wednesday - Week 47]]></title>

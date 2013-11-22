@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Tuesday - Zarrar's Journaling</title>
+  <title>Thursday - Week 47 - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="NiLearn I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to &hellip;">
+  <meta name="description" content="Today mostly revolved around memory profiling to work in python. Summary is as follows. Looked into memory profiling Had issues with memprof but got &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/05/tuesday/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/21/thursday-week-47/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Tuesday</h1>
+        <h1 class="entry-title">Thursday - Week 47</h1>
       
     
     
@@ -93,99 +93,66 @@
   
 
 
-<time datetime="2013-11-05T15:26:00-05:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+<time datetime="2013-11-21T11:34:00-05:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h1 id="nilearn">NiLearn</h1>
+<div class="entry-content"><p>Today mostly revolved around memory profiling to work in python. Summary is as follows.</p>
 
-<p>I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data’s location<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+<ul>
+  <li>Looked into memory profiling
+    <ul>
+      <li>Had issues with memprof but got heapy to work (links below).</li>
+      <li>Got memprof to work not through numpy</li>
+      <li>Also applied memory_profiler (a little bit more accurate and useful than memprof).</li>
+      <li>Finally also applied memtop (a wrapper around ps)</li>
+    </ul>
+  </li>
+  <li>Attended lab meeting</li>
+  <li>Discussion of ABIDE with Chao-Gan and then Cameron</li>
+</ul>
 
-<p>So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I’m rerunning (on top of the old) the participants with nuisance and bandpass turned off.</p>
+<h2 id="memory-profiling">Memory Profiling</h2>
 
-<p>Checking on the preprocessing, it initially skipped a bunch of things but now seems to be running some initial steps again. If this takes too long (i.e., is still going into tomorrow), then I might try to apply the warp myself tomorrow.</p>
+<p>Want to examine the memory usage of centrality in CPAC.</p>
 
-<hr />
+<h3 id="choosing-a-package">Choosing a Package</h3>
 
-<h1 id="abide">ABIDE</h1>
+<p>There are several python packages available with an extensive list available on stackoverflow: http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended.</p>
 
-<p>Since the QC pages have been fixed, I started to re-run the ABIDE analysis. This time I used 6mm of smoothing, added back the degree centrality, and running each subject with 4 cores on gelert. It is running strong (for now). There are 1102 subjects to run and currently 62 are being run in parallel.</p>
+<p>Some that do not seem appropriate for our purposes:</p>
 
-<hr />
+<ul>
+  <li><a href="https://launchpad.net/meliae">Meliae</a>: No documentation.</li>
+  <li><a href="http://pythonhosted.org/Pympler/muppy.html">Muppy</a>: Not that useful.</li>
+</ul>
 
-<h1 id="emotional-bs">Emotional BS</h1>
+<p>One particular issue that I’ll be dealing with are how well it will work with nipype.</p>
 
-<p>I ran the preprocessing for these participants before the QC issue for CPAC was fixed. Now I want to rebuild just the QC as follows:</p>
+<h3 id="path-issue">Path Issue</h3>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home/milham/Downloads/cpac_master&quot;</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
-</span><span class="line"><span class="n">CPAC</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">create_all_qc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;/home2/data/Projects/Emotional-BS/processed_data&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>The first problem I faced was the memory profiling not being on the path. This wasn’t so obvious because in the interactive shell of python and python, the memory profiling packages that were recently installed were available. However, when running python (the same python) from the command-line, then it couldn’t find it. The fix was simply to add my python site-packages to the path. Should know in the future that the paths for the interactive vs command-line python can be different.</p>
 
-<p>This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I’m not really using, then this shouldn’t be an issue.</p>
+<h3 id="heapy">Heapy</h3>
 
-<p>I also looked into co-registering the two anatomicals. I ended up dropping this endeavor for now since the gain in SNR and benefit to any results should not be too great. In looking at the QC, one possibility is that we may want to replace one of our anatomicals with the other anatomical.</p>
+<p>So when I actually ran memprof, it ended up failing. I went through all the other packages and was able to get <a href="http://smira.ru/wp-content/uploads/2011/08/heapy.html">heapy</a> to work. The approach taken with heapy is to call an individual function to measure the memory usage, whereas the other approaches all use a decorator of some kind. It worked, but the RAM values all seemed a bit low and not very convenient to read, so I tried another approach.</p>
 
-<h2 id="multi-instance-learning">Multi-Instance Learning</h2>
+<h3 id="memprof">Memprof</h3>
 
-<p>I did a basic search for relevant reading material. I found the following:</p>
+<p>Now I’ll be looking at <a href="http://jmdana.github.io/memprof">Memprof</a>, recommended by Cameron and also on the <a href="http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended">stackoverflow page</a>. Since it won’t work with nipype, I manually ran the <code>calc_centrality</code> function. This approach gave me some memory read outs. However, because it doesn’t actually record the memory usage of a particular command (when all the correlations are calculated), the maximum memory is about 160 + 11 or 171MB in total. This is a lot lower than I calculated and much lower than what I saw in top, which maxed out at around 4GB.</p>
 
-<p><em>A paper outlining the approach in a seemingly easy manner.</em>
-http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf</p>
+<p>[add pics]</p>
 
-<p><em>Very detailed slides that appear to give a good overview.</em>
-http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf</p>
+<h3 id="memory-profiler">Memory Profiler</h3>
 
-<p><em>Two links with relevant python code</em><br />
-http://engr.case.edu/doran_gary/code.html<br />
-https://github.com/garydoranjr/misvm</p>
+<p>The other approach <a href="https://pypi.python.org/pypi/memory_profiler">memory_profiler</a> was a bit more useful. It showed about 1.4gb being used at the peak (around the correlation calculation).</p>
 
-<hr />
+<h3 id="memtop">Memtop</h3>
 
-<h1 id="todo">TODO</h1>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="p">[]</span> <span class="n">NiLearn</span> <span class="n">Test</span> <span class="n">Data</span>
-</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Sent</span> <span class="n">email</span> <span class="n">confirming</span> <span class="n">that</span> <span class="n">band</span><span class="o">-</span><span class="k">pass</span> <span class="n">filtering</span> <span class="ow">is</span> <span class="n">required</span>
-</span><span class="line">	<span class="p">[]</span> <span class="n">Get</span> <span class="n">the</span> <span class="n">pre</span><span class="o">-</span><span class="n">nuisance</span> <span class="n">variables</span>
-</span><span class="line"><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">ABIDE</span> <span class="n">Preprocessing</span>
-</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Restart</span> <span class="n">the</span> <span class="n">preprocessing</span> <span class="n">using</span> <span class="mi">4</span> <span class="n">cores</span> <span class="p">(</span><span class="n">everything</span> <span class="k">except</span> <span class="n">eigen</span><span class="p">)</span>
-</span><span class="line"><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Emotional</span> <span class="n">BS</span>
-</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">regenerate</span> <span class="n">the</span> <span class="n">QC</span> <span class="n">pages</span> <span class="n">based</span> <span class="n">on</span> <span class="n">current</span> <span class="n">output</span>
-</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Lookup</span> <span class="n">some</span> <span class="n">multi</span><span class="o">-</span><span class="n">instance</span> <span class="n">learning</span> <span class="n">stuff</span>
-</span><span class="line">	<span class="p">[]</span> <span class="n">QC</span>
-</span><span class="line"><span class="p">[]</span> <span class="n">QuickPack</span>
-</span><span class="line">	<span class="p">[]</span> <span class="err">?</span> <span class="p">(</span><span class="ow">not</span> <span class="n">enough</span> <span class="n">time</span> <span class="n">today</span> <span class="n">to</span> <span class="n">make</span> <span class="n">substantial</span> <span class="n">progress</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-<div class="footnotes">
-  <ol>
-    <li id="fn:1">
-      <p><code>/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code><a href="#fnref:1" rel="reference">&#8617;</a></p>
-    </li>
-  </ol>
-</div>
+<p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
 </div>
 
 
@@ -208,12 +175,12 @@ https://github.com/garydoranjr/misvm</p>
   
 
 
-<time datetime="2013-11-05T15:26:00-05:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+<time datetime="2013-11-21T11:34:00-05:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/emotional-bs/'>emotional-bs</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a>
+    <a class='category' href='/blog/categories/cpac/'>cpac</a>
   
 </span>
 
@@ -222,7 +189,7 @@ https://github.com/garydoranjr/misvm</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/05/tuesday/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/05/tuesday/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/21/thursday-week-47/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/21/thursday-week-47/" >Tweet</a>
   
   
   
@@ -231,10 +198,8 @@ https://github.com/garydoranjr/misvm</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/04/bootstrap-of-iq-cwas/" title="Previous Post: Bootstrap of IQ CWAS">&laquo; Bootstrap of IQ CWAS</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/20/wednesday-week-47/" title="Previous Post: Wednesday - Week 47">&laquo; Wednesday - Week 47</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/05/rerunning-cwas-using-transformed-correlations/" title="Next Post: Rerunning CWAS using Transformed Correlations">Rerunning CWAS using Transformed Correlations &raquo;</a>
       
     </p>
   </footer>
@@ -245,7 +210,20 @@ https://github.com/garydoranjr/misvm</p>
 <aside class="sidebar">
   
     
-  
+  <section>
+  <h1>Contents</h1>
+  <ol class="nested" style="margin-left: 1.3em;">
+<li class="nested" style="list-style:inherit;">
+	<a href="#memory-profiling">Memory Profiling</a>
+<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#choosing-a-package">Choosing a Package</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#path-issue">Path Issue</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#heapy">Heapy</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#memprof">Memprof</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#memory-profiler">Memory Profiler</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#memtop">Memtop</a></li>
+</ul>
+</li></ol>
+  </section>
 
 <section>
   <h1>Tag Cloud</h1>
