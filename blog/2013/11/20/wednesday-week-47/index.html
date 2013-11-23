@@ -188,11 +188,15 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 142.85714285714286%'>cpac(5)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
@@ -208,10 +212,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/18/more-quick-pack-testing/">More Quick Pack Testing</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
       </li>
     
   </ul>
@@ -372,6 +372,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/22/2013');
+  hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
+  
   highlightArray.push('11/21/2013');
   hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
   
@@ -383,9 +386,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/18/2013');
   hightlightLinks.push('/blog/2013/11/18/more-quick-pack-testing/');
-  
-  highlightArray.push('11/15/2013');
-  hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

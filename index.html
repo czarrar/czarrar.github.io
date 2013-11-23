@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Today mostly revolved around memory profiling to work in python. Summary is as follows. Looked into memory profiling Had issues with memprof but got &hellip;">
+  <meta name="description" content="Summary Centrality and Memory The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,363 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-22T15:44:00-05:00" pubdate data-updated="true">Nov 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="summary">Summary</h2>
+
+<h3 id="centrality-and-memory">Centrality and Memory</h3>
+
+<p>The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in memory load that then stays there.</p>
+
+<ol>
+  <li>When computing the correlations, additional memory is allocated then that used for the output (up to 0.5x more).</li>
+  <li>When converting any NaNs to 0s, more than 2x more than the current memory is used (I guess because a copy of the data is created but not wiped from memory at a later point).</li>
+  <li>When calculating the degree centrality from the connectivity about 2x the amount of memory is used at this step.</li>
+</ol>
+
+<p>We actually can deal with step 2, since this only occurs because some time-series are flat or all zeros. If we mask those time series out in advance, then we don’t need to worry about that particular issue.</p>
+
+<p>The third step might also be solved semi-easily with some cython. There is one nice tutorial/comparison here: http://technicaldiscovery.blogspot.com/2011/06/speeding-up-python-numpy-cython-and.html. We could then write a function that loops through the array, thresholds each element, and adds each element to a vector.</p>
+
+<p>Further details are given below on examining memory issues in centrality using (1) 3mm brain and breakpoints and (2) a toy example to get more details.</p>
+
+<h3 id="abide">ABIDE</h3>
+
+<p>I began running CPAC to register the participant functional data and derivatives to 3mm space.</p>
+
+<h2 id="memory-issues">Memory Issues</h2>
+
+<p>There are a couple of nice pages on some memory issues with numpy. One suggestion was to upgrade to version 1.7.1+ where some memory leaks were fixed. I’m currently using version 1.6.1 so it’s possible using a more advanced version could help…however, I did check with a version of numpy Dan has and this didn’t solve my particular issues.</p>
+
+<h2 id="detailed-memory-test">Detailed Memory Test</h2>
+
+<p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">import code
+</span><span class="line">print "BP 1"
+</span><span class="line">code.interact(local=locals())
+</span><span class="line">
+</span><span class="line">print "Normalize TimeSeries"
+</span><span class="line">timeseries = norm_cols(timeseries.T)
+</span><span class="line">
+</span><span class="line">j=0
+</span><span class="line">i = block_size
+</span><span class="line">
+</span><span class="line">import code
+</span><span class="line">print "BP 2"
+</span><span class="line">code.interact(local=locals())
+</span><span class="line">
+</span><span class="line">while i &lt;= timeseries.shape[1]:
+</span><span class="line">   
+</span><span class="line">   print "running block -&gt;", i, j 
+</span><span class="line">   try:
+</span><span class="line">       #corr_matrix = np.nan_to_num(calc_corrcoef(timeseries[j:i].T, timeseries.T))
+</span><span class="line">       corr_matrix = np.nan_to_num(timeseries[:,j:i].T.dot(timeseries))
+</span><span class="line">       code.interact(local=locals())
+</span><span class="line">   except:
+</span><span class="line">       raise Exception("Error in calcuating block wise correlation for the block %,%"%(j,i))
+</span><span class="line">   
+</span><span class="line">   print "BP 3"
+</span><span class="line">   code.interact(local=locals())
+</span><span class="line">   
+</span><span class="line">   if r_value == None:
+</span><span class="line">        r_value = calc_threshold(1, threshold, scans, corr_matrix, full_matrix = False)
+</span><span class="line">
+</span><span class="line">   if method_options[1]:
+</span><span class="line">       r_matrix[j:i] = corr_matrix 
+</span><span class="line">
+</span><span class="line">   print "BP 4"
+</span><span class="line">   code.interact(local=locals())
+</span><span class="line">
+</span><span class="line">   if method_options[0]:
+</span><span class="line">       if weight_options[0]:
+</span><span class="line">           degree_mat_binarize[j:i] = np.sum((corr_matrix &gt; r_value).astype(np.float32), axis = 1)
+</span><span class="line">       if weight_options[1]:
+</span><span class="line">           degree_mat_weighted[j:i] = np.sum(corr_matrix*(corr_matrix &gt; r_value).astype(np.float32), axis = 1)
+</span><span class="line">
+</span><span class="line">   j = i   
+</span><span class="line">   if i == timeseries.shape[1]:
+</span><span class="line">       break
+</span><span class="line">   elif (i+block_size) &gt; timeseries.shape[1]: 
+</span><span class="line">       i = timeseries.shape[1] 
+</span><span class="line">   else:
+</span><span class="line">       i += block_size    
+</span><span class="line">
+</span><span class="line">   print "BP 5"
+</span><span class="line">   code.interact(local=locals())
+</span><span class="line">
+</span><span class="line">try:
+</span><span class="line">    if method_options[1]:
+</span><span class="line">        out_list.extend(calc_eigenV(r_matrix, r_value, weight_options))
+</span><span class="line">except Exception:
+</span><span class="line">    print "Error in calcuating eigen vector centrality"
+</span><span class="line">    raise
+</span><span class="line">
+</span><span class="line">print "BP 6"
+</span><span class="line">code.interact(local=locals())
+</span><span class="line">
+</span><span class="line"># Removing effect of auto-correlation
+</span><span class="line">if method_options[0]:
+</span><span class="line">    degree_mat_binarize[degree_mat_binarize!=0] = degree_mat_binarize[degree_mat_binarize!=0] - 1
+</span><span class="line">    degree_mat_weighted[degree_mat_weighted!=0] = degree_mat_weighted[degree_mat_weighted!=0] - 1
+</span><span class="line">
+</span><span class="line">return out_list</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>block -&gt; 34382 0</p>
+
+<ol>
+  <li>93.88 MB</li>
+  <li>139.12 MB</li>
+  <li>6.45 GB (but note that before this point, memory goes up to 18.1GB)</li>
+  <li>6.45 GB</li>
+  <li>6.45 GB (but note that before this point, memory goes up to 13.75GB)</li>
+</ol>
+
+<p>block -&gt; 45262 34382</p>
+
+<p>Also there was a second block so points 3-4 repeat. They both had 2.49 GB as that used.</p>
+
+<p>Took about 324.71 secs or 5mins.</p>
+
+<h2 id="for-our-sanity">For our Sanity</h2>
+
+<p>So to confirm that we get sane numbers in python, one can run the following code and then monitor the memory externally with <code>./memtop</code>. Here, we will create a <code>corr_matrix</code> identical in size as in block 1 above. We find generally that our own calculation of this matrix is the same as that within python, which is the same as that using <code>memtop</code> (depends on <code>ps</code>). To get <code>memtop</code>, please follow this link: http://justinfranks.com/code/scripts/memtop.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">34382</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;float32&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Our assumption (4.4GB)</span>
+</span><span class="line"><span class="n">size_us</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nvoxs</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Using numpy (4.4GB)</span>
+</span><span class="line"><span class="n">size_np</span> <span class="o">=</span> <span class="n">corr_matrix</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># From the command-line (4.45GB)</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">os</span>
+</span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&quot;./memtop | grep ipython&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="understanding-memory-for-dot-product">Understanding memory for dot product</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nibabel-1.3.0-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pydicom-0.9.8-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/networkx-1.7-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pysurfer-0.3.1-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python27.zip&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/plat-linux2&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-tk&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-old&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-dynload&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages/PIL&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/site-packages&#39;</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Note there is a base memory of 84.86  MB</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="n">npsize</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">nbytes</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">10000</span>
+</span><span class="line"><span class="n">ntpts</span> <span class="o">=</span> <span class="mi">150</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># There is an increase to 100.7 MB with the time series</span>
+</span><span class="line"><span class="c"># this is a little larger then it&#39;s 11.5MB size</span>
+</span><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">ntpts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+</span><span class="line"><span class="n">timeseries</span><span class="p">[:,</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 863.73 MB</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">nvoxs</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 1.35 GB (even after it is done)</span>
+</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="n">nvoxs</span><span class="p">],</span> <span class="n">timeseries</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">corr_matrix</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 2.47 GB but stays at 2.09 GB</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># still at 2.09 GB</span>
+</span><span class="line"><span class="n">degree_centrality_weighted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvoxs</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 3.68 GB but stays at 2.84 GB</span>
+</span><span class="line"><span class="n">r_value</span> <span class="o">=</span> <span class="mf">0.2</span>
+</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">*</span><span class="p">(</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">degree_centrality_weighted</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Note that theoretically, we might have thought a limit of 0.75 GB</span>
+</span><span class="line"><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span><span class="o">*</span><span class="n">ntpts</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Below is the parallel commands that I ran to monitor the memory usage above.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">./memtop | grep ipython <span class="c"># get the pid</span>
+</span><span class="line"><span class="nv">PID</span><span class="o">=</span>32430
+</span><span class="line"><span class="k">while</span> <span class="o">[[</span> True <span class="o">]]</span>; <span class="k">do</span>
+</span><span class="line">	./memtop -s -p <span class="nv">$PID</span>
+</span><span class="line">	sleep 0.5
+</span><span class="line"><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="memory-leakage-links">Memory Leakage Links</h2>
+
+<ul>
+  <li>http://stackoverflow.com/questions/12422307/reducing-numpy-memory-footprint-in-long-running-application</li>
+  <li>http://stackoverflow.com/questions/12461413/why-does-comparison-of-a-numpy-array-with-a-list-consume-so-much-memory</li>
+  <li>http://stackoverflow.com/questions/15191391/how-to-avoid-this-four-line-memory-leak-with-numpymkl</li>
+</ul>
+
+<h2 id="running-centrality-on-abide">Running Centrality on ABIDE</h2>
+
+<p>The usage approaches 18GB when I set a 12GB limit. On gelert, each node has about 16GB of RAM. The easiest thing might be to run one process on each node with a limit of 6GB to keep well within range.</p>
+
+<h2 id="registering-data-to-3mm-space">Registering Data to 3mm Space</h2>
+
+<p>I also want to redo the registration to be in 3mm standard space, whereas it currently is in 2mm. I’m working on the script for that task and have started running this on gelert now.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1523,92 +1880,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-08T09:28:00-05:00" pubdate data-updated="true">Nov 8<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="abide">ABIDE</h1>
-
-<p>I am continuing to look into the ‘no space left on device’ error on gelert. First, I’ll attempt to understand what subject’s were deleted if at all.</p>
-
-<h2 id="any-working-directories-deleted">Any Working Directories Deleted?</h2>
-
-<p>I want to first figure out if the working directories are never deleted on gelert, which is potentially an easy fix, or if it is more sporadic. To test this, I will look at the subjects in the output directory but not in any of the working directories on gelert. Below are the 46 subjects that fall in that category indicating that some subjects are at least deleted.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-</pre></td><td class="code"><pre><code class=""><span class="line"> [1] "0050642" "0050644" "0050650" "0050651" "0050652" "0050653" "0050654"
-</span><span class="line"> [8] "0050655" "0050656" "0050657" "0050660" "0050661" "0050664" "0050666"
-</span><span class="line">[15] "0050669" "0050682" "0050774" "0050776" "0050781" "0050785" "0050789"
-</span><span class="line">[22] "0050791" "0050792" "0050794" "0050799" "0050802" "0050807" "0050808"
-</span><span class="line">[29] "0050815" "0050825" "0050826" "0051456" "0051458" "0051461" "0051463"
-</span><span class="line">[36] "0051464" "0051471" "0051475" "0051478" "0051480" "0051483" "0051485"
-</span><span class="line">[43] "0051487" "0051491" "0051492" "0051493"</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="a-mix-of-working-directories-were-removed">A mix of working directories were removed</h3>
-
-<p>Are these deleted working directories belong to participants with one of the first subject ids? That is are these the first subjects that were run? The answer appears both a yes and no, as you can see from the subject indices.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class=""><span class="line"> [1]   1   3   9  10  11  12  13  14  15  16  19  20  22  24  27  28  94  96 101
-</span><span class="line">[20] 105 109 111 112 114 119 122 127 128 135 145 146 149 151 154 156 157 164 168
-</span><span class="line">[39] 171 173 176 178 180 184 185 186</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="the-removed-directories-completed-functional-preprocessing">The removed directories completed functional preprocessing</h3>
-
-<p>Now I wonder if participant’s with deleted working directories have completed workflows. I checked and all the 46 participants had a <code>functional_mni</code> that exists. Here is a sample path for the first participant: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-05/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0050642_session_1/scan_rest_1_rest/func/functional_mni.nii.gz</code>.</p>
-
-<h3 id="the-kept-directories-also-completed-functional-preprocessing">The kept directories also completed functional preprocessing</h3>
-
-<p>I thought some of these might have failed at generating the <code>functional_mni</code>, however they are all there.</p>
-
-<blockquote>
-  <p>Note: the relevant script is <code>x_find_tmps.R</code>.</p>
-</blockquote>
-
-<hr />
-
-<p>You regress out the covariates and </p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1624,11 +1895,15 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 142.85714285714286%'>cpac(5)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
@@ -1644,10 +1919,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
     
       <li class="post">
         <a href="/blog/2013/11/18/more-quick-pack-testing/">More Quick Pack Testing</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a>
       </li>
     
   </ul>
@@ -1808,6 +2079,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/22/2013');
+  hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
+  
   highlightArray.push('11/21/2013');
   hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
   
@@ -1819,9 +2093,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/18/2013');
   hightlightLinks.push('/blog/2013/11/18/more-quick-pack-testing/');
-  
-  highlightArray.push('11/15/2013');
-  hightlightLinks.push('/blog/2013/11/15/testing-quick-pack/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

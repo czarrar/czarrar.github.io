@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cpac | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cpac/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-22T00:55:32-05:00</updated>
+  <updated>2013-11-22T19:46:51-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,217 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Friday - Week 47]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/22/friday-week-47/"/>
+    <updated>2013-11-22T15:44:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/22/friday-week-47</id>
+    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
+
+<h3 id="centrality-and-memory">Centrality and Memory</h3>
+
+<p>The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in memory load that then stays there.</p>
+
+<ol>
+  <li>When computing the correlations, additional memory is allocated then that used for the output (up to 0.5x more).</li>
+  <li>When converting any NaNs to 0s, more than 2x more than the current memory is used (I guess because a copy of the data is created but not wiped from memory at a later point).</li>
+  <li>When calculating the degree centrality from the connectivity about 2x the amount of memory is used at this step.</li>
+</ol>
+
+<p>We actually can deal with step 2, since this only occurs because some time-series are flat or all zeros. If we mask those time series out in advance, then we don’t need to worry about that particular issue.</p>
+
+<p>The third step might also be solved semi-easily with some cython. There is one nice tutorial/comparison here: http://technicaldiscovery.blogspot.com/2011/06/speeding-up-python-numpy-cython-and.html. We could then write a function that loops through the array, thresholds each element, and adds each element to a vector.</p>
+
+<p>Further details are given below on examining memory issues in centrality using (1) 3mm brain and breakpoints and (2) a toy example to get more details.</p>
+
+<h3 id="abide">ABIDE</h3>
+
+<p>I began running CPAC to register the participant functional data and derivatives to 3mm space.</p>
+
+<h2 id="memory-issues">Memory Issues</h2>
+
+<p>There are a couple of nice pages on some memory issues with numpy. One suggestion was to upgrade to version 1.7.1+ where some memory leaks were fixed. I’m currently using version 1.6.1 so it’s possible using a more advanced version could help…however, I did check with a version of numpy Dan has and this didn’t solve my particular issues.</p>
+
+<h2 id="detailed-memory-test">Detailed Memory Test</h2>
+
+<p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
+
+<p>``` python
+import code
+print “BP 1”
+code.interact(local=locals())</p>
+
+<p>print “Normalize TimeSeries”
+timeseries = norm_cols(timeseries.T)</p>
+
+<p>j=0
+i = block_size</p>
+
+<p>import code
+print “BP 2”
+code.interact(local=locals())</p>
+
+<p>while i &lt;= timeseries.shape[1]:</p>
+
+<p>print “running block -&gt;”, i, j 
+   try:
+       #corr_matrix = np.nan_to_num(calc_corrcoef(timeseries[j:i].T, timeseries.T))
+       corr_matrix = np.nan_to_num(timeseries[:,j:i].T.dot(timeseries))
+       code.interact(local=locals())
+   except:
+       raise Exception(“Error in calcuating block wise correlation for the block %,%”%(j,i))</p>
+
+<p>print “BP 3”
+   code.interact(local=locals())</p>
+
+<p>if r_value == None:
+        r_value = calc_threshold(1, threshold, scans, corr_matrix, full_matrix = False)</p>
+
+<p>if method_options[1]:
+       r_matrix[j:i] = corr_matrix </p>
+
+<p>print “BP 4”
+   code.interact(local=locals())</p>
+
+<p>if method_options[0]:
+       if weight_options[0]:
+           degree_mat_binarize[j:i] = np.sum((corr_matrix &gt; r_value).astype(np.float32), axis = 1)
+       if weight_options[1]:
+           degree_mat_weighted[j:i] = np.sum(corr_matrix*(corr_matrix &gt; r_value).astype(np.float32), axis = 1)</p>
+
+<p>j = i <br />
+   if i == timeseries.shape[1]:
+       break
+   elif (i+block_size) &gt; timeseries.shape[1]: 
+       i = timeseries.shape[1] 
+   else:
+       i += block_size    </p>
+
+<p>print “BP 5”
+   code.interact(local=locals())</p>
+
+<p>try:
+    if method_options[1]:
+        out_list.extend(calc_eigenV(r_matrix, r_value, weight_options))
+except Exception:
+    print “Error in calcuating eigen vector centrality”
+    raise</p>
+
+<p>print “BP 6”
+code.interact(local=locals())</p>
+
+<h1 id="removing-effect-of-auto-correlation">Removing effect of auto-correlation</h1>
+<p>if method_options[0]:
+    degree_mat_binarize[degree_mat_binarize!=0] = degree_mat_binarize[degree_mat_binarize!=0] - 1
+    degree_mat_weighted[degree_mat_weighted!=0] = degree_mat_weighted[degree_mat_weighted!=0] - 1</p>
+
+<p>return out_list
+```</p>
+
+<p>block -&gt; 34382 0</p>
+
+<ol>
+  <li>93.88 MB</li>
+  <li>139.12 MB</li>
+  <li>6.45 GB (but note that before this point, memory goes up to 18.1GB)</li>
+  <li>6.45 GB</li>
+  <li>6.45 GB (but note that before this point, memory goes up to 13.75GB)</li>
+</ol>
+
+<p>block -&gt; 45262 34382</p>
+
+<p>Also there was a second block so points 3-4 repeat. They both had 2.49 GB as that used.</p>
+
+<p>Took about 324.71 secs or 5mins.</p>
+
+<h2 id="for-our-sanity">For our Sanity</h2>
+
+<p>So to confirm that we get sane numbers in python, one can run the following code and then monitor the memory externally with <code>./memtop</code>. Here, we will create a <code>corr_matrix</code> identical in size as in block 1 above. We find generally that our own calculation of this matrix is the same as that within python, which is the same as that using <code>memtop</code> (depends on <code>ps</code>). To get <code>memtop</code>, please follow this link: http://justinfranks.com/code/scripts/memtop.</p>
+
+<p>``` python
+import numpy as np</p>
+
+<p>nvoxs = 34382
+corr_matrix = np.ones((nvoxs, nvoxs)).astype(‘float32’)</p>
+
+<h1 id="our-assumption-44gb">Our assumption (4.4GB)</h1>
+<p>size_us = 4 * nvoxs<strong>2 / float(1024</strong>2)</p>
+
+<h1 id="using-numpy-44gb">Using numpy (4.4GB)</h1>
+<p>size_np = corr_matrix.nbytes / float(1024**2)</p>
+
+<h1 id="from-the-command-line-445gb">From the command-line (4.45GB)</h1>
+<p>import os
+os.system(“./memtop | grep ipython”)
+```</p>
+
+<h2 id="understanding-memory-for-dot-product">Understanding memory for dot product</h2>
+
+<p>``` python
+import sys
+sys.path = [’’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/User/lib/python2.7/site-packages/nibabel-1.3.0-py2.7.egg’, ‘/home2/dlurie/Enthought/Canopy</em>64bit/User/lib/python2.7/site-packages/pydicom-0.9.8-py2.7.egg’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/User/lib/python2.7/site-packages/networkx-1.7-py2.7.egg’, ‘/home2/dlurie/Enthought/Canopy</em>64bit/User/lib/python2.7/site-packages/pysurfer-0.3.1-py2.7.egg’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python27.zip’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python2.7/plat-linux2’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/lib-tk’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python2.7/lib-old’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/lib-dynload’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/User/lib/python2.7/site-packages’, ‘/home2/dlurie/Enthought/Canopy</em>64bit/System/lib/python2.7/site-packages’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/System/lib/python2.7/site-packages/PIL’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/site-packages’]</p>
+
+<h1 id="note-there-is-a-base-memory-of-8486--mb">Note there is a base memory of 84.86  MB</h1>
+<p>import numpy as np
+npsize = lambda x: x.nbytes/float(1024**3)</p>
+
+<p>nvoxs = 10000
+ntpts = 150</p>
+
+<h1 id="there-is-an-increase-to-1007-mb-with-the-time-series">There is an increase to 100.7 MB with the time series</h1>
+<p># this is a little larger then it’s 11.5MB size
+timeseries = np.random.random((nvoxs,ntpts)).T
+timeseries[:,100:104] = 0</p>
+
+<h1 id="to-86373-mb">to 863.73 MB</h1>
+<p>corr_matrix = np.zeros((nvoxs,nvoxs))</p>
+
+<h1 id="to-135-gb-even-after-it-is-done">to 1.35 GB (even after it is done)</h1>
+<p>np.dot(timeseries.T[:,0:nvoxs], timeseries, out=corr_matrix)</p>
+
+<h1 id="to-247-gb-but-stays-at-209-gb">to 2.47 GB but stays at 2.09 GB</h1>
+<p>corr_matrix = np.nan_to_num(corr_matrix)</p>
+
+<h1 id="still-at-209-gb">still at 2.09 GB</h1>
+<p>degree_centrality_weighted = np.zeros(nvoxs)</p>
+
+<h1 id="to-368-gb-but-stays-at-284-gb">to 3.68 GB but stays at 2.84 GB</h1>
+<p>r_value = 0.2
+np.sum(corr_matrix*(corr_matrix &gt; r_value), axis=1, out=degree_centrality_weighted)</p>
+
+<h1 id="note-that-theoretically-we-might-have-thought-a-limit-of-075-gb">Note that theoretically, we might have thought a limit of 0.75 GB</h1>
+<p>(nvoxs<em>nvoxs + nvoxs + nvoxs</em>ntpts)*8/float(1024**3)
+```</p>
+
+<p>Below is the parallel commands that I ran to monitor the memory usage above.</p>
+
+<p><code>bash
+./memtop | grep ipython # get the pid
+PID=32430
+while [[ True ]]; do
+	./memtop -s -p $PID
+	sleep 0.5
+done
+</code></p>
+
+<h2 id="memory-leakage-links">Memory Leakage Links</h2>
+
+<ul>
+  <li>http://stackoverflow.com/questions/12422307/reducing-numpy-memory-footprint-in-long-running-application</li>
+  <li>http://stackoverflow.com/questions/12461413/why-does-comparison-of-a-numpy-array-with-a-list-consume-so-much-memory</li>
+  <li>http://stackoverflow.com/questions/15191391/how-to-avoid-this-four-line-memory-leak-with-numpymkl</li>
+</ul>
+
+<h2 id="running-centrality-on-abide">Running Centrality on ABIDE</h2>
+
+<p>The usage approaches 18GB when I set a 12GB limit. On gelert, each node has about 16GB of RAM. The easiest thing might be to run one process on each node with a limit of 6GB to keep well within range.</p>
+
+<h2 id="registering-data-to-3mm-space">Registering Data to 3mm Space</h2>
+
+<p>I also want to redo the registration to be in 3mm standard space, whereas it currently is in 2mm. I’m working on the script for that task and have started running this on gelert now.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thursday - Week 47]]></title>
@@ -551,104 +762,6 @@ grep -B 1 -A 1 Executing cluster_temp_files/2013-11-11_15-44-04/c-pac_0050642_se
 
 <p>Actually there is not much here. I think maybe a lot of the nipype stuff is also in the standard output/error?</p>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Another Quick Pack Journey]]></title>
-    <link href="http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey/"/>
-    <updated>2013-10-30T15:55:00-04:00</updated>
-    <id>http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey</id>
-    <content type="html"><![CDATA[<p>Today, I’ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for </p>
-
-<p>Some minor things, I helped Krishna with some ROI error he had in CPAC. It turned out that his issue was due to incorrectly binarizing the mask.</p>
-
-<h1 id="quickpack">QuickPack</h1>
-
-<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn’t track. I am re-running the complete run to see what errors I get again and try to figure those out. I’m also rerunning the alff to see what happens there.</p>
-
-<h2 id="complete-run">Complete Run</h2>
-
-<p>This appears to be re-running smoothly (knock on wood). The last time I ran a complete (preprocessing + derivatives) run, it led to some unclear problems.</p>
-
-<h2 id="alff-qp">ALFF QP</h2>
-
-<p>I get the same link error as I did before. The error occurs on line 562 in <code>utils.py</code> within the <code>create_symbolic_links</code>. The line and error are</p>
-
-<pre><code>ext = fname.split('.', 1)[1]
-IndexError: list index out of range
-</code></pre>
-
-<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don’t have much sense about what is going on with this file.</p>
-
-<p>Other bits of information:</p>
-
-<ul>
-  <li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
-z</code>.</li>
-  <li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
-</ul>
-
-<h3 id="steve-talk">Steve Talk</h3>
-
-<p>I discussed this issue with Steve and it seems I will need to get down and dirty with nipype to understand the origin of this problem.</p>
-
-<h2 id="reho-qp">REHO QP</h2>
-
-<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link<em>16 it is link</em>5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
-
-<p>A snapshot of the error is given below:</p>
-
-<pre><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
-
-/home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
-     37     except KeyError:
-     38         raise ImageFileError('Cannot work out file type of "%s"' %
----&gt; 39                              filename)
-     40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
-     41         klass = class_map[img_type]['class']
-
-ImageFileError: Cannot work out file type of ""
-Interface Function failed to run. 
-</code></pre>
-
-<p>To run the crash file, see the code below.</p>
-
-<p>``` python
-import sys
-sys.path.insert(0, ‘/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages’)
-sys.path.insert(1, “/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC”)
-import CPAC
-import CPAC.reho.utils
-from nipype.utils.filemanip import loadflat</p>
-
-<p>crashinfo = loadflat(“/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz”)
-crashinfo[‘node’].run()
-```</p>
-
-<h1 id="preprocessing-emotionalbs">Preprocessing EmotionalBS</h1>
-
-<p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
-
-<ul>
-  <li>Used ANTS for registration</li>
-  <li>Two nuisance correction strategies
-      * compcor+motion+linear+quadratic
-      * compcor+global+motion+linear+quadratic</li>
-  <li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
-  <li>Smoothing of 4.5mm (only for derivatives)</li>
-  <li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
-</ul>
-
-<h2 id="install-fsl-5-for-gelert">Install FSL 5 for Gelert</h2>
-
-<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike’s account didn’t have. And even if I had those, it wasn’t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so </p>
-
-<h1 id="new-journal">New Journal</h1>
-
-<p>I also worked on setting up this blog/journal with github user account. The goal is to chronicle my work efforts with particular thought on any issues I encounter. A major side benefit will be easier communication with others in the lab (e.g., was able to easily show the error for ALFF quick pack to Steve). Previously, I had been using different journal pages for each of my projects. I ended up being a big confused where to post stuff and often lost track of the markdown pages that I had created before they were published. With one journal site, this should all be easier.</p>
-
-<p>I’m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
 ]]></content>
   </entry>
   
