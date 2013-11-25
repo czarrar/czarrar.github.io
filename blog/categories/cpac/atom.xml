@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cpac | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cpac/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-22T19:46:51-05:00</updated>
+  <updated>2013-11-25T00:32:48-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -48,77 +48,9 @@
 
 <p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
 
-<p>``` python
-import code
-print “BP 1”
-code.interact(local=locals())</p>
-
-<p>print “Normalize TimeSeries”
-timeseries = norm_cols(timeseries.T)</p>
-
-<p>j=0
-i = block_size</p>
-
-<p>import code
-print “BP 2”
-code.interact(local=locals())</p>
-
-<p>while i &lt;= timeseries.shape[1]:</p>
-
-<p>print “running block -&gt;”, i, j 
-   try:
-       #corr_matrix = np.nan_to_num(calc_corrcoef(timeseries[j:i].T, timeseries.T))
-       corr_matrix = np.nan_to_num(timeseries[:,j:i].T.dot(timeseries))
-       code.interact(local=locals())
-   except:
-       raise Exception(“Error in calcuating block wise correlation for the block %,%”%(j,i))</p>
-
-<p>print “BP 3”
-   code.interact(local=locals())</p>
-
-<p>if r_value == None:
-        r_value = calc_threshold(1, threshold, scans, corr_matrix, full_matrix = False)</p>
-
-<p>if method_options[1]:
-       r_matrix[j:i] = corr_matrix </p>
-
-<p>print “BP 4”
-   code.interact(local=locals())</p>
-
-<p>if method_options[0]:
-       if weight_options[0]:
-           degree_mat_binarize[j:i] = np.sum((corr_matrix &gt; r_value).astype(np.float32), axis = 1)
-       if weight_options[1]:
-           degree_mat_weighted[j:i] = np.sum(corr_matrix*(corr_matrix &gt; r_value).astype(np.float32), axis = 1)</p>
-
-<p>j = i <br />
-   if i == timeseries.shape[1]:
-       break
-   elif (i+block_size) &gt; timeseries.shape[1]: 
-       i = timeseries.shape[1] 
-   else:
-       i += block_size    </p>
-
-<p>print “BP 5”
-   code.interact(local=locals())</p>
-
-<p>try:
-    if method_options[1]:
-        out_list.extend(calc_eigenV(r_matrix, r_value, weight_options))
-except Exception:
-    print “Error in calcuating eigen vector centrality”
-    raise</p>
-
-<p>print “BP 6”
-code.interact(local=locals())</p>
-
-<h1 id="removing-effect-of-auto-correlation">Removing effect of auto-correlation</h1>
-<p>if method_options[0]:
-    degree_mat_binarize[degree_mat_binarize!=0] = degree_mat_binarize[degree_mat_binarize!=0] - 1
-    degree_mat_weighted[degree_mat_weighted!=0] = degree_mat_weighted[degree_mat_weighted!=0] - 1</p>
-
-<p>return out_list
-```</p>
+<p><code>python
+TODO: breaks pigments will compile elsewhere
+</code></p>
 
 <p>block -&gt; 34382 0</p>
 
@@ -199,7 +131,7 @@ np.sum(corr_matrix*(corr_matrix &gt; r_value), axis=1, out=degree_centrality_wei
 
 <p><code>bash
 ./memtop | grep ipython # get the pid
-PID=32430
+PID=7873
 while [[ True ]]; do
 	./memtop -s -p $PID
 	sleep 0.5

@@ -212,17 +212,6 @@
   <li>Mahalanobois (14.5 mins)</li>
 </ul>
 
-<h2 id="in-progress">In Progress</h2>
-
-<ul>
-  <li>Mahalanobois</li>
-</ul>
-
-<h2 id="redo">Redo</h2>
-
-<pre><code>* Concordance (will likely take long too)
-</code></pre>
-
 <h1 id="comparing-distances">Comparing Distances</h1>
 
 <p>Here is some quick code to compare the MDMR results using the different distance measures.</p>
@@ -241,18 +230,46 @@
 <span class="line-number">12</span>
 <span class="line-number">13</span>
 <span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
 </pre></td><td class="code"><pre><code class="r"><span class="line"><span class="c1"># Setup</span>
 </span><span class="line">setwd<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas/short/try_distances/&quot;</span><span class="p">)</span>
 </span><span class="line">library<span class="p">(</span>bigmemory<span class="p">)</span>
 </span><span class="line">dirs <span class="o">&lt;-</span> Sys.glob<span class="p">(</span><span class="s">&quot;*/iq_age+sex+meanFD.mdmr/pvals.desc&quot;</span><span class="p">)</span>
 </span><span class="line">pvals.mat <span class="o">&lt;-</span> sapply<span class="p">(</span>dirs<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>d<span class="p">)</span> attach.big.matrix<span class="p">(</span>d<span class="p">)[,</span><span class="m">1</span><span class="p">])</span>
 </span><span class="line">colnames<span class="p">(</span>pvals.mat<span class="p">)</span> <span class="o">&lt;-</span> sub<span class="p">(</span><span class="s">&quot;_k0800_to_k0800&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> dirname<span class="p">(</span>dirname<span class="p">(</span>dirs<span class="p">)))</span>
+</span><span class="line"><span class="c1"># reorder according to Zapala paper</span>
+</span><span class="line">tmp <span class="o">&lt;-</span> pvals.mat<span class="p">[,</span>c<span class="p">(</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">5</span><span class="p">)]</span>
+</span><span class="line"><span class="c1"># Percent significant</span>
+</span><span class="line">round<span class="p">(</span>cbind<span class="p">(</span>
+</span><span class="line">	<span class="s">&#39;1&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.01</span><span class="p">),</span> 	
+</span><span class="line">	<span class="s">&#39;5&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.05</span><span class="p">),</span>
+</span><span class="line">	<span class="s">&#39;25&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.25</span><span class="p">),</span>
+</span><span class="line">	<span class="s">&#39;50&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.50</span><span class="p">)</span>
+</span><span class="line"><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
 </span><span class="line"><span class="c1"># Correlate</span>
 </span><span class="line">cor<span class="p">(</span>pvals.mat<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">)</span>
 </span><span class="line"><span class="c1"># Dice-esque</span>
-</span><span class="line">d.mat <span class="o">&lt;-</span> crossprod<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span>
+</span><span class="line">d.mat <span class="o">&lt;-</span> crossprod<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span>
 </span><span class="line">print<span class="p">(</span>d.mat<span class="p">)</span> <span class="c1"># counts</span>
 </span><span class="line">round<span class="p">(</span>sweep<span class="p">(</span>d.mat<span class="p">,</span> <span class="m">1</span><span class="p">,</span> diag<span class="p">(</span>d.mat<span class="p">),</span> <span class="s">&#39;/&#39;</span><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span> <span class="c1"># percent overlap</span>
+</span><span class="line"><span class="c1"># Dice</span>
+</span><span class="line">numer <span class="o">&lt;-</span> <span class="m">2</span><span class="o">*</span>d.mat
+</span><span class="line">denom <span class="o">&lt;-</span> <span class="p">(</span>diag<span class="p">(</span>d.mat<span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>rep<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">)))</span> <span class="o">+</span> t<span class="p">(</span>diag<span class="p">(</span>d.mat<span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>rep<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">)))</span>
+</span><span class="line">dice <span class="o">&lt;-</span> numer<span class="o">/</span>denom
+</span><span class="line">print<span class="p">(</span>round<span class="p">(</span>dice<span class="p">,</span> <span class="m">2</span><span class="p">))</span>
 </span><span class="line"><span class="c1"># Voxels present in all distance measures</span>
 </span><span class="line">sum<span class="p">(</span>rowSums<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span><span class="o">==</span><span class="m">6</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
@@ -323,11 +340,23 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
@@ -335,18 +364,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/20/wednesday-week-47/">Wednesday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/19/tuesday-week-47/">Tuesday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/18/more-quick-pack-testing/">More Quick Pack Testing</a>
       </li>
     
   </ul>
@@ -507,20 +524,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/24/2013');
+  hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
+  
+  highlightArray.push('11/24/2013');
+  hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
+  
+  highlightArray.push('11/23/2013');
+  hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
+  
   highlightArray.push('11/22/2013');
   hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
   
   highlightArray.push('11/21/2013');
   hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
-  
-  highlightArray.push('11/20/2013');
-  hightlightLinks.push('/blog/2013/11/20/wednesday-week-47/');
-  
-  highlightArray.push('11/19/2013');
-  hightlightLinks.push('/blog/2013/11/19/tuesday-week-47/');
-  
-  highlightArray.push('11/18/2013');
-  hightlightLinks.push('/blog/2013/11/18/more-quick-pack-testing/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

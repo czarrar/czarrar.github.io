@@ -102,7 +102,7 @@
 
 <div class="entry-content"><p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
 
-<h1 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h1>
+<h2 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h2>
 
 <p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
 
@@ -116,7 +116,7 @@
   <li>Plot two samples on brain</li>
 </ul>
 
-<h2 id="code-to-plot">Code to Plot</h2>
+<h3 id="code-to-plot">Code to Plot</h3>
 
 <p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
 
@@ -124,17 +124,17 @@
 
 <hr />
 
-<h1 id="bootstrap-with-replication">Bootstrap with Replication</h1>
+<h2 id="bootstrap-with-replication">Bootstrap with Replication</h2>
 
 <p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
 
-<h2 id="analysis">Analysis</h2>
+<h3 id="analysis">Analysis</h3>
 
 <p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
 
 <p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
 
-<h2 id="plotting">Plotting</h2>
+<h3 id="plotting">Plotting</h3>
 
 <p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
 
@@ -146,7 +146,7 @@
 </span><span class="line">hdr   <span class="o">&lt;-</span> read.nifti.header<span class="p">(</span>mpath<span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<h2 id="histogram-issue">Histogram Issue</h2>
+<h3 id="histogram-issue">Histogram Issue</h3>
 
 <p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
 
@@ -156,11 +156,11 @@
 
 <p>http://rpubs.com/czarrar/cwas_distributions</p>
 
-<h3 id="older-approach">Older approach</h3>
+<h4 id="older-approach">Older approach</h4>
 
 <p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
 
-<h2 id="code">Code</h2>
+<h3 id="code">Code</h3>
 
 <div><script src="https://gist.github.com/7164165.js?file=cwas_bootstrap.R"></script>
 <noscript><pre><code>library(connectir)
@@ -300,15 +300,42 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
 <aside class="sidebar">
   
     
-  
+  <section>
+  <h1>Contents</h1>
+  <ol class="nested" style="margin-left: 1.3em;">
+<li class="nested" style="list-style:inherit;">
+	<a href="#bootstrap-with-subsampling">Bootstrap with Subsampling</a>
+<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#code-to-plot">Code to Plot</a></li>
+</ul>
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#bootstrap-with-replication">Bootstrap with Replication</a>
+<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#analysis">Analysis</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#plotting">Plotting</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#histogram-issue">Histogram Issue</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#code">Code</a></li>
+</ul>
+</li></ol>
+  </section>
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
@@ -316,18 +343,6 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
     
       <li class="post">
         <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/20/wednesday-week-47/">Wednesday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/19/tuesday-week-47/">Tuesday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/18/more-quick-pack-testing/">More Quick Pack Testing</a>
       </li>
     
   </ul>
@@ -488,20 +503,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/24/2013');
+  hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
+  
+  highlightArray.push('11/24/2013');
+  hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
+  
+  highlightArray.push('11/23/2013');
+  hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
+  
   highlightArray.push('11/22/2013');
   hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
   
   highlightArray.push('11/21/2013');
   hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
-  
-  highlightArray.push('11/20/2013');
-  hightlightLinks.push('/blog/2013/11/20/wednesday-week-47/');
-  
-  highlightArray.push('11/19/2013');
-  hightlightLinks.push('/blog/2013/11/19/tuesday-week-47/');
-  
-  highlightArray.push('11/18/2013');
-  hightlightLinks.push('/blog/2013/11/18/more-quick-pack-testing/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

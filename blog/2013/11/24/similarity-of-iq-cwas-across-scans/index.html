@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: abide - Zarrar's Journaling</title>
+  <title>Similarity of IQ CWAS Across Scans - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Category: abide">
+  <meta name="description" content="Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.ioblog/categories/abide/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,119 +71,148 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Abide</h1>
+    
+      
+        <h1 class="entry-title">Similarity of IQ CWAS Across Scans</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-24T11:51:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
 
-  
-  <h2>2013</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">measures</th>
+      <th>values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">dice</td>
+      <td>0.2731</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">pearson</td>
+      <td>0.2571</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">spearman</td>
+      <td>0.2511</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">kendalls</td>
+      <td>0.1695</td>
+    </tr>
+  </tbody>
+</table>
 
-<article>
-  
-<h1><a href="/blog/2013/11/12/abide-sge-debug/">ABIDE SGE Debug</a></h1>
-<time datetime="2013-11-12T13:13:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>12</span> <span class='year'>2013</span></time>
+<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a></span>
-</footer>
+<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
 
+<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
 
-</article>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">cd /home2/data/Projects/CWAS/share/nki/05_cwas
+</span><span class="line">./30_mdmr_using_perms.bash</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
 
+<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
 
-<article>
-  
-<h1><a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a></h1>
-<time datetime="2013-11-11T16:26:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>11</span> <span class='year'>2013</span></time>
+<ol>
+  <li>Read in the permuted Fstats</li>
+  <li>Loop through each permutation so you can</li>
+  <li>Calculate significance for both scans</li>
+  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
+  <li>Return this result and loop to #3 for the next permutation</li>
+</ol>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a></span>
-</footer>
+<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
 
+<h2 id="results">Results</h2>
 
-</article>
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
 
+<h2 id="update-connectir">Update Connectir</h2>
 
-
-<article>
-  
-<h1><a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a></h1>
-<time datetime="2013-11-08T09:28:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>08</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/07/thursday-lib-cmi-nyu/">thursday lib cmi nyu</a></h1>
-<time datetime="2013-11-07T11:17:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>07</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/06/wednesday-nki/">wednesday nki</a></h1>
-<time datetime="2013-11-06T14:59:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>06</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/05/tuesday/">Tuesday</a></h1>
-<time datetime="2013-11-05T15:26:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>05</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/emotional-bs/'>emotional-bs</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/04/monday/">Monday</a></h1>
-<time datetime="2013-11-04T12:20:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>04</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a></span>
-</footer>
-
-
-</article>
-
+<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-24T11:51:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cwas/'>cwas</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/23/saturday-week-47/" title="Previous Post: Saturday - Week 47">&laquo; Saturday - Week 47</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2013/11/24/timing-comparison/" title="Next Post: Timing Comparison">Timing Comparison &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>
@@ -191,7 +220,23 @@
 <aside class="sidebar">
   
     
-  
+  <section>
+  <h1>Contents</h1>
+  <ol class="nested" style="margin-left: 1.3em;">
+<li class="nested" style="list-style:inherit;">
+	<a href="#re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#permutations-for-dice-and-spearman">Permutations for dice and spearman</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#results">Results</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#update-connectir">Update Connectir</a>
+
+</li></ol>
+  </section>
 
 <section>
   <h1>Tag Cloud</h1>

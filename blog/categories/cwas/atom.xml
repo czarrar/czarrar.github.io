@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-22T19:46:51-05:00</updated>
+  <updated>2013-11-25T00:32:48-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,238 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Timing Comparison]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/24/timing-comparison/"/>
+    <updated>2013-11-24T15:21:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/24/timing-comparison</id>
+    <content type="html"><![CDATA[<h2 id="overview">Overview</h2>
+
+<p>I will be comparing the timing for the following functions:</p>
+
+<ul>
+  <li>Degree Centrality</li>
+  <li>GLM</li>
+  <li>MDMR</li>
+  <li>SVM (linear)</li>
+  <li>K-Means Clustering</li>
+</ul>
+
+<p>This order also reflects the speed result (first is faster).</p>
+
+<h2 id="parameters">Parameters</h2>
+
+<p>I examined the speed for examining connectivity-phenotype relationships for the following parameters:</p>
+
+<ul>
+  <li>number of nodes or connectivity maps: <strong>10</strong></li>
+  <li>number of elements in each connectivity map: <strong>800</strong></li>
+  <li>number of participants: <strong>100</strong></li>
+  <li>number of iterations: <strong>100</strong></li>
+</ul>
+
+<p>In the case of SVM and K-Means, I did the analysis like I did with MDMR. I examined the fit between one connectivity map per participant and participant group membership. Thus, the analysis was repeated 10 times, one for each connectivity map.</p>
+
+<p>This whole process was repeated 100 times.</p>
+
+<h2 id="system">System</h2>
+
+<p>The timing analysis was performed on a MacBook Pro OSX v10.8 using a 2.53GHz Intel Core 2 Duo with 4GB of RAM.</p>
+
+<h2 id="results">Results</h2>
+
+<p>A graph shows the average timing for each approach across 100 iterations below.</p>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Method', 'Time'],
+      ['Degree',  6],
+      ['GLM',  		30],
+      ['MDMR',  	52],
+      ['SVM',  		229], 
+		 ['K-Means', 788]
+    ]);
+
+    var options = {
+      title: 'Average time (ms) to compute connectivity-phenotype association',
+      hAxis: {title: 'Method'}, 
+		 legend: {position: 'none'}
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+</script>
+
+<div id="chart_div" style="width: 500px; height: 300px;"></div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Similarity of IQ CWAS Across Scans]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/"/>
+    <updated>2013-11-24T11:51:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans</id>
+    <content type="html"><![CDATA[<p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">measures</th>
+      <th>values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">dice</td>
+      <td>0.2731</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">pearson</td>
+      <td>0.2571</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">spearman</td>
+      <td>0.2511</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">kendalls</td>
+      <td>0.1695</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
+
+<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
+
+<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
+
+<p><code>
+cd /home2/data/Projects/CWAS/share/nki/05_cwas
+./30_mdmr_using_perms.bash
+</code></p>
+
+<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
+
+<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
+
+<ol>
+  <li>Read in the permuted Fstats</li>
+  <li>Loop through each permutation so you can</li>
+  <li>Calculate significance for both scans</li>
+  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
+  <li>Return this result and loop to #3 for the next permutation</li>
+</ol>
+
+<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
+
+<h2 id="results">Results</h2>
+
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
+
+<h2 id="update-connectir">Update Connectir</h2>
+
+<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Saturday - Week 47]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/23/saturday-week-47/"/>
+    <updated>2013-11-23T13:54:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/23/saturday-week-47</id>
+    <content type="html"><![CDATA[<p>This page covers both Saturday and Sunday (which is technically week 48).</p>
+
+<h2 id="todo">TODO</h2>
+
+<p>What’s left for the CWAS re-submission?</p>
+
+<ul>
+  <li>Permutation test for dice and spearman with IQ CWAS </li>
+</ul>
+
+<p><strong>DONE</strong></p>
+
+<ul>
+  <li>Compare computational time for MDMR to other approaches </li>
+</ul>
+
+<p><strong>DONE</strong></p>
+
+<ul>
+  <li>Bootstrap analyses</li>
+</ul>
+
+<p><strong>DONE</strong></p>
+
+<ul>
+  <li>Compare different distances</li>
+</ul>
+
+<p><strong>DONE WITH TABLES</strong>
+<strong>GENERATE SURFACE RESULTS</strong>
+<strong>WRITE TEXT FOR PAPER</strong>
+<strong>UPDATE RESPONSE</strong></p>
+
+<ul>
+  <li>Simulations</li>
+</ul>
+
+<p><strong>WRITE CODE</strong>
+<strong>GENERATE PLOTS</strong>
+<strong>ADD TO RESPONSE LETTER</strong></p>
+
+<ul>
+  <li>Results</li>
+</ul>
+
+<p><strong>RE-COMPUTE WHERE NEEDED</strong>
+<strong>ADD TO PAPER</strong></p>
+
+<ul>
+  <li>Update paper with stuff from response letter</li>
+</ul>
+
+<p><strong>I guess waiting for feedback on response letter</strong></p>
+
+<h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
+
+<p>See details at <a href="/2013/11/24/similarity-of-iq-cwas-across-scans/">my other post</a>.</p>
+
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
+
+<h2 id="computational-time">Computational Time</h2>
+
+<p>Below is the average time (ms) across 100 iterations. MDMR is a little slower than GLM but comparable.</p>
+
+<p><code>
+   method      time
+1  Degree   5.76817
+2     GLM  30.12167
+3    MDMR  51.73251
+4     SVM 228.89548
+5 K-Means 788.41195
+</code></p>
+
+<p>Further details can be found on the <a href="/2013/11/24/timing-comparison/">following post</a>.</p>
+
+<h2 id="comparing-distances">Comparing Distances</h2>
+
+<p>Further details can be found on the <a href="/2013/11/09/comparing-distances">following post</a>.</p>
+
+<h2 id="simulations">Simulations</h2>
+
+<p>Getting a late start on the simulations. </p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Comparing Distances]]></title>
@@ -121,17 +353,6 @@ dmat &lt;- as.matrix(dist(seedMaps %*% SQRT))
   <li>Mahalanobois (14.5 mins)</li>
 </ul>
 
-<h2 id="in-progress">In Progress</h2>
-
-<ul>
-  <li>Mahalanobois</li>
-</ul>
-
-<h2 id="redo">Redo</h2>
-
-<pre><code>* Concordance (will likely take long too)
-</code></pre>
-
 <h1 id="comparing-distances">Comparing Distances</h1>
 
 <p>Here is some quick code to compare the MDMR results using the different distance measures.</p>
@@ -143,12 +364,26 @@ library(bigmemory)
 dirs &lt;- Sys.glob("*/iq_age+sex+meanFD.mdmr/pvals.desc")
 pvals.mat &lt;- sapply(dirs, function(d) attach.big.matrix(d)[,1])
 colnames(pvals.mat) &lt;- sub("_k0800_to_k0800", "", dirname(dirname(dirs)))
+# reorder according to Zapala paper
+tmp &lt;- pvals.mat[,c(6,7,4,2,3,1,5)]
+# Percent significant
+round(cbind(
+	'1'=colMeans(tmp&lt;0.01), 	
+	'5'=colMeans(tmp&lt;0.05), 
+	'25'=colMeans(tmp&lt;0.25), 
+	'50'=colMeans(tmp&lt;0.50)
+)*100, 1)
 # Correlate
 cor(pvals.mat, method="s")
 # Dice-esque
-d.mat &lt;- crossprod(pvals.mat&lt;0.05)
+d.mat &lt;- crossprod(tmp&lt;0.05)
 print(d.mat) # counts
 round(sweep(d.mat, 1, diag(d.mat), '/')*100, 2) # percent overlap
+# Dice
+numer &lt;- 2*d.mat
+denom &lt;- (diag(d.mat) %*% t(rep(1,7))) + t(diag(d.mat) %*% t(rep(1,7)))
+dice &lt;- numer/denom
+print(round(dice, 2))
 # Voxels present in all distance measures
 sum(rowSums(pvals.mat&lt;0.05)==6)
 </code></p>
@@ -625,249 +860,6 @@ cd /home2/data/Projects/CWAS/share/figures/sfig_roi_comparison
     </li>
   </ol>
 </div>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Bootstrap of IQ CWAS]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/"/>
-    <updated>2013-11-04T23:38:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas</id>
-    <content type="html"><![CDATA[<p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
-
-<h1 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h1>
-
-<p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
-
-<p><strong>DONE</strong></p>
-
-<p>Now we want to represent a few aspects of the data. The easiest approach here is for us to plot the correlation and dice values comparing the different subsamples. This could help show how reproducible the different bootstrap samples are for our data. We can also further visualize this with surface maps of two of the samples with a median dice coefficient. In summary, todo:</p>
-
-<ul>
-  <li>Histogram of percent significant results (just for reference)</li>
-  <li>Correlate and dice</li>
-  <li>Plot two samples on brain</li>
-</ul>
-
-<h2 id="code-to-plot">Code to Plot</h2>
-
-<p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
-
-<p>The relevant scripts to plot are in <code>/home2/data/Projects/CWAS/share/figures/sfig_bootstrap</code> with output directed to <code>/home2/data/Projects/CWAS/figures/sfig_bootstrap</code>.</p>
-
-<hr />
-
-<h1 id="bootstrap-with-replication">Bootstrap with Replication</h1>
-
-<p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
-
-<h2 id="analysis">Analysis</h2>
-
-<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
-
-<p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
-
-<h2 id="plotting">Plotting</h2>
-
-<p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
-
-<p><code>r
-mpath &lt;- file.path("/home2/data/Projects/CWAS/nki/cwas", scan,  "compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/mask.nii.gz")
-mask  &lt;- read.mask(mpath)
-hdr   &lt;- read.nifti.header(mpath)
-</code></p>
-
-<h2 id="histogram-issue">Histogram Issue</h2>
-
-<p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
-
-<p>So my thought now is to see if the bootstrap approach with <code>boot</code> is shifting things in the wrong direction.</p>
-
-<p>My analysis/tests show that bootstrap with replication is not appropriate here and instead we should be using subsampling (bootstrapping without replication).</p>
-
-<p>http://rpubs.com/czarrar/cwas_distributions</p>
-
-<h3 id="older-approach">Older approach</h3>
-
-<p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
-
-<h2 id="code">Code</h2>
-
-<p><div><script src='https://gist.github.com/7164165.js?file=cwas_bootstrap.R'></script>
-<noscript><pre><code>library(connectir)
-library(boot)
-
-# data = model
-boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
-    ###
-    # Distances
-    ###
-    
-    # We need to sample the distances based on the indices
-    # that is we will create a new set of distances with subject indices based on indices
-    # This will also create a local copy of the big matrix
-    cat(&quot;Subset of subjects in distances\n&quot;)
-    sdist &lt;- filter_subdist(sdist, subs=indices)
-    
-    # Now we can gowerify
-    cat(&quot;Gowerify\n&quot;)
-    gmat &lt;- gower.subdist2(sdist)
-    
-    # Info
-    nvoxs &lt;- ncol(gmat)
-    nsubs &lt;- sqrt(nrow(gmat))
-    nperms &lt;- 4999
-    nfactors &lt;- 1
-    
-    
-    ###
-    # Calculate memory demands
-    ###
-    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
-    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
-    # this will give opts$blocksize and opts$superblocksize that will
-    # limit total RAM usage to 20GB
-    
-    ###
-    # Get the model ready
-    ###
-    
-    cat(&quot;Subset of subjects in model\n&quot;)
-    model &lt;- data.frame(data[indices,])
-    
-    
-    ###
-    # Call MDMR
-    ###
-    
-    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
-                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
-    
-    -log10(ret$pvals[,]) # or should I just return p-values?
-}
-
-
-###
-# Bootstrap ROI-based IQ Results
-###
-
-# Set parallel processing
-nthreads &lt;- 8
-set_parallel_procs(1, nthreads, TRUE)
-
-# Read in the distances (using ROI-based distances and not voxelwise here)
-#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
-dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
-sdist &lt;- attach.big.matrix(dpath)
-
-# Read in the model
-mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
-model &lt;- read.csv(mpath)
-model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
-
-# Set the formula
-f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
-
-# Call
-results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
-</code></pre></noscript></div>
-</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CWAS Computational Complexity]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/"/>
-    <updated>2013-11-03T20:06:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity</id>
-    <content type="html"><![CDATA[<p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
-
-<p>In summary, the complexity (I think) is</p>
-
-<ul>
-  <li>O(V*n^2) for computing the distance matrices</li>
-  <li>O(k*n^2) for creating the hat matrices</li>
-  <li>O(n^3) for gower centering the distance matrices</li>
-  <li>O(Pxn^2xV) for MDMR</li>
-</ul>
-
-<p>where V = # of voxels, n = # of subjects, k = # of regressors, P = # of permutations.</p>
-
-<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn^3xV) or O(n^3) whereas ours is O(n^2).</p>
-
-<h1 id="about-time-complexity">About Time Complexity</h1>
-
-<p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
-
-<p>Efficiency of an algorithm can be measured by [1]:</p>
-
-<ul>
-  <li>Execution time (time complexity)</li>
-  <li>Amount of memory required (space complexity)</li>
-</ul>
-
-<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There’s other relevant information on the wiki page and some online slides [2,3].</p>
-
-<h2 id="complexity-of-math-operations">Complexity of Math Operations</h2>
-
-<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n^2 or n*log(n) (depending on the implementation). Matrix multiplication is n^3. This is a little weird because I think of the correlation coefficient as n^2 since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
-
-<h1 id="cwas-complexity">CWAS Complexity</h1>
-
-<p>So I guess that’s all the background I need. Now let’s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
-
-<h2 id="distance-matrices">Distance Matrices</h2>
-
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n^2) change. Thus, this step should be O(V*n^2).</p>
-
-<h2 id="mdmr">MDMR</h2>
-
-<h3 id="hat-matrix">Hat Matrix</h3>
-
-<p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
-
-<ul>
-  <li>3 matrix algebra operations</li>
-  <li>1 matrix inversion</li>
-  <li>2 transpositions (but I won’t count those)</li>
-</ul>
-
-<p>Each of these operations is O(k<em>n^2) [4] so this step has O(k</em>n^2) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
-
-<h3 id="gower-matrix">Gower Matrix</h3>
-
-<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1’s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
-
-<ul>
-  <li>2 subtractions (additions)</li>
-  <li>2 divisions (multiplications)</li>
-  <li>2 matrix multiplications</li>
-</ul>
-
-<p>Since the matrix operation will dominate the time, the complexity is O(V*n^3) where V is the number of voxels.</p>
-
-<h3 id="pseudo-f-statistic">Pseudo-F Statistic</h3>
-
-<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it’s a P x n^2 matrix (P = # of permutations) and G is a vector of gower matrices so it’s a n^2 x V matrix (V = # of voxels). This means that there are:</p>
-
-<ul>
-  <li>1 subtraction (I-H)</li>
-  <li>2 matrix multiplications</li>
-  <li>1 division</li>
-</ul>
-
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn^2xV) so as in the distance matrix step the complexity will scale by n^2.</p>
-
-<h1 id="references">References</h1>
-
-<ol>
-  <li>http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</li>
-  <li>http://en.wikipedia.org/wiki/Time_complexity</li>
-  <li>http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</li>
-  <li>http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</li>
-  <li>http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</li>
-  <li>http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</li>
-</ol>
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-22T19:46:51-05:00</updated>
+  <updated>2013-11-25T00:32:48-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,237 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Timing Comparison]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/24/timing-comparison/"/>
+    <updated>2013-11-24T15:21:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/24/timing-comparison</id>
+    <content type="html"><![CDATA[<h2 id="overview">Overview</h2>
+
+<p>I will be comparing the timing for the following functions:</p>
+
+<ul>
+  <li>Degree Centrality</li>
+  <li>GLM</li>
+  <li>MDMR</li>
+  <li>SVM (linear)</li>
+  <li>K-Means Clustering</li>
+</ul>
+
+<p>This order also reflects the speed result (first is faster).</p>
+
+<h2 id="parameters">Parameters</h2>
+
+<p>I examined the speed for examining connectivity-phenotype relationships for the following parameters:</p>
+
+<ul>
+  <li>number of nodes or connectivity maps: <strong>10</strong></li>
+  <li>number of elements in each connectivity map: <strong>800</strong></li>
+  <li>number of participants: <strong>100</strong></li>
+  <li>number of iterations: <strong>100</strong></li>
+</ul>
+
+<p>In the case of SVM and K-Means, I did the analysis like I did with MDMR. I examined the fit between one connectivity map per participant and participant group membership. Thus, the analysis was repeated 10 times, one for each connectivity map.</p>
+
+<p>This whole process was repeated 100 times.</p>
+
+<h2 id="system">System</h2>
+
+<p>The timing analysis was performed on a MacBook Pro OSX v10.8 using a 2.53GHz Intel Core 2 Duo with 4GB of RAM.</p>
+
+<h2 id="results">Results</h2>
+
+<p>A graph shows the average timing for each approach across 100 iterations below.</p>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Method', 'Time'],
+      ['Degree',  6],
+      ['GLM',  		30],
+      ['MDMR',  	52],
+      ['SVM',  		229], 
+		 ['K-Means', 788]
+    ]);
+
+    var options = {
+      title: 'Average time (ms) to compute connectivity-phenotype association',
+      hAxis: {title: 'Method'}, 
+		 legend: {position: 'none'}
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+</script>
+
+<div id="chart_div" style="width: 500px; height: 300px;"></div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Similarity of IQ CWAS Across Scans]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/"/>
+    <updated>2013-11-24T11:51:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans</id>
+    <content type="html"><![CDATA[<p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">measures</th>
+      <th>values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">dice</td>
+      <td>0.2731</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">pearson</td>
+      <td>0.2571</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">spearman</td>
+      <td>0.2511</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">kendalls</td>
+      <td>0.1695</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
+
+<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
+
+<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">cd /home2/data/Projects/CWAS/share/nki/05_cwas
+</span><span class="line">./30_mdmr_using_perms.bash</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
+
+<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
+
+<ol>
+  <li>Read in the permuted Fstats</li>
+  <li>Loop through each permutation so you can</li>
+  <li>Calculate significance for both scans</li>
+  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
+  <li>Return this result and loop to #3 for the next permutation</li>
+</ol>
+
+<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
+
+<h2 id="results">Results</h2>
+
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
+
+<h2 id="update-connectir">Update Connectir</h2>
+
+<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Saturday - Week 47]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/23/saturday-week-47/"/>
+    <updated>2013-11-23T13:54:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/23/saturday-week-47</id>
+    <content type="html"><![CDATA[<p>This page covers both Saturday and Sunday (which is technically week 48).</p>
+
+<h2 id="todo">TODO</h2>
+
+<p>What’s left for the CWAS re-submission?</p>
+
+<ul>
+  <li>Permutation test for dice and spearman with IQ CWAS </li>
+</ul>
+
+<p><strong>DONE</strong></p>
+
+<ul>
+  <li>Compare computational time for MDMR to other approaches </li>
+</ul>
+
+<p><strong>DONE</strong></p>
+
+<ul>
+  <li>Bootstrap analyses</li>
+</ul>
+
+<p><strong>DONE</strong></p>
+
+<ul>
+  <li>Compare different distances</li>
+</ul>
+
+<p><strong>DONE WITH TABLES</strong>
+<strong>GENERATE SURFACE RESULTS</strong>
+<strong>WRITE TEXT FOR PAPER</strong>
+<strong>UPDATE RESPONSE</strong></p>
+
+<ul>
+  <li>Simulations</li>
+</ul>
+
+<p><strong>WRITE CODE</strong>
+<strong>GENERATE PLOTS</strong>
+<strong>ADD TO RESPONSE LETTER</strong></p>
+
+<ul>
+  <li>Results</li>
+</ul>
+
+<p><strong>RE-COMPUTE WHERE NEEDED</strong>
+<strong>ADD TO PAPER</strong></p>
+
+<ul>
+  <li>Update paper with stuff from response letter</li>
+</ul>
+
+<p><strong>I guess waiting for feedback on response letter</strong></p>
+
+<h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
+
+<p>See details at <a href="http://czarrar.github.io/2013/11/24/similarity-of-iq-cwas-across-scans/">my other post</a>.</p>
+
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
+
+<h2 id="computational-time">Computational Time</h2>
+
+<p>Below is the average time (ms) across 100 iterations. MDMR is a little slower than GLM but comparable.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">   method      time
+1  Degree   5.76817
+2     GLM  30.12167
+3    MDMR  51.73251
+4     SVM 228.89548
+5 K-Means 788.41195</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Further details can be found on the <a href="http://czarrar.github.io/2013/11/24/timing-comparison/">following post</a>.</p>
+
+<h2 id="comparing-distances">Comparing Distances</h2>
+
+<p>Further details can be found on the <a href="http://czarrar.github.io/2013/11/09/comparing-distances">following post</a>.</p>
+
+<h2 id="simulations">Simulations</h2>
+
+<p>Getting a late start on the simulations. </p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Friday - Week 47]]></title>
@@ -49,143 +280,8 @@
 <p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-<span class="line-number">34</span>
-<span class="line-number">35</span>
-<span class="line-number">36</span>
-<span class="line-number">37</span>
-<span class="line-number">38</span>
-<span class="line-number">39</span>
-<span class="line-number">40</span>
-<span class="line-number">41</span>
-<span class="line-number">42</span>
-<span class="line-number">43</span>
-<span class="line-number">44</span>
-<span class="line-number">45</span>
-<span class="line-number">46</span>
-<span class="line-number">47</span>
-<span class="line-number">48</span>
-<span class="line-number">49</span>
-<span class="line-number">50</span>
-<span class="line-number">51</span>
-<span class="line-number">52</span>
-<span class="line-number">53</span>
-<span class="line-number">54</span>
-<span class="line-number">55</span>
-<span class="line-number">56</span>
-<span class="line-number">57</span>
-<span class="line-number">58</span>
-<span class="line-number">59</span>
-<span class="line-number">60</span>
-<span class="line-number">61</span>
-<span class="line-number">62</span>
-<span class="line-number">63</span>
-<span class="line-number">64</span>
-<span class="line-number">65</span>
-<span class="line-number">66</span>
-<span class="line-number">67</span>
-<span class="line-number">68</span>
-<span class="line-number">69</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line">import code
-</span><span class="line">print "BP 1"
-</span><span class="line">code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">print "Normalize TimeSeries"
-</span><span class="line">timeseries = norm_cols(timeseries.T)
-</span><span class="line">
-</span><span class="line">j=0
-</span><span class="line">i = block_size
-</span><span class="line">
-</span><span class="line">import code
-</span><span class="line">print "BP 2"
-</span><span class="line">code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">while i &lt;= timeseries.shape[1]:
-</span><span class="line">   
-</span><span class="line">   print "running block -&gt;", i, j 
-</span><span class="line">   try:
-</span><span class="line">       #corr_matrix = np.nan_to_num(calc_corrcoef(timeseries[j:i].T, timeseries.T))
-</span><span class="line">       corr_matrix = np.nan_to_num(timeseries[:,j:i].T.dot(timeseries))
-</span><span class="line">       code.interact(local=locals())
-</span><span class="line">   except:
-</span><span class="line">       raise Exception("Error in calcuating block wise correlation for the block %,%"%(j,i))
-</span><span class="line">   
-</span><span class="line">   print "BP 3"
-</span><span class="line">   code.interact(local=locals())
-</span><span class="line">   
-</span><span class="line">   if r_value == None:
-</span><span class="line">        r_value = calc_threshold(1, threshold, scans, corr_matrix, full_matrix = False)
-</span><span class="line">
-</span><span class="line">   if method_options[1]:
-</span><span class="line">       r_matrix[j:i] = corr_matrix 
-</span><span class="line">
-</span><span class="line">   print "BP 4"
-</span><span class="line">   code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">   if method_options[0]:
-</span><span class="line">       if weight_options[0]:
-</span><span class="line">           degree_mat_binarize[j:i] = np.sum((corr_matrix &gt; r_value).astype(np.float32), axis = 1)
-</span><span class="line">       if weight_options[1]:
-</span><span class="line">           degree_mat_weighted[j:i] = np.sum(corr_matrix*(corr_matrix &gt; r_value).astype(np.float32), axis = 1)
-</span><span class="line">
-</span><span class="line">   j = i   
-</span><span class="line">   if i == timeseries.shape[1]:
-</span><span class="line">       break
-</span><span class="line">   elif (i+block_size) &gt; timeseries.shape[1]: 
-</span><span class="line">       i = timeseries.shape[1] 
-</span><span class="line">   else:
-</span><span class="line">       i += block_size    
-</span><span class="line">
-</span><span class="line">   print "BP 5"
-</span><span class="line">   code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">try:
-</span><span class="line">    if method_options[1]:
-</span><span class="line">        out_list.extend(calc_eigenV(r_matrix, r_value, weight_options))
-</span><span class="line">except Exception:
-</span><span class="line">    print "Error in calcuating eigen vector centrality"
-</span><span class="line">    raise
-</span><span class="line">
-</span><span class="line">print "BP 6"
-</span><span class="line">code.interact(local=locals())
-</span><span class="line">
-</span><span class="line"># Removing effect of auto-correlation
-</span><span class="line">if method_options[0]:
-</span><span class="line">    degree_mat_binarize[degree_mat_binarize!=0] = degree_mat_binarize[degree_mat_binarize!=0] - 1
-</span><span class="line">    degree_mat_weighted[degree_mat_weighted!=0] = degree_mat_weighted[degree_mat_weighted!=0] - 1
-</span><span class="line">
-</span><span class="line">return out_list</span></code></pre></td></tr></table></div></figure></notextile></div>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TODO</span><span class="p">:</span> <span class="n">breaks</span> <span class="n">pigments</span> <span class="n">will</span> <span class="nb">compile</span> <span class="n">elsewhere</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>block -&gt; 34382 0</p>
 
@@ -316,7 +412,7 @@
 <span class="line-number">5</span>
 <span class="line-number">6</span>
 </pre></td><td class="code"><pre><code class="bash"><span class="line">./memtop | grep ipython <span class="c"># get the pid</span>
-</span><span class="line"><span class="nv">PID</span><span class="o">=</span>32430
+</span><span class="line"><span class="nv">PID</span><span class="o">=</span>7873
 </span><span class="line"><span class="k">while</span> <span class="o">[[</span> True <span class="o">]]</span>; <span class="k">do</span>
 </span><span class="line">	./memtop -s -p <span class="nv">$PID</span>
 </span><span class="line">	sleep 0.5
@@ -1479,17 +1575,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
   <li>Mahalanobois (14.5 mins)</li>
 </ul>
 
-<h2 id="in-progress">In Progress</h2>
-
-<ul>
-  <li>Mahalanobois</li>
-</ul>
-
-<h2 id="redo">Redo</h2>
-
-<pre><code>* Concordance (will likely take long too)
-</code></pre>
-
 <h1 id="comparing-distances">Comparing Distances</h1>
 
 <p>Here is some quick code to compare the MDMR results using the different distance measures.</p>
@@ -1508,18 +1593,46 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 <span class="line-number">12</span>
 <span class="line-number">13</span>
 <span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
 </pre></td><td class="code"><pre><code class="r"><span class="line"><span class="c1"># Setup</span>
 </span><span class="line">setwd<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas/short/try_distances/&quot;</span><span class="p">)</span>
 </span><span class="line">library<span class="p">(</span>bigmemory<span class="p">)</span>
 </span><span class="line">dirs <span class="o">&lt;-</span> Sys.glob<span class="p">(</span><span class="s">&quot;*/iq_age+sex+meanFD.mdmr/pvals.desc&quot;</span><span class="p">)</span>
 </span><span class="line">pvals.mat <span class="o">&lt;-</span> sapply<span class="p">(</span>dirs<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>d<span class="p">)</span> attach.big.matrix<span class="p">(</span>d<span class="p">)[,</span><span class="m">1</span><span class="p">])</span>
 </span><span class="line">colnames<span class="p">(</span>pvals.mat<span class="p">)</span> <span class="o">&lt;-</span> sub<span class="p">(</span><span class="s">&quot;_k0800_to_k0800&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> dirname<span class="p">(</span>dirname<span class="p">(</span>dirs<span class="p">)))</span>
+</span><span class="line"><span class="c1"># reorder according to Zapala paper</span>
+</span><span class="line">tmp <span class="o">&lt;-</span> pvals.mat<span class="p">[,</span>c<span class="p">(</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">5</span><span class="p">)]</span>
+</span><span class="line"><span class="c1"># Percent significant</span>
+</span><span class="line">round<span class="p">(</span>cbind<span class="p">(</span>
+</span><span class="line">	<span class="s">&#39;1&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.01</span><span class="p">),</span> 	
+</span><span class="line">	<span class="s">&#39;5&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.05</span><span class="p">),</span>
+</span><span class="line">	<span class="s">&#39;25&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.25</span><span class="p">),</span>
+</span><span class="line">	<span class="s">&#39;50&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.50</span><span class="p">)</span>
+</span><span class="line"><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
 </span><span class="line"><span class="c1"># Correlate</span>
 </span><span class="line">cor<span class="p">(</span>pvals.mat<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">)</span>
 </span><span class="line"><span class="c1"># Dice-esque</span>
-</span><span class="line">d.mat <span class="o">&lt;-</span> crossprod<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span>
+</span><span class="line">d.mat <span class="o">&lt;-</span> crossprod<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span>
 </span><span class="line">print<span class="p">(</span>d.mat<span class="p">)</span> <span class="c1"># counts</span>
 </span><span class="line">round<span class="p">(</span>sweep<span class="p">(</span>d.mat<span class="p">,</span> <span class="m">1</span><span class="p">,</span> diag<span class="p">(</span>d.mat<span class="p">),</span> <span class="s">&#39;/&#39;</span><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span> <span class="c1"># percent overlap</span>
+</span><span class="line"><span class="c1"># Dice</span>
+</span><span class="line">numer <span class="o">&lt;-</span> <span class="m">2</span><span class="o">*</span>d.mat
+</span><span class="line">denom <span class="o">&lt;-</span> <span class="p">(</span>diag<span class="p">(</span>d.mat<span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>rep<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">)))</span> <span class="o">+</span> t<span class="p">(</span>diag<span class="p">(</span>d.mat<span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>rep<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">)))</span>
+</span><span class="line">dice <span class="o">&lt;-</span> numer<span class="o">/</span>denom
+</span><span class="line">print<span class="p">(</span>round<span class="p">(</span>dice<span class="p">,</span> <span class="m">2</span><span class="p">))</span>
 </span><span class="line"><span class="c1"># Voxels present in all distance measures</span>
 </span><span class="line">sum<span class="p">(</span>rowSums<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span><span class="o">==</span><span class="m">6</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
@@ -2369,7 +2482,7 @@ https://github.com/garydoranjr/misvm</p>
     <id>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas</id>
     <content type="html"><![CDATA[<p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
 
-<h1 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h1>
+<h2 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h2>
 
 <p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
 
@@ -2383,7 +2496,7 @@ https://github.com/garydoranjr/misvm</p>
   <li>Plot two samples on brain</li>
 </ul>
 
-<h2 id="code-to-plot">Code to Plot</h2>
+<h3 id="code-to-plot">Code to Plot</h3>
 
 <p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
 
@@ -2391,17 +2504,17 @@ https://github.com/garydoranjr/misvm</p>
 
 <hr />
 
-<h1 id="bootstrap-with-replication">Bootstrap with Replication</h1>
+<h2 id="bootstrap-with-replication">Bootstrap with Replication</h2>
 
 <p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
 
-<h2 id="analysis">Analysis</h2>
+<h3 id="analysis">Analysis</h3>
 
 <p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
 
 <p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
 
-<h2 id="plotting">Plotting</h2>
+<h3 id="plotting">Plotting</h3>
 
 <p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
 
@@ -2413,7 +2526,7 @@ https://github.com/garydoranjr/misvm</p>
 </span><span class="line">hdr   <span class="o">&lt;-</span> read.nifti.header<span class="p">(</span>mpath<span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<h2 id="histogram-issue">Histogram Issue</h2>
+<h3 id="histogram-issue">Histogram Issue</h3>
 
 <p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
 
@@ -2423,11 +2536,11 @@ https://github.com/garydoranjr/misvm</p>
 
 <p>http://rpubs.com/czarrar/cwas_distributions</p>
 
-<h3 id="older-approach">Older approach</h3>
+<h4 id="older-approach">Older approach</h4>
 
 <p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
 
-<h2 id="code">Code</h2>
+<h3 id="code">Code</h3>
 
 <div><script src="https://gist.github.com/7164165.js?file=cwas_bootstrap.R"></script>
 <noscript><pre><code>library(connectir)
@@ -2642,208 +2755,6 @@ http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</p>
 </span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Try to figure out why the old runs did fine?
 </span><span class="line">	<span class="o">[]</span> Using the new <span class="nb">complete </span>run as input <span class="k">for </span>QP
 </span></code></pre></td></tr></table></div></figure></notextile></div>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CWAS Computational Complexity]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/"/>
-    <updated>2013-11-03T20:06:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity</id>
-    <content type="html"><![CDATA[<p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
-
-<p>In summary, the complexity (I think) is</p>
-
-<ul>
-  <li>O(V*n^2) for computing the distance matrices</li>
-  <li>O(k*n^2) for creating the hat matrices</li>
-  <li>O(n^3) for gower centering the distance matrices</li>
-  <li>O(Pxn^2xV) for MDMR</li>
-</ul>
-
-<p>where V = # of voxels, n = # of subjects, k = # of regressors, P = # of permutations.</p>
-
-<p>The real optimization is the final MDMR step, where the traditional MDMR approach is O(Pxn^3xV) or O(n^3) whereas ours is O(n^2).</p>
-
-<h1 id="about-time-complexity">About Time Complexity</h1>
-
-<p>My first step here is to build up some knowledge about the computational time needed for computing the different steps. I searched the terms computational complexity and time complexity but could have also looked at Big-O Notation. It seems like time complexity is the most appropriate term.</p>
-
-<p>Efficiency of an algorithm can be measured by [1]:</p>
-
-<ul>
-  <li>Execution time (time complexity)</li>
-  <li>Amount of memory required (space complexity)</li>
-</ul>
-
-<p>Time complexity expresses the relationship between the size of the size of the input and the run time for the algorithm. There’s other relevant information on the wiki page and some online slides [2,3].</p>
-
-<h2 id="complexity-of-math-operations">Complexity of Math Operations</h2>
-
-<p>For measuring the complexity of individual operations, wikipedia has a great summary page [4]. Although it gives difference values for the elementary addition and multiplications, it seems one might assume they run in linear or quasi-linear time (based on other pages?). However, technically multiplication is n^2 or n*log(n) (depending on the implementation). Matrix multiplication is n^3. This is a little weird because I think of the correlation coefficient as n^2 since that is the number of pairwise correlations you are computing and according to a cs stackexchange post, pearson correlation is O(n) [5].</p>
-
-<h1 id="cwas-complexity">CWAS Complexity</h1>
-
-<p>So I guess that’s all the background I need. Now let’s figure out the complexity of CWAS. Since the computation of the connectivity maps is shared amongst many algorithms, I will ignore that step and start from the computation of the distance matrices.</p>
-
-<h2 id="distance-matrices">Distance Matrices</h2>
-
-<p>This step is done independently at each voxel. And, at a voxel, we have connectivity with m voxels across n participants. On this <code>mxn</code> matrix, we compute the pearson correlation between the m connectivity maps for all possible pairs of participants. Assuming that each correlation is computed in O(n) time [5], changing the number of voxels will lead to an O(n) change while changing the number of subjects will lead to an O(n^2) change. Thus, this step should be O(V*n^2).</p>
-
-<h2 id="mdmr">MDMR</h2>
-
-<h3 id="hat-matrix">Hat Matrix</h3>
-
-<p>This step involves <code>H = X ( X^T X )^-1 X^T</code>. Note that <code>X</code> is n participants x k regressors. So from the formula, we can see that there are</p>
-
-<ul>
-  <li>3 matrix algebra operations</li>
-  <li>1 matrix inversion</li>
-  <li>2 transpositions (but I won’t count those)</li>
-</ul>
-
-<p>Each of these operations is O(k<em>n^2) [4] so this step has O(k</em>n^2) complexity. This I believe would be around the complexity of multiple linear regression for one voxel as well [6].</p>
-
-<h3 id="gower-matrix">Gower Matrix</h3>
-
-<p>This step involves <code>G = (I - 11^T/n) * A * (I - 11^T/n)</code>. Note that <code>I</code> is the identity matrix (n x n), <code>1</code> is a vector of n 1’s, and <code>A</code> is half the squared distance matrix. So from the formula, we can see</p>
-
-<ul>
-  <li>2 subtractions (additions)</li>
-  <li>2 divisions (multiplications)</li>
-  <li>2 matrix multiplications</li>
-</ul>
-
-<p>Since the matrix operation will dominate the time, the complexity is O(V*n^3) where V is the number of voxels.</p>
-
-<h3 id="pseudo-f-statistic">Pseudo-F Statistic</h3>
-
-<p>This step involves <code>(HG/(k-1))/((I-H)G/(n-m))</code>. The division parts are not really relevant for the complexity and indeed are not needed when computing the permutations (McArdle and Anderson, 2001), so we actually have <code>(HG)/((I-H)G)</code>. Here H is a vector of hat matrix vectors so it’s a P x n^2 matrix (P = # of permutations) and G is a vector of gower matrices so it’s a n^2 x V matrix (V = # of voxels). This means that there are:</p>
-
-<ul>
-  <li>1 subtraction (I-H)</li>
-  <li>2 matrix multiplications</li>
-  <li>1 division</li>
-</ul>
-
-<p>Since the matrix multiplication takes the dominant time, we can ignore the other two division operations. The computational complexity is then O(Pxn^2xV) so as in the distance matrix step the complexity will scale by n^2.</p>
-
-<h1 id="references">References</h1>
-
-<ol>
-  <li>http://www.csd.uwo.ca/courses/CS1037a/notes/topic13_AnalysisOfAlgs.pdf</li>
-  <li>http://en.wikipedia.org/wiki/Time_complexity</li>
-  <li>http://www-fourier.ujf-grenoble.fr/~demailly/manuscripts/kvpy-print.pdf</li>
-  <li>http://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations</li>
-  <li>http://cs.stackexchange.com/questions/2604/whats-the-complexity-of-spearmans-rank-correlation-coefficient-computation</li>
-  <li>http://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation</li>
-</ol>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Another Quick Pack Journey]]></title>
-    <link href="http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey/"/>
-    <updated>2013-10-30T15:55:00-04:00</updated>
-    <id>http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey</id>
-    <content type="html"><![CDATA[<p>Today, I’ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for </p>
-
-<p>Some minor things, I helped Krishna with some ROI error he had in CPAC. It turned out that his issue was due to incorrectly binarizing the mask.</p>
-
-<h1 id="quickpack">QuickPack</h1>
-
-<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn’t track. I am re-running the complete run to see what errors I get again and try to figure those out. I’m also rerunning the alff to see what happens there.</p>
-
-<h2 id="complete-run">Complete Run</h2>
-
-<p>This appears to be re-running smoothly (knock on wood). The last time I ran a complete (preprocessing + derivatives) run, it led to some unclear problems.</p>
-
-<h2 id="alff-qp">ALFF QP</h2>
-
-<p>I get the same link error as I did before. The error occurs on line 562 in <code>utils.py</code> within the <code>create_symbolic_links</code>. The line and error are</p>
-
-<pre><code>ext = fname.split('.', 1)[1]
-IndexError: list index out of range
-</code></pre>
-
-<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don’t have much sense about what is going on with this file.</p>
-
-<p>Other bits of information:</p>
-
-<ul>
-  <li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
-z</code>.</li>
-  <li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
-</ul>
-
-<h3 id="steve-talk">Steve Talk</h3>
-
-<p>I discussed this issue with Steve and it seems I will need to get down and dirty with nipype to understand the origin of this problem.</p>
-
-<h2 id="reho-qp">REHO QP</h2>
-
-<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link<em>16 it is link</em>5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
-
-<p>A snapshot of the error is given below:</p>
-
-<pre><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
-
-/home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
-     37     except KeyError:
-     38         raise ImageFileError('Cannot work out file type of "%s"' %
----&gt; 39                              filename)
-     40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
-     41         klass = class_map[img_type]['class']
-
-ImageFileError: Cannot work out file type of ""
-Interface Function failed to run. 
-</code></pre>
-
-<p>To run the crash file, see the code below.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC&quot;</span><span class="p">)</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC.reho.utils</span>
-</span><span class="line"><span class="kn">from</span> <span class="nn">nipype.utils.filemanip</span> <span class="kn">import</span> <span class="n">loadflat</span>
-</span><span class="line">
-</span><span class="line"><span class="n">crashinfo</span> <span class="o">=</span> <span class="n">loadflat</span><span class="p">(</span><span class="s">&quot;/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz&quot;</span><span class="p">)</span>
-</span><span class="line"><span class="n">crashinfo</span><span class="p">[</span><span class="s">&#39;node&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h1 id="preprocessing-emotionalbs">Preprocessing EmotionalBS</h1>
-
-<p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
-
-<ul>
-  <li>Used ANTS for registration</li>
-  <li>Two nuisance correction strategies
-      * compcor+motion+linear+quadratic
-      * compcor+global+motion+linear+quadratic</li>
-  <li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
-  <li>Smoothing of 4.5mm (only for derivatives)</li>
-  <li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
-</ul>
-
-<h2 id="install-fsl-5-for-gelert">Install FSL 5 for Gelert</h2>
-
-<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike’s account didn’t have. And even if I had those, it wasn’t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so </p>
-
-<h1 id="new-journal">New Journal</h1>
-
-<p>I also worked on setting up this blog/journal with github user account. The goal is to chronicle my work efforts with particular thought on any issues I encounter. A major side benefit will be easier communication with others in the lab (e.g., was able to easily show the error for ALFF quick pack to Steve). Previously, I had been using different journal pages for each of my projects. I ended up being a big confused where to post stuff and often lost track of the markdown pages that I had created before they were published. With one journal site, this should all be easier.</p>
-
-<p>I’m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
 ]]></content>
   </entry>
   

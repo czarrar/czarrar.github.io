@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: abide - Zarrar's Journaling</title>
+  <title>Timing Comparison - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Category: abide">
+  <meta name="description" content="Overview I will be comparing the timing for the following functions: Degree Centrality GLM MDMR SVM (linear) K-Means Clustering This order also &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.ioblog/categories/abide/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/24/timing-comparison/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,119 +71,149 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Abide</h1>
+    
+      
+        <h1 class="entry-title">Timing Comparison</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-24T15:21:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><h2 id="overview">Overview</h2>
 
-  
-  <h2>2013</h2>
+<p>I will be comparing the timing for the following functions:</p>
 
-<article>
-  
-<h1><a href="/blog/2013/11/12/abide-sge-debug/">ABIDE SGE Debug</a></h1>
-<time datetime="2013-11-12T13:13:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>12</span> <span class='year'>2013</span></time>
+<ul>
+  <li>Degree Centrality</li>
+  <li>GLM</li>
+  <li>MDMR</li>
+  <li>SVM (linear)</li>
+  <li>K-Means Clustering</li>
+</ul>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a></span>
-</footer>
+<p>This order also reflects the speed result (first is faster).</p>
 
+<h2 id="parameters">Parameters</h2>
 
-</article>
+<p>I examined the speed for examining connectivity-phenotype relationships for the following parameters:</p>
 
+<ul>
+  <li>number of nodes or connectivity maps: <strong>10</strong></li>
+  <li>number of elements in each connectivity map: <strong>800</strong></li>
+  <li>number of participants: <strong>100</strong></li>
+  <li>number of iterations: <strong>100</strong></li>
+</ul>
 
+<p>In the case of SVM and K-Means, I did the analysis like I did with MDMR. I examined the fit between one connectivity map per participant and participant group membership. Thus, the analysis was repeated 10 times, one for each connectivity map.</p>
 
-<article>
-  
-<h1><a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a></h1>
-<time datetime="2013-11-11T16:26:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>11</span> <span class='year'>2013</span></time>
+<p>This whole process was repeated 100 times.</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a></span>
-</footer>
+<h2 id="system">System</h2>
 
+<p>The timing analysis was performed on a MacBook Pro OSX v10.8 using a 2.53GHz Intel Core 2 Duo with 4GB of RAM.</p>
 
-</article>
+<h2 id="results">Results</h2>
 
+<p>A graph shows the average timing for each approach across 100 iterations below.</p>
 
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-<article>
-  
-<h1><a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a></h1>
-<time datetime="2013-11-08T09:28:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>08</span> <span class='year'>2013</span></time>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Method', 'Time'],
+      ['Degree',  6],
+      ['GLM',  		30],
+      ['MDMR',  	52],
+      ['SVM',  		229], 
+		 ['K-Means', 788]
+    ]);
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a></span>
-</footer>
+    var options = {
+      title: 'Average time (ms) to compute connectivity-phenotype association',
+      hAxis: {title: 'Method'}, 
+		 legend: {position: 'none'}
+    };
 
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+</script>
 
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/07/thursday-lib-cmi-nyu/">thursday lib cmi nyu</a></h1>
-<time datetime="2013-11-07T11:17:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>07</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/06/wednesday-nki/">wednesday nki</a></h1>
-<time datetime="2013-11-06T14:59:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>06</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/05/tuesday/">Tuesday</a></h1>
-<time datetime="2013-11-05T15:26:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>05</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/emotional-bs/'>emotional-bs</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/04/monday/">Monday</a></h1>
-<time datetime="2013-11-04T12:20:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>04</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/abide/'>abide</a>, <a class='category' href='/blog/categories/nilearn/'>nilearn</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a></span>
-</footer>
-
-
-</article>
-
+<div id="chart_div" style="width: 500px; height: 300px;"></div>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-24T15:21:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cwas/'>cwas</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/24/timing-comparison/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/24/timing-comparison/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/" title="Previous Post: Similarity of IQ CWAS Across Scans">&laquo; Similarity of IQ CWAS Across Scans</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>
@@ -191,7 +221,23 @@
 <aside class="sidebar">
   
     
-  
+  <section>
+  <h1>Contents</h1>
+  <ol class="nested" style="margin-left: 1.3em;">
+<li class="nested" style="list-style:inherit;">
+	<a href="#overview">Overview</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#parameters">Parameters</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#system">System</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#results">Results</a>
+
+</li></ol>
+  </section>
 
 <section>
   <h1>Tag Cloud</h1>

@@ -131,143 +131,8 @@
 <p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-<span class="line-number">34</span>
-<span class="line-number">35</span>
-<span class="line-number">36</span>
-<span class="line-number">37</span>
-<span class="line-number">38</span>
-<span class="line-number">39</span>
-<span class="line-number">40</span>
-<span class="line-number">41</span>
-<span class="line-number">42</span>
-<span class="line-number">43</span>
-<span class="line-number">44</span>
-<span class="line-number">45</span>
-<span class="line-number">46</span>
-<span class="line-number">47</span>
-<span class="line-number">48</span>
-<span class="line-number">49</span>
-<span class="line-number">50</span>
-<span class="line-number">51</span>
-<span class="line-number">52</span>
-<span class="line-number">53</span>
-<span class="line-number">54</span>
-<span class="line-number">55</span>
-<span class="line-number">56</span>
-<span class="line-number">57</span>
-<span class="line-number">58</span>
-<span class="line-number">59</span>
-<span class="line-number">60</span>
-<span class="line-number">61</span>
-<span class="line-number">62</span>
-<span class="line-number">63</span>
-<span class="line-number">64</span>
-<span class="line-number">65</span>
-<span class="line-number">66</span>
-<span class="line-number">67</span>
-<span class="line-number">68</span>
-<span class="line-number">69</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line">import code
-</span><span class="line">print "BP 1"
-</span><span class="line">code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">print "Normalize TimeSeries"
-</span><span class="line">timeseries = norm_cols(timeseries.T)
-</span><span class="line">
-</span><span class="line">j=0
-</span><span class="line">i = block_size
-</span><span class="line">
-</span><span class="line">import code
-</span><span class="line">print "BP 2"
-</span><span class="line">code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">while i &lt;= timeseries.shape[1]:
-</span><span class="line">   
-</span><span class="line">   print "running block -&gt;", i, j 
-</span><span class="line">   try:
-</span><span class="line">       #corr_matrix = np.nan_to_num(calc_corrcoef(timeseries[j:i].T, timeseries.T))
-</span><span class="line">       corr_matrix = np.nan_to_num(timeseries[:,j:i].T.dot(timeseries))
-</span><span class="line">       code.interact(local=locals())
-</span><span class="line">   except:
-</span><span class="line">       raise Exception("Error in calcuating block wise correlation for the block %,%"%(j,i))
-</span><span class="line">   
-</span><span class="line">   print "BP 3"
-</span><span class="line">   code.interact(local=locals())
-</span><span class="line">   
-</span><span class="line">   if r_value == None:
-</span><span class="line">        r_value = calc_threshold(1, threshold, scans, corr_matrix, full_matrix = False)
-</span><span class="line">
-</span><span class="line">   if method_options[1]:
-</span><span class="line">       r_matrix[j:i] = corr_matrix 
-</span><span class="line">
-</span><span class="line">   print "BP 4"
-</span><span class="line">   code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">   if method_options[0]:
-</span><span class="line">       if weight_options[0]:
-</span><span class="line">           degree_mat_binarize[j:i] = np.sum((corr_matrix &gt; r_value).astype(np.float32), axis = 1)
-</span><span class="line">       if weight_options[1]:
-</span><span class="line">           degree_mat_weighted[j:i] = np.sum(corr_matrix*(corr_matrix &gt; r_value).astype(np.float32), axis = 1)
-</span><span class="line">
-</span><span class="line">   j = i   
-</span><span class="line">   if i == timeseries.shape[1]:
-</span><span class="line">       break
-</span><span class="line">   elif (i+block_size) &gt; timeseries.shape[1]: 
-</span><span class="line">       i = timeseries.shape[1] 
-</span><span class="line">   else:
-</span><span class="line">       i += block_size    
-</span><span class="line">
-</span><span class="line">   print "BP 5"
-</span><span class="line">   code.interact(local=locals())
-</span><span class="line">
-</span><span class="line">try:
-</span><span class="line">    if method_options[1]:
-</span><span class="line">        out_list.extend(calc_eigenV(r_matrix, r_value, weight_options))
-</span><span class="line">except Exception:
-</span><span class="line">    print "Error in calcuating eigen vector centrality"
-</span><span class="line">    raise
-</span><span class="line">
-</span><span class="line">print "BP 6"
-</span><span class="line">code.interact(local=locals())
-</span><span class="line">
-</span><span class="line"># Removing effect of auto-correlation
-</span><span class="line">if method_options[0]:
-</span><span class="line">    degree_mat_binarize[degree_mat_binarize!=0] = degree_mat_binarize[degree_mat_binarize!=0] - 1
-</span><span class="line">    degree_mat_weighted[degree_mat_weighted!=0] = degree_mat_weighted[degree_mat_weighted!=0] - 1
-</span><span class="line">
-</span><span class="line">return out_list</span></code></pre></td></tr></table></div></figure></notextile></div>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TODO</span><span class="p">:</span> <span class="n">breaks</span> <span class="n">pigments</span> <span class="n">will</span> <span class="nb">compile</span> <span class="n">elsewhere</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>block -&gt; 34382 0</p>
 
@@ -398,7 +263,7 @@
 <span class="line-number">5</span>
 <span class="line-number">6</span>
 </pre></td><td class="code"><pre><code class="bash"><span class="line">./memtop | grep ipython <span class="c"># get the pid</span>
-</span><span class="line"><span class="nv">PID</span><span class="o">=</span>32430
+</span><span class="line"><span class="nv">PID</span><span class="o">=</span>7873
 </span><span class="line"><span class="k">while</span> <span class="o">[[</span> True <span class="o">]]</span>; <span class="k">do</span>
 </span><span class="line">	./memtop -s -p <span class="nv">$PID</span>
 </span><span class="line">	sleep 0.5
@@ -468,6 +333,8 @@
         <a class="basic-alignment left articlenav" href="/blog/2013/11/21/thursday-week-47/" title="Previous Post: Thursday - Week 47">&laquo; Thursday - Week 47</a>
       
       
+        <a class="basic-alignment right articlenav" href="/blog/2013/11/23/saturday-week-47/" title="Next Post: Saturday - Week 47">Saturday - Week 47 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -511,11 +378,23 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 134.28571428571428%'>cwas(4)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
@@ -523,18 +402,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/20/wednesday-week-47/">Wednesday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/19/tuesday-week-47/">Tuesday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/18/more-quick-pack-testing/">More Quick Pack Testing</a>
       </li>
     
   </ul>
@@ -695,20 +562,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/24/2013');
+  hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
+  
+  highlightArray.push('11/24/2013');
+  hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
+  
+  highlightArray.push('11/23/2013');
+  hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
+  
   highlightArray.push('11/22/2013');
   hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
   
   highlightArray.push('11/21/2013');
   hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
-  
-  highlightArray.push('11/20/2013');
-  hightlightLinks.push('/blog/2013/11/20/wednesday-week-47/');
-  
-  highlightArray.push('11/19/2013');
-  hightlightLinks.push('/blog/2013/11/19/tuesday-week-47/');
-  
-  highlightArray.push('11/18/2013');
-  hightlightLinks.push('/blog/2013/11/18/more-quick-pack-testing/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);
