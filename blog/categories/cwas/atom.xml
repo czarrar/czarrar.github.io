@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-25T00:32:48-05:00</updated>
+  <updated>2013-11-25T09:58:51-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -163,55 +163,49 @@ cd /home2/data/Projects/CWAS/share/nki/05_cwas
 
 <h2 id="todo">TODO</h2>
 
-<p>What’s left for the CWAS re-submission?</p>
-
 <ul>
-  <li>Permutation test for dice and spearman with IQ CWAS </li>
+  <li><strong>Permutation test for dice and spearman with IQ CWAS</strong>
+    <ul>
+      <li><em>DONE</em></li>
+    </ul>
+  </li>
+  <li><strong>Compare computational time for MDMR to other approaches</strong>
+    <ul>
+      <li><em>DONE</em></li>
+    </ul>
+  </li>
+  <li><strong>Bootstrap analyses</strong>
+    <ul>
+      <li><em>DONE</em></li>
+    </ul>
+  </li>
+  <li><strong>Compare different distances</strong>
+    <ul>
+      <li><em>DONE WITH TABLES</em></li>
+      <li><em>GENERATE SURFACE RESULTS</em></li>
+      <li><em>WRITE TEXT FOR PAPER</em></li>
+      <li><em>UPDATE RESPONSE</em></li>
+    </ul>
+  </li>
+  <li><strong>Simulations</strong>
+    <ul>
+      <li><em>WRITE CODE</em></li>
+      <li><em>GENERATE PLOTS</em></li>
+      <li><em>ADD TO RESPONSE LETTER</em></li>
+    </ul>
+  </li>
+  <li><strong>Results</strong>
+    <ul>
+      <li><em>RE-COMPUTE WHERE NEEDED</em></li>
+      <li><em>ADD TO PAPER</em></li>
+    </ul>
+  </li>
+  <li><strong>Update paper with stuff from response letter</strong>
+    <ul>
+      <li><em>I guess waiting for feedback on response letter</em></li>
+    </ul>
+  </li>
 </ul>
-
-<p><strong>DONE</strong></p>
-
-<ul>
-  <li>Compare computational time for MDMR to other approaches </li>
-</ul>
-
-<p><strong>DONE</strong></p>
-
-<ul>
-  <li>Bootstrap analyses</li>
-</ul>
-
-<p><strong>DONE</strong></p>
-
-<ul>
-  <li>Compare different distances</li>
-</ul>
-
-<p><strong>DONE WITH TABLES</strong>
-<strong>GENERATE SURFACE RESULTS</strong>
-<strong>WRITE TEXT FOR PAPER</strong>
-<strong>UPDATE RESPONSE</strong></p>
-
-<ul>
-  <li>Simulations</li>
-</ul>
-
-<p><strong>WRITE CODE</strong>
-<strong>GENERATE PLOTS</strong>
-<strong>ADD TO RESPONSE LETTER</strong></p>
-
-<ul>
-  <li>Results</li>
-</ul>
-
-<p><strong>RE-COMPUTE WHERE NEEDED</strong>
-<strong>ADD TO PAPER</strong></p>
-
-<ul>
-  <li>Update paper with stuff from response letter</li>
-</ul>
-
-<p><strong>I guess waiting for feedback on response letter</strong></p>
 
 <h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
 
