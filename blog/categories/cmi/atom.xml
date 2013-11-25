@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-25T09:58:51-05:00</updated>
+  <updated>2013-11-25T10:19:27-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Monday - Week 48]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/25/monday-week-48/"/>
+    <updated>2013-11-25T09:59:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/25/monday-week-48</id>
+    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
+
+<p>Today, I will work on</p>
+
+<ul>
+  <li>finish memory fixes to centrality code</li>
+  <li>checking on the 3mm registration of ABIDE</li>
+  <li>setup quick pack for Pierre &amp; Xinian’s data</li>
+  <li>setup quick pack for ABIDE data (centrality and VMHC)</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Another Quick Pack Journey]]></title>

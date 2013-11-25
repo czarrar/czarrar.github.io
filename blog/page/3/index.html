@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step. In summary, the &hellip;">
+  <meta name="description" content="NiLearn Test Data Note that the code to generate all this is as well as the actual package is in /home/data/Projects/CPAC_Regression_Test/2013-10- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,169 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/04/monday/">Monday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-04T12:20:00-05:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="nilearn-test-data">NiLearn Test Data</h1>
+
+<p>Note that the code to generate all this is as well as the actual package is in <code>/home/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code>.</p>
+
+<p>I’ve already gotten the subject data and regressors. I am left to create the group phenotypic file. It appears that I don’t need to duplicate the previous setup so I can use what we have on motion per subject. With this new data packaged up, I uploaded it to my connectir repository as I still don’t have access to the ADHD200 repository.</p>
+
+<p>The download links are below:</p>
+
+<p>http://connectir.projects.nitrc.org/adhd40_p1.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p2.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p3.nii.gz
+http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</p>
+
+<p>And I have contacted the other peeps about this. So DONE.</p>
+
+<hr />
+
+<h1 id="abide-preprocessing">ABIDE Preprocessing</h1>
+
+<p>I found out that the QC pages are a little broken. So this will have to wait.</p>
+
+<h2 id="run-config-setup">Run Config Setup</h2>
+
+<p>I have adjusted this file to run one subject for every two nodes. I am using FSL5 now. Preprocessing will be run as well as all the derivatives except centrality (degree or eigen). This is because they both need a decent amount of RAM and computational time so I’ll wait to run them separately later.</p>
+
+<hr />
+
+<h1 id="quickpack">QuickPack</h1>
+
+<p>So the first general issue that I’m experiencing is that if I run everything (no quick-pack), then I don’t get any of the sym links. However, in my Emotional-BS run, the symlinks all seem to be fine! A little weird. I’m not sure what is causing the problem.</p>
+
+<h2 id="running-with-just-cpac">Running with just CPAC</h2>
+
+<p>I’m focusing on why I’m getting symlink issues when I run internally with CPAC. I think the reasons that no files are being symlinked is because there might be single quotes in the strategy part of the path.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">ln -s /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_RameyBorough/0051466_session_1/qc/mni_normalized_anatomical_a/mni_anat_a.png /home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_RameyBorough/_compcor_<span class="s1">&#39;ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.csf0&#39;</span>_CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan/qc/mni_anat_a.png
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If I run this command that was spit out from CPAC, then I get a “No such file or directory” error. This error doesn’t appear with CPAC but this might explain why no symlinks were generated.</p>
+
+<p>Now we must understand why those single quotes are there. We should note that there were actually 2 strategies that I had given but only one strategy folder in the symlinks directory folder was created. I wonder if this has to do with some error?</p>
+
+<p>I tried to open the config file with the GUI and re-save it, seeing if that would help but it didn’t. Now I’ll try to run the pipeline from the GUI. Yup that fixed the issue and it isn’t related to the fact that I’m using Dan’s path and shiz. Running this one subject through the GUI.</p>
+
+<h2 id="running-alff">Running ALFF</h2>
+
+<p>There was one previous and confusing link issue. However, another issue that I didn’t notice was the ALFF output directory using single quotes in its symlinks strategy directory and only has one of the two strategies. This suggests a potential benefit in running this through the GUI.</p>
+
+<h3 id="gui">GUI</h3>
+
+<p>This run failed. The error message is below. I am not sure what’s going on.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">Invalid Connection: ALFF: 0  resource_pool:  <span class="o">{}</span>
+</span><span class="line">Process Process-3:
+</span><span class="line">Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&quot;</span>, line 258, in _bootstrap
+</span><span class="line">    self.run<span class="o">()</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/multiprocessing/process.py&quot;</span>, line 114, in run
+</span><span class="line">    self._target<span class="o">(</span>*self._args, **self._kwargs<span class="o">)</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/CPAC/pipeline/cpac_pipeline.py&quot;</span>, line 1198, in prep_workflow
+</span><span class="line">    alff, <span class="s1">&#39;inputspec.rest_res&#39;</span><span class="o">)</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&quot;</span>, line 306, in connect
+</span><span class="line">    self._check_nodes<span class="o">(</span>newnodes<span class="o">)</span>
+</span><span class="line">  File <span class="s2">&quot;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nipype/pipeline/engine.py&quot;</span>, line 769, in _check_nodes
+</span><span class="line">    <span class="k">if </span>node.name in node_names:
+</span><span class="line">AttributeError: <span class="s1">&#39;NoneType&#39;</span> object has no attribute <span class="s1">&#39;name&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="cli">CLI</h3>
+
+<p>The error on the command-line is driven in part by two correction strategies (with and without global). Since my quick pack, can’t really do both of those strategies at once anyway, why not just have one strategy specified. Trying this with ALFF and that didn’t work! Ugh so it’s specifically related to the command-line, which is doing something differently than the GUI.</p>
+
+<hr />
+
+<h1 id="emotional-bs">Emotional-BS</h1>
+
+<p>The preprocessing is done but the QC pages were not generated due to some issue in CPAC. I wish there was some way of running the QC scripts with the current outputs without me having to re-run all of CPAC. Since I ran via gelert using the <code>/tmp</code> directory, it will also need to redo all the processing.</p>
+
+<hr />
+
+<h1 id="random">Random</h1>
+
+<p>I spent a bit of time getting the table of contents to work on these pages. Hopefully it was worth it (I might want to also add a go back to the top link for each header). At the very least it gives a sort-of summary list of what will be on the post.</p>
+
+<p>I think I also had a bit of trouble keeping on track today. It was very frustrating and I’m hoping it was just re-adjusting to coming back to work after a brief break.</p>
+
+<hr />
+
+<h1 id="todo">TODO</h1>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="o">[</span>x<span class="o">]</span> NiLearn Test Data
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Generate group phenotype file
+</span><span class="line"><span class="o">[]</span> ABIDE Preprocessing
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Email Cam about next steps
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Setup the pipeline with gelert excluding centrality
+</span><span class="line">	<span class="o">[]</span> Start running the pipeline
+</span><span class="line"><span class="o">[]</span> QuickPack
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Check that <span class="nb">complete </span>run was good
+</span><span class="line">	<span class="o">[</span>x<span class="o">]</span> Try to figure out why the old runs did fine?
+</span><span class="line">	<span class="o">[]</span> Using the new <span class="nb">complete </span>run as input <span class="k">for </span>QP
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -348,11 +511,15 @@ Interface Function failed to run.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 108.57142857142857%'>cmi(1)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/25/monday-week-48/">Monday - Week 48</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
@@ -368,10 +535,6 @@ Interface Function failed to run.
     
       <li class="post">
         <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a>
       </li>
     
   </ul>
@@ -532,6 +695,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/25/2013');
+  hightlightLinks.push('/blog/2013/11/25/monday-week-48/');
+  
   highlightArray.push('11/24/2013');
   hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
   
@@ -543,9 +709,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/22/2013');
   hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
-  
-  highlightArray.push('11/21/2013');
-  hightlightLinks.push('/blog/2013/11/21/thursday-week-47/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);
