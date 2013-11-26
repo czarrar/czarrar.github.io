@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-26T10:39:42-05:00</updated>
+  <updated>2013-11-26T13:57:47-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tuesday - Week 48]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/26/tuesday-week-48/"/>
+    <updated>2013-11-26T10:41:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/26/tuesday-week-48</id>
+    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
+
+<ul>
+  <li>Do final memory test for centrality code</li>
+  <li>Create command-line centrality wrapper</li>
+  <li>Finish 10mins (from yesterday) for CMI librarian tagging</li>
+  <li>Get details on ABIDE preprocessing output (what completed and what didn’t)</li>
+  <li>Start creating quick packs for different strategies (CPAC, Pierre, Xinian, and Chao-Gan).</li>
+</ul>
+
+<h3 id="questions">Questions</h3>
+
+<ul>
+  <li>How will quick pack work for Pierre’s data? Do we provide the identity matrix?</li>
+</ul>
+
+<h2 id="centrality">Centrality</h2>
+
+<h3 id="memory-test">Memory Test</h3>
+
+<p>Below are the results of running <code>./memtopX ./x_test_memprof.py</code> in <code>.../config/test_quick_pack</code>. I set a 1GB memory limit here, which led to two blocks being used. It seems further down that it came close to the this limit with 1.05GB being used.</p>
+
+<p><code>
+sorted nodes [0.0, 1.0]
+threshold_option --&gt; 0
+p_value -&gt; 0.266037302736
+r_value --&gt;  0.0913878943802
+inside optimized_centraltity, r_value -&gt; 0.0913878943802
+block_size -&gt;  14236
+Setup Degree Output
+Normalize TimeSeries
+Computing centrality across 18091 voxels
+running block -&gt; 14236 0
+...correlating
+...calculating degree
+...removing correlation matrix
+running block -&gt; 18091 14236
+...correlating
+...calculating degree
+...removing correlation matrix
+timing: 32.47
+</code></p>
+
+<p>Here is the corresponding output of <code>mem.log</code> that recorded the memory usage for my script every 30 seconds.</p>
+
+<p>File /Users/zarrar/Dropbox/Journal/octopress/source/downloads/code/cpac_centrality_memory.log could not be found</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Monday - Week 48]]></title>

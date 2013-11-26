@@ -249,11 +249,15 @@ https://github.com/garydoranjr/misvm</p>
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 125.71428571428572%'>cmi(3)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/25/updating-centrality/">Updating Centrality</a>
@@ -269,10 +273,6 @@ https://github.com/garydoranjr/misvm</p>
     
       <li class="post">
         <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
       </li>
     
   </ul>
@@ -433,6 +433,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/26/2013');
+  hightlightLinks.push('/blog/2013/11/26/tuesday-week-48/');
+  
   highlightArray.push('11/25/2013');
   hightlightLinks.push('/blog/2013/11/25/updating-centrality/');
   
@@ -444,9 +447,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/24/2013');
   hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
-  
-  highlightArray.push('11/23/2013');
-  hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the &hellip;">
+  <meta name="description" content="NiLearn I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,129 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/05/tuesday/">Tuesday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-05T15:26:00-05:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="nilearn">NiLearn</h1>
+
+<p>I need to regenerate the 4D output. I previously used data with nuisance co-variates removed, however I should have used the data prior to nuisance correction. Remember the data’s location<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+
+<p>So again I want to turn off nuisance correction and bandpass filtering. In order to do this, I’m rerunning (on top of the old) the participants with nuisance and bandpass turned off.</p>
+
+<p>Checking on the preprocessing, it initially skipped a bunch of things but now seems to be running some initial steps again. If this takes too long (i.e., is still going into tomorrow), then I might try to apply the warp myself tomorrow.</p>
+
+<hr />
+
+<h1 id="abide">ABIDE</h1>
+
+<p>Since the QC pages have been fixed, I started to re-run the ABIDE analysis. This time I used 6mm of smoothing, added back the degree centrality, and running each subject with 4 cores on gelert. It is running strong (for now). There are 1102 subjects to run and currently 62 are being run in parallel.</p>
+
+<hr />
+
+<h1 id="emotional-bs">Emotional BS</h1>
+
+<p>I ran the preprocessing for these participants before the QC issue for CPAC was fixed. Now I want to rebuild just the QC as follows:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home/milham/Downloads/cpac_master&quot;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
+</span><span class="line"><span class="n">CPAC</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">create_all_qc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;/home2/data/Projects/Emotional-BS/processed_data&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This does work but I then later noticed that I used 4.5mm as the smoothness instead of 6mm. I may need to rerun this down the line? Since for now this only effects derivatives, which I’m not really using, then this shouldn’t be an issue.</p>
+
+<p>I also looked into co-registering the two anatomicals. I ended up dropping this endeavor for now since the gain in SNR and benefit to any results should not be too great. In looking at the QC, one possibility is that we may want to replace one of our anatomicals with the other anatomical.</p>
+
+<h2 id="multi-instance-learning">Multi-Instance Learning</h2>
+
+<p>I did a basic search for relevant reading material. I found the following:</p>
+
+<p><em>A paper outlining the approach in a seemingly easy manner.</em>
+http://pages.ucsd.edu/~ztu/courses/2013_CS_spring/reading/bbabenko_re.pdf</p>
+
+<p><em>Very detailed slides that appear to give a good overview.</em>
+http://www.cs.columbia.edu/~andrews/pub/talk-proposal-july8-clean.pdf</p>
+
+<p><em>Two links with relevant python code</em><br />
+http://engr.case.edu/doran_gary/code.html<br />
+https://github.com/garydoranjr/misvm</p>
+
+<hr />
+
+<h1 id="todo">TODO</h1>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="p">[]</span> <span class="n">NiLearn</span> <span class="n">Test</span> <span class="n">Data</span>
+</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Sent</span> <span class="n">email</span> <span class="n">confirming</span> <span class="n">that</span> <span class="n">band</span><span class="o">-</span><span class="k">pass</span> <span class="n">filtering</span> <span class="ow">is</span> <span class="n">required</span>
+</span><span class="line">	<span class="p">[]</span> <span class="n">Get</span> <span class="n">the</span> <span class="n">pre</span><span class="o">-</span><span class="n">nuisance</span> <span class="n">variables</span>
+</span><span class="line"><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">ABIDE</span> <span class="n">Preprocessing</span>
+</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Restart</span> <span class="n">the</span> <span class="n">preprocessing</span> <span class="n">using</span> <span class="mi">4</span> <span class="n">cores</span> <span class="p">(</span><span class="n">everything</span> <span class="k">except</span> <span class="n">eigen</span><span class="p">)</span>
+</span><span class="line"><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Emotional</span> <span class="n">BS</span>
+</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">regenerate</span> <span class="n">the</span> <span class="n">QC</span> <span class="n">pages</span> <span class="n">based</span> <span class="n">on</span> <span class="n">current</span> <span class="n">output</span>
+</span><span class="line">	<span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">Lookup</span> <span class="n">some</span> <span class="n">multi</span><span class="o">-</span><span class="n">instance</span> <span class="n">learning</span> <span class="n">stuff</span>
+</span><span class="line">	<span class="p">[]</span> <span class="n">QC</span>
+</span><span class="line"><span class="p">[]</span> <span class="n">QuickPack</span>
+</span><span class="line">	<span class="p">[]</span> <span class="err">?</span> <span class="p">(</span><span class="ow">not</span> <span class="n">enough</span> <span class="n">time</span> <span class="n">today</span> <span class="n">to</span> <span class="n">make</span> <span class="n">substantial</span> <span class="n">progress</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><code>/home2/data/Projects/CPAC_Regression_Test/2013-10-04_v0-3-2/run/gael-o/package</code><a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -689,11 +812,15 @@ Interface Function failed to run.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 125.71428571428572%'>cmi(3)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/25/updating-centrality/">Updating Centrality</a>
@@ -709,10 +836,6 @@ Interface Function failed to run.
     
       <li class="post">
         <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
       </li>
     
   </ul>
@@ -873,6 +996,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/26/2013');
+  hightlightLinks.push('/blog/2013/11/26/tuesday-week-48/');
+  
   highlightArray.push('11/25/2013');
   hightlightLinks.push('/blog/2013/11/25/updating-centrality/');
   
@@ -884,9 +1010,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/24/2013');
   hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
-  
-  highlightArray.push('11/23/2013');
-  hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);
