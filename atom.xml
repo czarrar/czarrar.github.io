@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-26T16:55:54-05:00</updated>
+  <updated>2013-11-26T18:48:43-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,12 +18,25 @@
     <link href="http://czarrar.github.io/blog/2013/11/26/tuesday-week-48/"/>
     <updated>2013-11-26T10:41:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/26/tuesday-week-48</id>
-    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
+    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
+
+<p>I was able to get through a fair amount of what I planned (next section). Here is what I did do:</p>
+
+<ul>
+  <li>Finished updating centrality code to be memory efficient</li>
+  <li>Created a command-line tool to run said centrality code</li>
+  <li>Ran memory test on final centrality code. The memory limit that a user sets is roughly (within 50MB) the amount that is actually used.</li>
+  <li>Found path to Yang’s QC report for ABIDE</li>
+  <li>Finished writing script to check what CPAC outputs exist. Most of the data appear to have been written with only a few missing data.</li>
+</ul>
+
+<h2 id="plans">Plans</h2>
 
 <ul>
   <li>Do final memory test for centrality code</li>
   <li>Create command-line centrality wrapper</li>
   <li>Finish 10mins (from yesterday) for CMI librarian tagging</li>
+  <li>Find Yang’s old QCing and related PDF</li>
   <li>Get details on ABIDE preprocessing output (what completed and what didn’t)</li>
   <li>Start creating quick packs for different strategies (CPAC, Pierre, Xinian, and Chao-Gan).</li>
 </ul>
@@ -34,17 +47,25 @@
   <li>How will quick pack work for Pierre’s data? Do we provide the identity matrix?</li>
 </ul>
 
-<h2 id="centrality">Centrality</h2>
+<h2 id="abide-processing-output">ABIDE Processing Output</h2>
 
-<p>Details for the military tactics taken to resolving the memory overage issues in the centrality, see <a href="http://czarrar.github.io/blog/2013/11/25/updating-centrality">this page</a>.</p>
+<p>One thing to check is if all scans have been preprocessed (i.e., if a subject has 3 scans as is the case with OHSU). I could check to see what other’s have done. Hmm not a bad idea. First find subjects with more than one scan and then see what happens with these subjects. Yes, the OHSU data has more than 1 scan per participant (can be up to 3 scans). Our CPAC processing did produce output for all scans. Ok so Xinian and I think Chao-Gan did not actually preprocess the additional scans, but Pierre did. Also Xinian and Chao-Gan did not concatenate their data for those subjects as the number of time-points was the same.</p>
 
-<h3 id="memory-test">Memory Test</h3>
+<p>I also finished creating a script that checks on the filtered and globally corrected data.</p>
 
-<p>Below are the results of running <code>./memtopX ./x_test_memprof.py</code> in <code>.../config/test_quick_pack</code>. I set a 1GB memory limit here, which led to two blocks being used. It seems further down that it came close to the this limit with 1.05GB being used.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">df <span class="o">&lt;-</span> read.csv<span class="p">(</span><span class="s">&quot;zcheck_exists_filt_global.csv&quot;</span><span class="p">)</span>
+</span><span class="line">rownames<span class="p">(</span>df<span class="p">)</span> <span class="o">&lt;-</span> df<span class="o">$</span>X
+</span><span class="line">df <span class="o">&lt;-</span> df<span class="p">[,</span><span class="m">-1</span><span class="p">]</span>
+</span><span class="line">nrow<span class="p">(</span>df<span class="p">)</span> <span class="o">-</span> colSums<span class="p">(</span>df<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>Note that I’ve used 4mm data in standard space here, although later I also test with similar results using 3mm data.</p>
+<p>Here is the output below. We can see that we have most of the data but there are a couple of bad (possibly very bad) subject data.</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 <span class="line-number">3</span>
 <span class="line-number">4</span>
@@ -62,24 +83,79 @@
 <span class="line-number">16</span>
 <span class="line-number">17</span>
 <span class="line-number">18</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">sorted nodes [0.0, 1.0]
-</span><span class="line">threshold_option --&gt; 0
-</span><span class="line">p_value -&gt; 0.266037302736
-</span><span class="line">r_value --&gt;  0.0913878943802
-</span><span class="line">inside optimized_centraltity, r_value -&gt; 0.0913878943802
-</span><span class="line">block_size -&gt;  14236
+</pre></td><td class="code"><pre><code class="r"><span class="line">                         alff                  anatomical_brain
+</span><span class="line">                            <span class="m">3</span>                                 <span class="m">0</span>
+</span><span class="line">          anatomical_reorient   anatomical_to_mni_nonlinear_xfm
+</span><span class="line">                            <span class="m">0</span>                                 <span class="m">0</span>
+</span><span class="line">              ants_affine_xfm                                dr
+</span><span class="line">                            <span class="m">0</span>                                 <span class="m">3</span>
+</span><span class="line">                        falff             functional_brain_mask
+</span><span class="line">                            <span class="m">3</span>                                 <span class="m">2</span>
+</span><span class="line">functional_brain_mask_to_standard          functional_freq_filtered
+</span><span class="line">                            <span class="m">2</span>                                 <span class="m">3</span>
+</span><span class="line">               functional_mni     functional_nuisance_residuals
+</span><span class="line">                            <span class="m">3</span>                                 <span class="m">3</span>
+</span><span class="line">functional_to_anat_linear_xfm                   mean_functional
+</span><span class="line">                            <span class="m">2</span>                                 <span class="m">2</span>
+</span><span class="line">    mni_normalized_anatomical                      preprocessed
+</span><span class="line">                            <span class="m">0</span>                                 <span class="m">2</span>
+</span><span class="line">                         reho
+</span><span class="line">                            <span class="m">3</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="abide-qc">ABIDE QC</h2>
+
+<p>I was able to find Yang’s QC report in <code>/data/Projects/ABIDE_Initiative/CPAC/QC</code>.</p>
+
+<p>Didn’t get a chance to regenerate the QC outputs but I think I might want to do this after I resolve that all the subject’s have data output with CPAC.</p>
+
+<h2 id="centrality">Centrality</h2>
+
+<p>Details for the military tactics taken to resolving the memory overage issues in the centrality, see <a href="http://czarrar.github.io/blog/2013/11/25/updating-centrality">this page</a>.</p>
+
+<h3 id="memory-test">Memory Test</h3>
+
+<p>Below are the results of running <code>./memtopX ./x_test_memprof.py</code> in <code>.../config/test_quick_pack</code>. I set a 1GB memory limit here, which led to two blocks being used. It seems further down that it came close to the this limit with 1.05GB being used.</p>
+
+<p>Note that I’ve used 4mm data in standard space here, although later I also test with similar results using 3mm data.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">sorted nodes <span class="p">[</span><span class="m">0.0</span><span class="p">,</span> <span class="m">1.0</span><span class="p">]</span>
+</span><span class="line">threshold_option <span class="o">--&gt;</span> <span class="m">0</span>
+</span><span class="line">p_value <span class="o">-&gt;</span> <span class="m">0.266037302736</span>
+</span><span class="line">r_value <span class="o">--&gt;</span>  <span class="m">0.0913878943802</span>
+</span><span class="line">inside optimized_centraltity<span class="p">,</span> r_value <span class="o">-&gt;</span> <span class="m">0.0913878943802</span>
+</span><span class="line">block_size <span class="o">-&gt;</span>  <span class="m">14236</span>
 </span><span class="line">Setup Degree Output
 </span><span class="line">Normalize TimeSeries
-</span><span class="line">Computing centrality across 18091 voxels
-</span><span class="line">running block -&gt; 14236 0
+</span><span class="line">Computing centrality across <span class="m">18091</span> voxels
+</span><span class="line">running block <span class="o">-&gt;</span> <span class="m">14236</span> <span class="m">0</span>
 </span><span class="line">...correlating
 </span><span class="line">...calculating degree
 </span><span class="line">...removing correlation matrix
-</span><span class="line">running block -&gt; 18091 14236
+</span><span class="line">running block <span class="o">-&gt;</span> <span class="m">18091</span> <span class="m">14236</span>
 </span><span class="line">...correlating
 </span><span class="line">...calculating degree
 </span><span class="line">...removing correlation matrix
-</span><span class="line">timing: 32.47</span></code></pre></td></tr></table></div></figure></notextile></div>
+</span><span class="line">timing<span class="o">:</span> <span class="m">32.47</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Here is the corresponding output of <code>mem.log</code> that recorded the memory usage for my script every 30 seconds.</p>
 
@@ -91,7 +167,7 @@
 
 <p>To make it easier to directly call the centrality code, I created a command-line interface. This is in <code>C-PAC/tools</code> and the script is called <code>cpac_centrality.py</code>. The auto-generated help is shown below.</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 <span class="line-number">3</span>
 <span class="line-number">4</span>
@@ -120,41 +196,36 @@
 <span class="line-number">27</span>
 <span class="line-number">28</span>
 <span class="line-number">29</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">usage: cpac_centrality.py [-h] -i INPUT [-m MASK] [--degree] [--eigen]
-</span><span class="line">                          [--binarize] [--weighted] [--sparsity SPARSITY]
-</span><span class="line">                          [--pvalue PVALUE] [--rho RHO] [--memlimit MEMLIMIT]
-</span><span class="line">                          [-o OUTDIR]
+</pre></td><td class="code"><pre><code class="r"><span class="line">usage<span class="o">:</span> cpac_centrality.py <span class="p">[</span><span class="o">-</span>h<span class="p">]</span> <span class="o">-</span>i INPUT <span class="p">[</span><span class="o">-</span>m MASK<span class="p">]</span> <span class="p">[</span><span class="o">--</span>degree<span class="p">]</span> <span class="p">[</span><span class="o">--</span>eigen<span class="p">]</span>
+</span><span class="line">                          <span class="p">[</span><span class="o">--</span>binarize<span class="p">]</span> <span class="p">[</span><span class="o">--</span>weighted<span class="p">]</span> <span class="p">[</span><span class="o">--</span>sparsity SPARSITY<span class="p">]</span>
+</span><span class="line">                          <span class="p">[</span><span class="o">--</span>pvalue PVALUE<span class="p">]</span> <span class="p">[</span><span class="o">--</span>rho RHO<span class="p">]</span> <span class="p">[</span><span class="o">--</span>memlimit MEMLIMIT<span class="p">]</span>
+</span><span class="line">                          <span class="p">[</span><span class="o">-</span>o OUTDIR<span class="p">]</span>
 </span><span class="line">
-</span><span class="line">Compute centrality for a given timeseries.
+</span><span class="line">Compute centrality <span class="kr">for</span> a given timeseries.
 </span><span class="line">
-</span><span class="line">optional arguments:
-</span><span class="line">  -h, --help            show this help message and exit
-</span><span class="line">  -i INPUT, --input INPUT
+</span><span class="line">optional arguments<span class="o">:</span>
+</span><span class="line">  <span class="o">-</span>h<span class="p">,</span> <span class="o">--</span>help            show this help message and exit
+</span><span class="line">  <span class="o">-</span>i INPUT<span class="p">,</span> <span class="o">--</span>input INPUT
 </span><span class="line">                        Input timeseries data file
-</span><span class="line">  -m MASK, --mask MASK  Brain mask (by default the program will create a mask
-</span><span class="line">                        where voxels have non-zero variance regardeless of the
-</span><span class="line">                        user specified mask).
-</span><span class="line">  --degree              Calculate degree centrality
-</span><span class="line">  --eigen               Calculate eigen centrality
-</span><span class="line">  --binarize            For a given voxel, save the number of connections that
+</span><span class="line">  <span class="o">-</span>m MASK<span class="p">,</span> <span class="o">--</span>mask MASK  Brain mask <span class="p">(</span>by default the program will create a mask
+</span><span class="line">                        where voxels have non<span class="o">-</span>zero variance regardeless of the
+</span><span class="line">                        user specified mask<span class="p">)</span>.
+</span><span class="line">  <span class="o">--</span>degree              Calculate degree centrality
+</span><span class="line">  <span class="o">--</span>eigen               Calculate eigen centrality
+</span><span class="line">  <span class="o">--</span>binarize            For a given voxel<span class="p">,</span> save the number of connections that
 </span><span class="line">                        pass a threshold
-</span><span class="line">  --weighted            For a given voxel, save the sum of all connection
+</span><span class="line">  <span class="o">--</span>weighted            For a given voxel<span class="p">,</span> save the sum of all connection
 </span><span class="line">                        weights that pass a threshold.
-</span><span class="line">  --sparsity SPARSITY   Sparsity based threshold. (Only one threshold option
-</span><span class="line">                        can be specified.)
-</span><span class="line">  --pvalue PVALUE       P-value threshold for each connection. (Only one
-</span><span class="line">                        threshold option can be specified.)
-</span><span class="line">  --rho RHO             Regular correlation threshold. (Only one threshold
-</span><span class="line">                        option can be specified.)
-</span><span class="line">  --memlimit MEMLIMIT   Memory limit that should be set.
-</span><span class="line">  -o OUTDIR, --outdir OUTDIR
-</span><span class="line">                        Output directory</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="abide-processing-output">ABIDE Processing Output</h2>
-
-<p>We started looking into this yesterday, let’s finish it off today.</p>
-
-<p>One thing to check is that not all scans have been preprocessed. I could check to see what other’s have done. Hmm not a bad idea. First find subjects with more than one scan and then see what happens with these subjects. Yes, the OHSU data has more than 1 scan per participant (can be up to 3 scans). Ok so Xinian and I think Chao-Gan did not actually preprocess the additional scans, Pierre did.</p>
+</span><span class="line">  <span class="o">--</span>sparsity SPARSITY   Sparsity based threshold. <span class="p">(</span>Only one threshold option
+</span><span class="line">                        can be specified.<span class="p">)</span>
+</span><span class="line">  <span class="o">--</span>pvalue PVALUE       P<span class="o">-</span>value threshold <span class="kr">for</span> each connection. <span class="p">(</span>Only one
+</span><span class="line">                        threshold option can be specified.<span class="p">)</span>
+</span><span class="line">  <span class="o">--</span>rho RHO             Regular correlation threshold. <span class="p">(</span>Only one threshold
+</span><span class="line">                        option can be specified.<span class="p">)</span>
+</span><span class="line">  <span class="o">--</span>memlimit MEMLIMIT   Memory limit that should be set.
+</span><span class="line">  <span class="o">-</span>o OUTDIR<span class="p">,</span> <span class="o">--</span>outdir OUTDIR
+</span><span class="line">                        Output directory
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 ]]></content>
   </entry>

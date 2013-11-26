@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-26T16:55:54-05:00</updated>
+  <updated>2013-11-26T18:48:43-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,12 +18,25 @@
     <link href="http://czarrar.github.io/blog/2013/11/26/tuesday-week-48/"/>
     <updated>2013-11-26T10:41:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/26/tuesday-week-48</id>
-    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
+    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
+
+<p>I was able to get through a fair amount of what I planned (next section). Here is what I did do:</p>
+
+<ul>
+  <li>Finished updating centrality code to be memory efficient</li>
+  <li>Created a command-line tool to run said centrality code</li>
+  <li>Ran memory test on final centrality code. The memory limit that a user sets is roughly (within 50MB) the amount that is actually used.</li>
+  <li>Found path to Yang’s QC report for ABIDE</li>
+  <li>Finished writing script to check what CPAC outputs exist. Most of the data appear to have been written with only a few missing data.</li>
+</ul>
+
+<h2 id="plans">Plans</h2>
 
 <ul>
   <li>Do final memory test for centrality code</li>
   <li>Create command-line centrality wrapper</li>
   <li>Finish 10mins (from yesterday) for CMI librarian tagging</li>
+  <li>Find Yang’s old QCing and related PDF</li>
   <li>Get details on ABIDE preprocessing output (what completed and what didn’t)</li>
   <li>Start creating quick packs for different strategies (CPAC, Pierre, Xinian, and Chao-Gan).</li>
 </ul>
@@ -33,6 +46,48 @@
 <ul>
   <li>How will quick pack work for Pierre’s data? Do we provide the identity matrix?</li>
 </ul>
+
+<h2 id="abide-processing-output">ABIDE Processing Output</h2>
+
+<p>One thing to check is if all scans have been preprocessed (i.e., if a subject has 3 scans as is the case with OHSU). I could check to see what other’s have done. Hmm not a bad idea. First find subjects with more than one scan and then see what happens with these subjects. Yes, the OHSU data has more than 1 scan per participant (can be up to 3 scans). Our CPAC processing did produce output for all scans. Ok so Xinian and I think Chao-Gan did not actually preprocess the additional scans, but Pierre did. Also Xinian and Chao-Gan did not concatenate their data for those subjects as the number of time-points was the same.</p>
+
+<p>I also finished creating a script that checks on the filtered and globally corrected data.</p>
+
+<p><code>r
+df &lt;- read.csv("zcheck_exists_filt_global.csv")
+rownames(df) &lt;- df$X
+df &lt;- df[,-1]
+nrow(df) - colSums(df)
+</code></p>
+
+<p>Here is the output below. We can see that we have most of the data but there are a couple of bad (possibly very bad) subject data.</p>
+
+<p><code>
+                             alff                  anatomical_brain 
+                                3                                 0 
+              anatomical_reorient   anatomical_to_mni_nonlinear_xfm 
+                                0                                 0 
+                  ants_affine_xfm                                dr 
+                                0                                 3 
+                            falff             functional_brain_mask 
+                                3                                 2 
+functional_brain_mask_to_standard          functional_freq_filtered 
+                                2                                 3 
+                   functional_mni     functional_nuisance_residuals 
+                                3                                 3 
+    functional_to_anat_linear_xfm                   mean_functional 
+                                2                                 2 
+        mni_normalized_anatomical                      preprocessed 
+                                0                                 2 
+                             reho 
+                                3
+</code></p>
+
+<h2 id="abide-qc">ABIDE QC</h2>
+
+<p>I was able to find Yang’s QC report in <code>/data/Projects/ABIDE_Initiative/CPAC/QC</code>.</p>
+
+<p>Didn’t get a chance to regenerate the QC outputs but I think I might want to do this after I resolve that all the subject’s have data output with CPAC.</p>
 
 <h2 id="centrality">Centrality</h2>
 
@@ -75,7 +130,7 @@ timing: 32.47
 
 <p>To make it easier to directly call the centrality code, I created a command-line interface. This is in <code>C-PAC/tools</code> and the script is called <code>cpac_centrality.py</code>. The auto-generated help is shown below.</p>
 
-<p>```
+<p>``` 
 usage: cpac_centrality.py [-h] -i INPUT [-m MASK] [–degree] [–eigen]
                           [–binarize] [–weighted] [–sparsity SPARSITY]
                           [–pvalue PVALUE] [–rho RHO] [–memlimit MEMLIMIT]
@@ -106,12 +161,6 @@ usage: cpac_centrality.py [-h] -i INPUT [-m MASK] [–degree] [–eigen]
   -o OUTDIR, –outdir OUTDIR
                         Output directory
 ```</p>
-
-<h2 id="abide-processing-output">ABIDE Processing Output</h2>
-
-<p>We started looking into this yesterday, let’s finish it off today.</p>
-
-<p>One thing to check is that not all scans have been preprocessed. I could check to see what other’s have done. Hmm not a bad idea. First find subjects with more than one scan and then see what happens with these subjects. Yes, the OHSU data has more than 1 scan per participant (can be up to 3 scans). Ok so Xinian and I think Chao-Gan did not actually preprocess the additional scans, Pierre did.</p>
 
 ]]></content>
   </entry>
