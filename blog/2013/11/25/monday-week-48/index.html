@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Plans Today, I will work on finish memory fixes to centrality code checking on the 3mm registration of ABIDE setup quick pack for Pierre &amp; Xinian &hellip;">
+  <meta name="description" content="Plans Today, I planned to work on…see summary section for what actually got done. finish memory fixes to centrality code checking on the 3mm &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -102,7 +102,7 @@
 
 <div class="entry-content"><h2 id="plans">Plans</h2>
 
-<p>Today, I will work on</p>
+<p>Today, I planned to work on…see summary section for what actually got done.</p>
 
 <ul>
   <li>finish memory fixes to centrality code</li>
@@ -111,6 +111,30 @@
   <li>setup quick pack for ABIDE data (centrality and VMHC)</li>
 </ul>
 
+<h2 id="summary">Summary</h2>
+
+<p>I wasn’t able to get through a lot that was planned. I worked on the following (described more later):</p>
+
+<ul>
+  <li>Centrality Coding</li>
+  <li>Checking paths for ABIDE preprocessing</li>
+</ul>
+
+<h2 id="centrality-code">Centrality Code</h2>
+
+<p>I updated the centrality code with several fixes and cleaned up some of the functions. Details of this work can be found on this <a href="/blog/2013/11/25/update-centrality">other post</a>.</p>
+
+<h2 id="qc">QC</h2>
+
+<p>The 3mm registration is done. I want to now take a closer look at the data. I want to take a look at a few things:</p>
+
+<ul>
+  <li>Are all the outputs there? Maybe make some type of table or record of what is good with what?</li>
+  <li>Can we fix up the QC pages?</li>
+  <li>Do the images look good?</li>
+</ul>
+
+<p>I began to create the code to find the needed paths in the preprocessing directory. This can be found in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/24_check/10_check_path.py</code>.</p>
 </div>
 
 
@@ -159,6 +183,8 @@
         <a class="basic-alignment left articlenav" href="/blog/2013/11/24/timing-comparison/" title="Previous Post: Timing Comparison">&laquo; Timing Comparison</a>
       
       
+        <a class="basic-alignment right articlenav" href="/blog/2013/11/25/updating-centrality/" title="Next Post: Updating Centrality">Updating Centrality &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -174,16 +200,29 @@
 <li class="nested" style="list-style:inherit;">
 	<a href="#plans">Plans</a>
 
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#summary">Summary</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#centrality-code">Centrality Code</a>
+
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#qc">QC</a>
+
 </li></ol>
   </section>
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/25/updating-centrality/">Updating Centrality</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/25/monday-week-48/">Monday - Week 48</a>
@@ -199,10 +238,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
       </li>
     
   </ul>
@@ -364,6 +399,9 @@ monthCalendar = function(id,year,month)
   var hightlightLinks = new Array();
   
   highlightArray.push('11/25/2013');
+  hightlightLinks.push('/blog/2013/11/25/updating-centrality/');
+  
+  highlightArray.push('11/25/2013');
   hightlightLinks.push('/blog/2013/11/25/monday-week-48/');
   
   highlightArray.push('11/24/2013');
@@ -374,9 +412,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/23/2013');
   hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
-  
-  highlightArray.push('11/22/2013');
-  hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

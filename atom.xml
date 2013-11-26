@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-25T10:19:27-05:00</updated>
+  <updated>2013-11-26T10:39:42-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -14,13 +14,119 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Updating Centrality]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/25/updating-centrality/"/>
+    <updated>2013-11-25T10:26:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/25/updating-centrality</id>
+    <content type="html"><![CDATA[<p>I’ll go through the different changes in the CPAC centrality code that I’ve implemented.</p>
+
+<h2 id="normalized-timeseries">Normalized Timeseries</h2>
+
+<p>The easiest change was to use normalized time series, which then allows one to compute the crossproduct of the time series to calculate the correlations. Below are the relevant code slices that call on functions used in CWAS.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">norm_cols</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[:,</span><span class="n">j</span><span class="p">:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="block-size">Block Size</h2>
+
+<p>We changed the block size to more accurately reflect the underlying operations. Although it should be noted that numpy has some poor memory handling as certain temporary objects will still be maintained in memory throwing off this calculation. However, later sections will show attempts to rectify this issue.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">nvoxs</span>   <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line"><span class="n">ntpts</span>   <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line"><span class="n">nbytes</span>  <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+</span><span class="line">
+</span><span class="line"><span class="k">if</span> <span class="n">memory_allocated</span><span class="p">:</span>
+</span><span class="line">    <span class="n">memory_in_bytes</span> <span class="o">=</span> <span class="n">memory_allocated</span> <span class="o">*</span> <span class="mf">1024.0</span><span class="o">**</span><span class="mi">3</span>    <span class="c"># assume it is in GB</span>
+</span><span class="line">    <span class="n">block_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">memory_in_bytes</span><span class="o">/</span><span class="p">(</span><span class="n">nvoxs</span> <span class="o">*</span> <span class="n">nbytes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">ntpts</span><span class="o">*</span><span class="n">nbytes</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="n">nvoxs</span><span class="p">:</span>
+</span><span class="line">    <span class="n">block_size</span> <span class="o">=</span> <span class="n">nvoxs</span>
+</span><span class="line"><span class="k">elif</span> <span class="n">block_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class="line">    <span class="k">raise</span> <span class="ne">MemoryError</span><span class="p">(</span><span class="s">&quot; Not enough memory available to perform degree centrality&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Note that the calculation is also dynamic with the data type of the time series.</p>
+
+<h2 id="no-more-nan-to-number">No More NaN to Number</h2>
+
+<p>This function <code>np.nan_to_num</code> is applied on the correlation matrix to turn any NaNs to 0s. This will occur when a time-series is all 0s leading to an error of sorts when calculating the correlation as you will be dividing by zeros and what not. The easiest way to avoid this error is to remove any flat time-series. I do this in the <code>load</code> function that initially reads in the time-series and the mask data.</p>
+
+<p>I create an additional mask that is specific to the data. This is then combined with the externally defined template mask for a final mask at a later step.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">datmask</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="n">mask</span>    <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="more-efficient-sum-of-thresholded-correlations">More Efficient Sum of Thresholded Correlations</h2>
+
+<p>This particular step (below) is both slow and takes up a lot of memory. For instance the <code>corr_matrix &gt; r_value</code> must create a new copy of the matrix.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line"><span class="sb">``</span>
+</span><span class="line">
+</span><span class="line"><span class="n">One</span> <span class="n">solution</span> <span class="ow">is</span> <span class="n">to</span> <span class="n">use</span> <span class="n">cython</span><span class="o">.</span> <span class="n">For</span> <span class="n">now</span><span class="p">,</span> <span class="n">I</span> <span class="n">will</span> <span class="n">do</span> <span class="n">this</span> <span class="n">without</span> <span class="n">compiling</span> <span class="n">the</span> <span class="n">whole</span> <span class="n">package</span> <span class="ow">and</span> <span class="n">use</span> <span class="sb">`pyxthon`</span> <span class="n">that</span> <span class="n">will</span> <span class="n">dynamically</span> <span class="nb">compile</span> <span class="n">the</span> <span class="n">new</span> <span class="n">function</span> <span class="n">at</span> <span class="n">runtime</span><span class="o">.</span> <span class="n">Below</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">cython</span> <span class="n">code</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>python
+def centrality_binarize_double(np.ndarray[double, ndim=2] cmat, np.ndarray[double, ndim=1] cent, double thresh):
+    cdef unsigned int i,j
+    for i in xrange(cmat.shape[0]):
+        for j in xrange(cmat.shape[1]):
+            cent[i] = cent[i] + 1<em>(cmat[i,j] &gt; thresh)
+#
+def centrality_weighted_double(np.ndarray[double, ndim=2] cmat, np.ndarray[double, ndim=1] cent, double thresh):
+    cdef unsigned int i,j
+    for i in xrange(cmat.shape[0]):
+        for j in xrange(cmat.shape[1]):
+            cent[i] = cent[i] + cmat[i,j]</em>(cmat[i,j] &gt; thresh)
+&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="python"><span class="line"><span class="n">I</span> <span class="n">created</span> <span class="n">a</span> <span class="n">wrapper</span> <span class="n">centrality</span> <span class="n">function</span> <span class="n">that</span> <span class="ow">is</span> <span class="n">fairly</span> <span class="n">straightforward</span><span class="o">.</span> <span class="n">It</span> <span class="n">allows</span> <span class="n">one</span> <span class="n">to</span> <span class="n">access</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">different</span> <span class="n">C</span> <span class="n">functions</span> <span class="n">through</span> <span class="n">one</span> <span class="n">python</span> <span class="n">function</span><span class="o">.</span> <span class="n">I</span> <span class="n">also</span> <span class="n">wrote</span> <span class="mi">2</span> <span class="n">tests</span> <span class="n">that</span> <span class="n">both</span> <span class="n">passed</span><span class="o">.</span> <span class="n">Here</span><span class="s">&#39;s one example to illustrate the new functionality (`comp`) relative to the old (`ref`).</span>
+</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt; python
+def test_centrality_binarize():
+    print “testing centrality binarize”</p>
+
+<pre><code>method      = "binarize"
+nblock      = 20
+nvoxs       = 100
+r_value     = 0.2
+corr_matrix = np.random.random((nblock, nvoxs))
+
+ref  = np.sum(corr_matrix&gt;r_value, axis=1)
+comp = centrality(corr_matrix, r_value, method)
+
+assert_equal(ref, comp) ```
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Monday - Week 48]]></title>
     <link href="http://czarrar.github.io/blog/2013/11/25/monday-week-48/"/>
     <updated>2013-11-25T09:59:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/25/monday-week-48</id>
     <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
 
-<p>Today, I will work on</p>
+<p>Today, I planned to work on…see summary section for what actually got done.</p>
 
 <ul>
   <li>finish memory fixes to centrality code</li>
@@ -29,6 +135,30 @@
   <li>setup quick pack for ABIDE data (centrality and VMHC)</li>
 </ul>
 
+<h2 id="summary">Summary</h2>
+
+<p>I wasn’t able to get through a lot that was planned. I worked on the following (described more later):</p>
+
+<ul>
+  <li>Centrality Coding</li>
+  <li>Checking paths for ABIDE preprocessing</li>
+</ul>
+
+<h2 id="centrality-code">Centrality Code</h2>
+
+<p>I updated the centrality code with several fixes and cleaned up some of the functions. Details of this work can be found on this <a href="http://czarrar.github.io/blog/2013/11/25/update-centrality">other post</a>.</p>
+
+<h2 id="qc">QC</h2>
+
+<p>The 3mm registration is done. I want to now take a closer look at the data. I want to take a look at a few things:</p>
+
+<ul>
+  <li>Are all the outputs there? Maybe make some type of table or record of what is good with what?</li>
+  <li>Can we fix up the QC pages?</li>
+  <li>Do the images look good?</li>
+</ul>
+
+<p>I began to create the code to find the needed paths in the preprocessing directory. This can be found in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/24_check/10_check_path.py</code>.</p>
 ]]></content>
   </entry>
   
@@ -2485,155 +2615,6 @@ https://github.com/garydoranjr/misvm</p>
     </li>
   </ol>
 </div>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Bootstrap of IQ CWAS]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/"/>
-    <updated>2013-11-04T23:38:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas</id>
-    <content type="html"><![CDATA[<p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
-
-<h2 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h2>
-
-<p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
-
-<p><strong>DONE</strong></p>
-
-<p>Now we want to represent a few aspects of the data. The easiest approach here is for us to plot the correlation and dice values comparing the different subsamples. This could help show how reproducible the different bootstrap samples are for our data. We can also further visualize this with surface maps of two of the samples with a median dice coefficient. In summary, todo:</p>
-
-<ul>
-  <li>Histogram of percent significant results (just for reference)</li>
-  <li>Correlate and dice</li>
-  <li>Plot two samples on brain</li>
-</ul>
-
-<h3 id="code-to-plot">Code to Plot</h3>
-
-<p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
-
-<p>The relevant scripts to plot are in <code>/home2/data/Projects/CWAS/share/figures/sfig_bootstrap</code> with output directed to <code>/home2/data/Projects/CWAS/figures/sfig_bootstrap</code>.</p>
-
-<hr />
-
-<h2 id="bootstrap-with-replication">Bootstrap with Replication</h2>
-
-<p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
-
-<h3 id="analysis">Analysis</h3>
-
-<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
-
-<p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
-
-<h3 id="plotting">Plotting</h3>
-
-<p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">mpath <span class="o">&lt;-</span> file.path<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas&quot;</span><span class="p">,</span> scan<span class="p">,</span>  <span class="s">&quot;compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/mask.nii.gz&quot;</span><span class="p">)</span>
-</span><span class="line">mask  <span class="o">&lt;-</span> read.mask<span class="p">(</span>mpath<span class="p">)</span>
-</span><span class="line">hdr   <span class="o">&lt;-</span> read.nifti.header<span class="p">(</span>mpath<span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="histogram-issue">Histogram Issue</h3>
-
-<p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
-
-<p>So my thought now is to see if the bootstrap approach with <code>boot</code> is shifting things in the wrong direction.</p>
-
-<p>My analysis/tests show that bootstrap with replication is not appropriate here and instead we should be using subsampling (bootstrapping without replication).</p>
-
-<p>http://rpubs.com/czarrar/cwas_distributions</p>
-
-<h4 id="older-approach">Older approach</h4>
-
-<p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
-
-<h3 id="code">Code</h3>
-
-<div><script src="https://gist.github.com/7164165.js?file=cwas_bootstrap.R"></script>
-<noscript><pre><code>library(connectir)
-library(boot)
-
-# data = model
-boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
-    ###
-    # Distances
-    ###
-    
-    # We need to sample the distances based on the indices
-    # that is we will create a new set of distances with subject indices based on indices
-    # This will also create a local copy of the big matrix
-    cat(&quot;Subset of subjects in distances\n&quot;)
-    sdist &lt;- filter_subdist(sdist, subs=indices)
-    
-    # Now we can gowerify
-    cat(&quot;Gowerify\n&quot;)
-    gmat &lt;- gower.subdist2(sdist)
-    
-    # Info
-    nvoxs &lt;- ncol(gmat)
-    nsubs &lt;- sqrt(nrow(gmat))
-    nperms &lt;- 4999
-    nfactors &lt;- 1
-    
-    
-    ###
-    # Calculate memory demands
-    ###
-    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
-    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
-    # this will give opts$blocksize and opts$superblocksize that will
-    # limit total RAM usage to 20GB
-    
-    ###
-    # Get the model ready
-    ###
-    
-    cat(&quot;Subset of subjects in model\n&quot;)
-    model &lt;- data.frame(data[indices,])
-    
-    
-    ###
-    # Call MDMR
-    ###
-    
-    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
-                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
-    
-    -log10(ret$pvals[,]) # or should I just return p-values?
-}
-
-
-###
-# Bootstrap ROI-based IQ Results
-###
-
-# Set parallel processing
-nthreads &lt;- 8
-set_parallel_procs(1, nthreads, TRUE)
-
-# Read in the distances (using ROI-based distances and not voxelwise here)
-#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
-dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
-sdist &lt;- attach.big.matrix(dpath)
-
-# Read in the model
-mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
-model &lt;- read.csv(mpath)
-model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
-
-# Set the formula
-f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
-
-# Call
-results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
-</code></pre></noscript></div>
-
 ]]></content>
   </entry>
   

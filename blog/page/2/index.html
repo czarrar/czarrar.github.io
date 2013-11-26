@@ -9,34 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Running ALFF It all appears to run fine except one link node. 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-131113-12:02:04 &hellip;">
+  <meta name="description" content="Today, I want to test my different quick pack results with the combined preprocessing + derivates run. Note that the files for running the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -99,6 +72,74 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-15T15:41:00-05:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today, I want to test my different quick pack results with the combined preprocessing + derivates run.</p>
+
+<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_quick_pack</code>.</p>
+
+<p>The files for testing the outputs are in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack</code>.</p>
+
+<h2 id="failed-comparison">Failed Comparison</h2>
+
+<p>My first run at comparing the ALFF/REHO results failed. So now I’m figuring out what was different in their inputs (assuming that actual computation was the same).</p>
+
+<p>The complete CPAC run uses that following as input for REHO:</p>
+
+<p><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Working/resting_preproc_0051466_session_1/nuisance_0/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global1.motion1.quadratic1.gm0.compcor1.csf0/residuals/residual.nii.gz</code></p>
+
+<p>So here it appears there is no frequency filtering that was applied. However, it appears the input used in the reho quick pack is not the same although the path looks similar:</p>
+
+<p><code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan_rest_1_rest/func/functional_nuisance_residuals.nii.gz</code></p>
+
+<p>Now since the above file is in the symlinks directory, I found out the original file and it appears it points to a nuisance residuals that has not had global correction.</p>
+
+<p><code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_nuisance_residuals/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/residual.nii.gz</code></p>
+
+<p>If I use the global1 version of things, the files used with All_Output and Reho_Output are now the same. This implies that the symlinks for All_Output should not be used. So for now use only the working directory outputs!!! I should be able to guess these from the sink outputs?</p>
+
+<h2 id="test-1">Test 1</h2>
+
+<script type="math/tex; mode=display"> \sqrt{2*(1-r)} </script>
+
+<h3 id="greater-test">Greater Test</h3>
+
+<p>Match - Game - Point</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1969,184 +2010,6 @@ https://github.com/garydoranjr/misvm</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/04/bootstrap-of-iq-cwas/">Bootstrap of IQ CWAS</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-04T23:38:00-05:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
-
-<h2 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h2>
-
-<p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
-
-<p><strong>DONE</strong></p>
-
-<p>Now we want to represent a few aspects of the data. The easiest approach here is for us to plot the correlation and dice values comparing the different subsamples. This could help show how reproducible the different bootstrap samples are for our data. We can also further visualize this with surface maps of two of the samples with a median dice coefficient. In summary, todo:</p>
-
-<ul>
-  <li>Histogram of percent significant results (just for reference)</li>
-  <li>Correlate and dice</li>
-  <li>Plot two samples on brain</li>
-</ul>
-
-<h3 id="code-to-plot">Code to Plot</h3>
-
-<p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
-
-<p>The relevant scripts to plot are in <code>/home2/data/Projects/CWAS/share/figures/sfig_bootstrap</code> with output directed to <code>/home2/data/Projects/CWAS/figures/sfig_bootstrap</code>.</p>
-
-<hr />
-
-<h2 id="bootstrap-with-replication">Bootstrap with Replication</h2>
-
-<p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
-
-<h3 id="analysis">Analysis</h3>
-
-<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
-
-<p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
-
-<h3 id="plotting">Plotting</h3>
-
-<p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">mpath <span class="o">&lt;-</span> file.path<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas&quot;</span><span class="p">,</span> scan<span class="p">,</span>  <span class="s">&quot;compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/mask.nii.gz&quot;</span><span class="p">)</span>
-</span><span class="line">mask  <span class="o">&lt;-</span> read.mask<span class="p">(</span>mpath<span class="p">)</span>
-</span><span class="line">hdr   <span class="o">&lt;-</span> read.nifti.header<span class="p">(</span>mpath<span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="histogram-issue">Histogram Issue</h3>
-
-<p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
-
-<p>So my thought now is to see if the bootstrap approach with <code>boot</code> is shifting things in the wrong direction.</p>
-
-<p>My analysis/tests show that bootstrap with replication is not appropriate here and instead we should be using subsampling (bootstrapping without replication).</p>
-
-<p>http://rpubs.com/czarrar/cwas_distributions</p>
-
-<h4 id="older-approach">Older approach</h4>
-
-<p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
-
-<h3 id="code">Code</h3>
-
-<div><script src="https://gist.github.com/7164165.js?file=cwas_bootstrap.R"></script>
-<noscript><pre><code>library(connectir)
-library(boot)
-
-# data = model
-boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
-    ###
-    # Distances
-    ###
-    
-    # We need to sample the distances based on the indices
-    # that is we will create a new set of distances with subject indices based on indices
-    # This will also create a local copy of the big matrix
-    cat(&quot;Subset of subjects in distances\n&quot;)
-    sdist &lt;- filter_subdist(sdist, subs=indices)
-    
-    # Now we can gowerify
-    cat(&quot;Gowerify\n&quot;)
-    gmat &lt;- gower.subdist2(sdist)
-    
-    # Info
-    nvoxs &lt;- ncol(gmat)
-    nsubs &lt;- sqrt(nrow(gmat))
-    nperms &lt;- 4999
-    nfactors &lt;- 1
-    
-    
-    ###
-    # Calculate memory demands
-    ###
-    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
-    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
-    # this will give opts$blocksize and opts$superblocksize that will
-    # limit total RAM usage to 20GB
-    
-    ###
-    # Get the model ready
-    ###
-    
-    cat(&quot;Subset of subjects in model\n&quot;)
-    model &lt;- data.frame(data[indices,])
-    
-    
-    ###
-    # Call MDMR
-    ###
-    
-    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
-                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
-    
-    -log10(ret$pvals[,]) # or should I just return p-values?
-}
-
-
-###
-# Bootstrap ROI-based IQ Results
-###
-
-# Set parallel processing
-nthreads &lt;- 8
-set_parallel_procs(1, nthreads, TRUE)
-
-# Read in the distances (using ROI-based distances and not voxelwise here)
-#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
-dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
-sdist &lt;- attach.big.matrix(dpath)
-
-# Read in the model
-mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
-model &lt;- read.csv(mpath)
-model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
-
-# Set the formula
-f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
-
-# Call
-results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
-</code></pre></noscript></div>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2164,11 +2027,15 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 151.42857142857144%'>cpac(6)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 117.14285714285714%'>cmi(2)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/25/updating-centrality/">Updating Centrality</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/25/monday-week-48/">Monday - Week 48</a>
@@ -2184,10 +2051,6 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
     
       <li class="post">
         <a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a>
       </li>
     
   </ul>
@@ -2349,6 +2212,9 @@ monthCalendar = function(id,year,month)
   var hightlightLinks = new Array();
   
   highlightArray.push('11/25/2013');
+  hightlightLinks.push('/blog/2013/11/25/updating-centrality/');
+  
+  highlightArray.push('11/25/2013');
   hightlightLinks.push('/blog/2013/11/25/monday-week-48/');
   
   highlightArray.push('11/24/2013');
@@ -2359,9 +2225,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/23/2013');
   hightlightLinks.push('/blog/2013/11/23/saturday-week-47/');
-  
-  highlightArray.push('11/22/2013');
-  hightlightLinks.push('/blog/2013/11/22/friday-week-47/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

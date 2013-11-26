@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-25T10:19:27-05:00</updated>
+  <updated>2013-11-26T10:39:42-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -20,7 +20,7 @@
     <id>http://czarrar.github.io/blog/2013/11/25/monday-week-48</id>
     <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
 
-<p>Today, I will work on</p>
+<p>Today, I planned to work on…see summary section for what actually got done.</p>
 
 <ul>
   <li>finish memory fixes to centrality code</li>
@@ -29,6 +29,30 @@
   <li>setup quick pack for ABIDE data (centrality and VMHC)</li>
 </ul>
 
+<h2 id="summary">Summary</h2>
+
+<p>I wasn’t able to get through a lot that was planned. I worked on the following (described more later):</p>
+
+<ul>
+  <li>Centrality Coding</li>
+  <li>Checking paths for ABIDE preprocessing</li>
+</ul>
+
+<h2 id="centrality-code">Centrality Code</h2>
+
+<p>I updated the centrality code with several fixes and cleaned up some of the functions. Details of this work can be found on this <a href="/blog/2013/11/25/update-centrality">other post</a>.</p>
+
+<h2 id="qc">QC</h2>
+
+<p>The 3mm registration is done. I want to now take a closer look at the data. I want to take a look at a few things:</p>
+
+<ul>
+  <li>Are all the outputs there? Maybe make some type of table or record of what is good with what?</li>
+  <li>Can we fix up the QC pages?</li>
+  <li>Do the images look good?</li>
+</ul>
+
+<p>I began to create the code to find the needed paths in the preprocessing directory. This can be found in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/24_check/10_check_path.py</code>.</p>
 ]]></content>
   </entry>
   
