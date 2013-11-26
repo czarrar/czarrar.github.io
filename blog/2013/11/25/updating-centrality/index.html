@@ -161,43 +161,64 @@
 <p>This particular step (below) is both slow and takes up a lot of memory. For instance the <code>corr_matrix &gt; r_value</code> must create a new copy of the matrix.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>One solution is to use cython. For now, I will do this without compiling the whole package and use <code>pyxthon</code> that will dynamically compile the new function at runtime. Below is the cython code.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 <span class="line-number">3</span>
 <span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class="line"><span class="sb">``</span>
-</span><span class="line">
-</span><span class="line"><span class="n">One</span> <span class="n">solution</span> <span class="ow">is</span> <span class="n">to</span> <span class="n">use</span> <span class="n">cython</span><span class="o">.</span> <span class="n">For</span> <span class="n">now</span><span class="p">,</span> <span class="n">I</span> <span class="n">will</span> <span class="n">do</span> <span class="n">this</span> <span class="n">without</span> <span class="n">compiling</span> <span class="n">the</span> <span class="n">whole</span> <span class="n">package</span> <span class="ow">and</span> <span class="n">use</span> <span class="sb">`pyxthon`</span> <span class="n">that</span> <span class="n">will</span> <span class="n">dynamically</span> <span class="nb">compile</span> <span class="n">the</span> <span class="n">new</span> <span class="n">function</span> <span class="n">at</span> <span class="n">runtime</span><span class="o">.</span> <span class="n">Below</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">cython</span> <span class="n">code</span><span class="o">.</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">centrality_binarize_double</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">cmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">cent</span><span class="p">,</span> <span class="n">double</span> <span class="n">thresh</span><span class="p">):</span>
+</span><span class="line">    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+</span><span class="line">            <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
+</span><span class="line"><span class="c">#</span>
+</span><span class="line"><span class="k">def</span> <span class="nf">centrality_weighted_double</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">cmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">cent</span><span class="p">,</span> <span class="n">double</span> <span class="n">thresh</span><span class="p">):</span>
+</span><span class="line">    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+</span><span class="line">            <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
-<p>python
-def centrality_binarize_double(np.ndarray[double, ndim=2] cmat, np.ndarray[double, ndim=1] cent, double thresh):
-    cdef unsigned int i,j
-    for i in xrange(cmat.shape[0]):
-        for j in xrange(cmat.shape[1]):
-            cent[i] = cent[i] + 1<em>(cmat[i,j] &gt; thresh)
-#
-def centrality_weighted_double(np.ndarray[double, ndim=2] cmat, np.ndarray[double, ndim=1] cent, double thresh):
-    cdef unsigned int i,j
-    for i in xrange(cmat.shape[0]):
-        for j in xrange(cmat.shape[1]):
-            cent[i] = cent[i] + cmat[i,j]</em>(cmat[i,j] &gt; thresh)
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="python"><span class="line"><span class="n">I</span> <span class="n">created</span> <span class="n">a</span> <span class="n">wrapper</span> <span class="n">centrality</span> <span class="n">function</span> <span class="n">that</span> <span class="ow">is</span> <span class="n">fairly</span> <span class="n">straightforward</span><span class="o">.</span> <span class="n">It</span> <span class="n">allows</span> <span class="n">one</span> <span class="n">to</span> <span class="n">access</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">different</span> <span class="n">C</span> <span class="n">functions</span> <span class="n">through</span> <span class="n">one</span> <span class="n">python</span> <span class="n">function</span><span class="o">.</span> <span class="n">I</span> <span class="n">also</span> <span class="n">wrote</span> <span class="mi">2</span> <span class="n">tests</span> <span class="n">that</span> <span class="n">both</span> <span class="n">passed</span><span class="o">.</span> <span class="n">Here</span><span class="s">&#39;s one example to illustrate the new functionality (`comp`) relative to the old (`ref`).</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt; python
-def test_centrality_binarize():
-    print “testing centrality binarize”</p>
 
-<pre><code>method      = "binarize"
-nblock      = 20
-nvoxs       = 100
-r_value     = 0.2
-corr_matrix = np.random.random((nblock, nvoxs))
+<p>I created a wrapper centrality function that is fairly straightforward. It allows one to access all the different C functions through one python function. I also wrote 2 tests that both passed. Here’s one example to illustrate the new functionality (<code>comp</code>) relative to the old (<code>ref</code>).</p>
 
-ref  = np.sum(corr_matrix&gt;r_value, axis=1)
-comp = centrality(corr_matrix, r_value, method)
-
-assert_equal(ref, comp) ```
-</code></pre>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">test_centrality_binarize</span><span class="p">():</span>
+</span><span class="line">    <span class="k">print</span> <span class="s">&quot;testing centrality binarize&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">method</span>      <span class="o">=</span> <span class="s">&quot;binarize&quot;</span>
+</span><span class="line">    <span class="n">nblock</span>      <span class="o">=</span> <span class="mi">20</span>
+</span><span class="line">    <span class="n">nvoxs</span>       <span class="o">=</span> <span class="mi">100</span>
+</span><span class="line">    <span class="n">r_value</span>     <span class="o">=</span> <span class="mf">0.2</span>
+</span><span class="line">    <span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nblock</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">ref</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">&gt;</span><span class="n">r_value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">    <span class="n">comp</span> <span class="o">=</span> <span class="n">centrality</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">assert_equal</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <h2 id="deleting-temporary-correlation-matrix">Deleting Temporary Correlation Matrix</h2>
 
