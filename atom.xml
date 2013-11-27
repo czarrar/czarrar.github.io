@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-27T14:02:02-05:00</updated>
+  <updated>2013-11-27T17:42:03-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,7 +18,11 @@
     <link href="http://czarrar.github.io/blog/2013/11/27/wednesday-week-48/"/>
     <updated>2013-11-27T11:42:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/27/wednesday-week-48</id>
-    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
+    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
+
+<p>I was able to get through at least at a partial level through the items in my TOOD list below.</p>
+
+<h2 id="plans">Plans</h2>
 
 <ul>
   <li>ABIDE
@@ -33,6 +37,41 @@
   </li>
   <li>Do 1 hour of tagging</li>
 </ul>
+
+<h2 id="abide---todo">ABIDE - TODO</h2>
+
+<p>This is a partial list and the next time I will need to make a more thorough list.</p>
+
+<ul>
+  <li>Do QC</li>
+  <li>Check all outputs there for Pierre, Xinian, Chao-Gan</li>
+  <li>Optimize the eigenvector centrality</li>
+  <li>Make sure VMHC works properly when using 3mm output resolution</li>
+  <li>Setup Quick Packs</li>
+  <li>Run Quick Packs</li>
+</ul>
+
+<h2 id="abide---check-outputs">ABIDE - Check Outputs</h2>
+
+<p>I made a script <code>20_check_subjects.R</code> in <code>.../config/24_check</code> that checks which subject is missing some preprocessing output given that the raw data exists.</p>
+
+<p>For two subjects, we are missing the first rest scan. These subjects are from OHSU and are <code>0050155</code> and <code>0050165</code>.</p>
+
+<p>We need to redo <code>0051275</code> since there was a failure in calculating the nuisance regression. I ran this subject again on rocky with the relevant info/scripts in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/26_reprocess_3mm</code>.</p>
+
+<h2 id="abide---qc">ABIDE - QC</h2>
+
+<p>Simply rerunning the QC resolved some broken links and the QC pages appear fine. Need to set some system of getting through all these QC pages and confirm the protocol for checking.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
+</span><span class="line"><span class="n">CPAC</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">create_all_qc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;/path/to/output_directory&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="vmhc">VMHC</h2>
+
+<p>Currently there is a bit of an issue when we try to run VMHC at 3mm. Although it now works, the registration appears to to be done at that resolution (3mm). Talking to Steve, it seems a fix proposed by Cameron would resolve my issue as well. That is, the registration between the regular MNI to the symmetric MNI would be done in the anatomical resolution, which is usually specified at 1mm. Then, this warp would be combined with the previous one to standard space, and we would apply this warp to the functional in order to get to the specified standard functional space, which is in 3mm.</p>
 
 <h2 id="eigen-vector-centrality">Eigen-Vector Centrality</h2>
 
@@ -58,6 +97,12 @@
   <li>Super straightforward code: http://stackoverflow.com/questions/13739186/compute-eigenvector-using-a-dominant-eigenvalue</li>
   <li>4 ways to compute: http://glowingpython.blogspot.com/2011/05/four-ways-to-compute-google-pagerank.html</li>
 </ul>
+
+<h2 id="tagging">Tagging</h2>
+
+<p>I think I should go through and check the first 45 that I did. I believe that I may not have properly added the type of connectivity (seed-based, unsupervised, etc) properly.</p>
+
+<p>Sent out an email with some issues/guidance on tagging.</p>
 ]]></content>
   </entry>
   
