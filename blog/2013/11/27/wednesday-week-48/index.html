@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Similarity of IQ CWAS Across Scans - Zarrar's Journaling</title>
+  <title>Wednesday - Week 48 - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a &hellip;">
+  <meta name="description" content="Plans ABIDE Create TODOs Finish checking CPAC output Fix QC pages Look into fixing VMHC error when running at 3mm Look into eigenvector centrality &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/27/wednesday-week-48/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Similarity of IQ CWAS Across Scans</h1>
+        <h1 class="entry-title">Wednesday - Week 48</h1>
       
     
     
@@ -93,74 +93,53 @@
   
 
 
-<time datetime="2013-11-24T11:51:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+<time datetime="2013-11-27T11:42:00-05:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
+<div class="entry-content"><h2 id="plans">Plans</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: right">measures</th>
-      <th>values</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: right">dice</td>
-      <td>0.2731</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">pearson</td>
-      <td>0.2571</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">spearman</td>
-      <td>0.2511</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">kendalls</td>
-      <td>0.1695</td>
-    </tr>
-  </tbody>
-</table>
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>Create TODOs</li>
+      <li>Finish checking CPAC output</li>
+      <li>Fix QC pages</li>
+      <li>Look into fixing VMHC error when running at 3mm</li>
+      <li>Look into eigenvector centrality</li>
+      <li>Create quick packs for CPAC and Xinian</li>
+    </ul>
+  </li>
+  <li>Do 1 hour of tagging</li>
+</ul>
 
-<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
+<h2 id="eigen-vector-centrality">Eigen-Vector Centrality</h2>
 
-<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
+<p>I did a brief search of faster implementations of eigenvector centrality, which is also sometimes referred to as google’s page rank.</p>
 
-<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
+<h3 id="paper-with-fast-implementation">Paper with Fast Implementation</h3>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">cd /home2/data/Projects/CWAS/share/nki/05_cwas
-</span><span class="line">./30_mdmr_using_perms.bash</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>The most relevant item is a paper recommended by Cameron: http://online.liebertpub.com.ezproxy.med.nyu.edu/doi/full/10.1089/brain.2012.0087. It appears their analyses were done in matlab so if we could also get their code, it would be fairly easy to integrate with CPAC. Below is a quote from the paper that indicates this approach is very fast, potentially faster than degree centrality! Note that they used a voxel size of 2mm.</p>
 
-<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
+<blockquote>
+  <p>The RS-fMRI data of each subject contain 195,704 in-brain voxels per volume and the time-series length is 200. The approximate gain in efficiency compared to the standard algorithm is a factor 1000. The computation times for ECM of the fMRI (excluding file I/O) are 39 sec on average (std. dev. 14 sec) on an Intel Xeon.</p>
+</blockquote>
 
-<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
+<p>So figure out if we should contact them or not?</p>
 
-<ol>
-  <li>Read in the permuted Fstats</li>
-  <li>Loop through each permutation so you can</li>
-  <li>Calculate significance for both scans</li>
-  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
-  <li>Return this result and loop to #3 for the next permutation</li>
-</ol>
+<h3 id="related-links">Related Links</h3>
 
-<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
+<p>The above paper used the power iteration method to calculate the dominant eigenvector. I found various links on the code to run this power iteration method.</p>
 
-<h2 id="results">Results</h2>
-
-<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
-
-<h2 id="update-connectir">Update Connectir</h2>
-
-<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
+<ul>
+  <li>Some slides with well explained code. http://homepages.math.uic.edu/~jan/mcs507/numpyveclinalg.pdf</li>
+  <li>Easy to follow function although needs to be fixed: https://github.com/seckcoder/mmd/blob/9aba8a224c69daebc6f3f800e3847362911f2225/dimension_reduction.py</li>
+  <li>Super straightforward code: http://stackoverflow.com/questions/13739186/compute-eigenvector-using-a-dominant-eigenvalue</li>
+  <li>4 ways to compute: http://glowingpython.blogspot.com/2011/05/four-ways-to-compute-google-pagerank.html</li>
+</ul>
 </div>
 
 
@@ -183,12 +162,12 @@
   
 
 
-<time datetime="2013-11-24T11:51:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+<time datetime="2013-11-27T11:42:00-05:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cwas/'>cwas</a>
+    <a class='category' href='/blog/categories/cmi/'>cmi</a>
   
 </span>
 
@@ -197,7 +176,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/27/wednesday-week-48/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/27/wednesday-week-48/" >Tweet</a>
   
   
   
@@ -206,10 +185,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/23/saturday-week-47/" title="Previous Post: Saturday - Week 47">&laquo; Saturday - Week 47</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/26/tuesday-week-48/" title="Previous Post: Tuesday - Week 48">&laquo; Tuesday - Week 48</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/24/timing-comparison/" title="Next Post: Timing Comparison">Timing Comparison &raquo;</a>
       
     </p>
   </footer>
@@ -224,17 +201,13 @@
   <h1>Contents</h1>
   <ol class="nested" style="margin-left: 1.3em;">
 <li class="nested" style="list-style:inherit;">
-	<a href="#re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</a>
+	<a href="#plans">Plans</a>
 
 </li><li class="nested" style="list-style:inherit;">
-	<a href="#permutations-for-dice-and-spearman">Permutations for dice and spearman</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#results">Results</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#update-connectir">Update Connectir</a>
-
+	<a href="#eigen-vector-centrality">Eigen-Vector Centrality</a>
+<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#paper-with-fast-implementation">Paper with Fast Implementation</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#related-links">Related Links</a></li>
+</ul>
 </li></ol>
   </section>
 

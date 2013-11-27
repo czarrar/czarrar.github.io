@@ -277,6 +277,10 @@
 <p>Interesting that the correlation-based measures are all alike: concordance, kendall, pearson, and spearman with pearson as the most sensitive (180 significant voxels). Then euclidian and mahalanobois are fairly similar with both being the most sensitive overall (194 and 195 significant voxels, respectively). Significance here is p &lt; 0.05 (uncorrected…running analyses for corrected version now).</p>
 
 <p>It’s also interesting that there are still differences in what voxel’s are identified as significant between the euclidian-based ones and the correlation-ones. For instance about 103 voxels are commonly significant between mahalanobois and pearson distance. If I look at those that are not common between mahalanobois and pearson distance, I do find that some of them are sub-threshold in the other measure. For instance, with p&lt;0.1 for pearson there are now 141 significant voxels in common with mahalanobois of p&lt;0.05.</p>
+
+<h1 id="plotting">Plotting</h1>
+
+<p>I want to now plot the different distances in surface.</p>
 </div>
 
 
@@ -340,11 +344,15 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 125.71428571428572%'>cmi(3)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 134.28571428571428%'>cmi(4)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/27/wednesday-week-48/">Wednesday - Week 48</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a>
@@ -360,10 +368,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
       </li>
     
   </ul>
@@ -524,6 +528,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/27/2013');
+  hightlightLinks.push('/blog/2013/11/27/wednesday-week-48/');
+  
   highlightArray.push('11/26/2013');
   hightlightLinks.push('/blog/2013/11/26/tuesday-week-48/');
   
@@ -535,9 +542,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/24/2013');
   hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
-  
-  highlightArray.push('11/24/2013');
-  hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

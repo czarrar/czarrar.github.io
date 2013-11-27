@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-26T18:48:43-05:00</updated>
+  <updated>2013-11-27T14:02:02-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Wednesday - Week 48]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/27/wednesday-week-48/"/>
+    <updated>2013-11-27T11:42:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/27/wednesday-week-48</id>
+    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>Create TODOs</li>
+      <li>Finish checking CPAC output</li>
+      <li>Fix QC pages</li>
+      <li>Look into fixing VMHC error when running at 3mm</li>
+      <li>Look into eigenvector centrality</li>
+      <li>Create quick packs for CPAC and Xinian</li>
+    </ul>
+  </li>
+  <li>Do 1 hour of tagging</li>
+</ul>
+
+<h2 id="eigen-vector-centrality">Eigen-Vector Centrality</h2>
+
+<p>I did a brief search of faster implementations of eigenvector centrality, which is also sometimes referred to as google’s page rank.</p>
+
+<h3 id="paper-with-fast-implementation">Paper with Fast Implementation</h3>
+
+<p>The most relevant item is a paper recommended by Cameron: http://online.liebertpub.com.ezproxy.med.nyu.edu/doi/full/10.1089/brain.2012.0087. It appears their analyses were done in matlab so if we could also get their code, it would be fairly easy to integrate with CPAC. Below is a quote from the paper that indicates this approach is very fast, potentially faster than degree centrality! Note that they used a voxel size of 2mm.</p>
+
+<blockquote>
+  <p>The RS-fMRI data of each subject contain 195,704 in-brain voxels per volume and the time-series length is 200. The approximate gain in efficiency compared to the standard algorithm is a factor 1000. The computation times for ECM of the fMRI (excluding file I/O) are 39 sec on average (std. dev. 14 sec) on an Intel Xeon.</p>
+</blockquote>
+
+<p>So figure out if we should contact them or not?</p>
+
+<h3 id="related-links">Related Links</h3>
+
+<p>The above paper used the power iteration method to calculate the dominant eigenvector. I found various links on the code to run this power iteration method.</p>
+
+<ul>
+  <li>Some slides with well explained code. http://homepages.math.uic.edu/~jan/mcs507/numpyveclinalg.pdf</li>
+  <li>Easy to follow function although needs to be fixed: https://github.com/seckcoder/mmd/blob/9aba8a224c69daebc6f3f800e3847362911f2225/dimension_reduction.py</li>
+  <li>Super straightforward code: http://stackoverflow.com/questions/13739186/compute-eigenvector-using-a-dominant-eigenvalue</li>
+  <li>4 ways to compute: http://glowingpython.blogspot.com/2011/05/four-ways-to-compute-google-pagerank.html</li>
+</ul>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tuesday - Week 48]]></title>

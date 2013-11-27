@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Summary I was able to get through a fair amount of what I planned (next section). Here is what I did do: Finished updating centrality code to be &hellip;">
+  <meta name="description" content="Plans ABIDE Create TODOs Finish checking CPAC output Fix QC pages Look into fixing VMHC error when running at 3mm Look into eigenvector centrality &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,83 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/27/wednesday-week-48/">Wednesday - Week 48</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-27T11:42:00-05:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="plans">Plans</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>Create TODOs</li>
+      <li>Finish checking CPAC output</li>
+      <li>Fix QC pages</li>
+      <li>Look into fixing VMHC error when running at 3mm</li>
+      <li>Look into eigenvector centrality</li>
+      <li>Create quick packs for CPAC and Xinian</li>
+    </ul>
+  </li>
+  <li>Do 1 hour of tagging</li>
+</ul>
+
+<h2 id="eigen-vector-centrality">Eigen-Vector Centrality</h2>
+
+<p>I did a brief search of faster implementations of eigenvector centrality, which is also sometimes referred to as google’s page rank.</p>
+
+<h3 id="paper-with-fast-implementation">Paper with Fast Implementation</h3>
+
+<p>The most relevant item is a paper recommended by Cameron: http://online.liebertpub.com.ezproxy.med.nyu.edu/doi/full/10.1089/brain.2012.0087. It appears their analyses were done in matlab so if we could also get their code, it would be fairly easy to integrate with CPAC. Below is a quote from the paper that indicates this approach is very fast, potentially faster than degree centrality! Note that they used a voxel size of 2mm.</p>
+
+<blockquote>
+  <p>The RS-fMRI data of each subject contain 195,704 in-brain voxels per volume and the time-series length is 200. The approximate gain in efficiency compared to the standard algorithm is a factor 1000. The computation times for ECM of the fMRI (excluding file I/O) are 39 sec on average (std. dev. 14 sec) on an Intel Xeon.</p>
+</blockquote>
+
+<p>So figure out if we should contact them or not?</p>
+
+<h3 id="related-links">Related Links</h3>
+
+<p>The above paper used the power iteration method to calculate the dominant eigenvector. I found various links on the code to run this power iteration method.</p>
+
+<ul>
+  <li>Some slides with well explained code. http://homepages.math.uic.edu/~jan/mcs507/numpyveclinalg.pdf</li>
+  <li>Easy to follow function although needs to be fixed: https://github.com/seckcoder/mmd/blob/9aba8a224c69daebc6f3f800e3847362911f2225/dimension_reduction.py</li>
+  <li>Super straightforward code: http://stackoverflow.com/questions/13739186/compute-eigenvector-using-a-dominant-eigenvalue</li>
+  <li>4 ways to compute: http://glowingpython.blogspot.com/2011/05/four-ways-to-compute-google-pagerank.html</li>
+</ul>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1237,190 +1314,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/19/tuesday-week-47/">Tuesday - Week 47</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-19T10:53:00-05:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="todo">TODO</h2>
-
-<h3 id="qc">QC</h3>
-
-<ul>
-  <li>Fix QC Pages</li>
-  <li>Check QC output from Yang</li>
-  <li>Do the QC</li>
-</ul>
-
-<h3 id="centrality-doneish">Centrality (<strong>DONEISH</strong>)</h3>
-
-<ul>
-  <li>Look at centrality code and diagnose possible improvements in efficiency</li>
-  <li>Write up a bit on possible code changes</li>
-  <li>Implement possible changes</li>
-</ul>
-
-<h3 id="abide-other-processing">ABIDE Other Processing</h3>
-
-<ul>
-  <li><strong>DONE</strong> Copy the other data into a new directory</li>
-  <li>Create new generate quick pack scripts for the new data</li>
-  <li>Talk to Chao-Gan about details of his results (ask him what the </li>
-</ul>
-
-<p>high reproducibility doesn’t necessary correlate with prediction value.</p>
-
-<h2 id="centrality">Centrality</h2>
-
-<h3 id="basics">Basics</h3>
-
-<p>I want to first iron out some general questions:</p>
-
-<ul>
-  <li>What data is used by centrality? And what space is it in?</li>
-  <li>How is the smoothing done?</li>
-</ul>
-
-<p>These steps can be seen in <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/pipeline/cpac_pipeline.py"><code>pipeline/cpac_pipeline.py</code></a>.</p>
-
-<h4 id="dataspace">Data/Space</h4>
-
-<p>First, we find that the 4D functional data in standard space is used as an input as can be seen on line 3212:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_mni&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>But it will resample that output in order to match the mask template based on some of the following lines:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">resample_functional_to_template</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">fsl</span><span class="o">.</span><span class="n">FLIRT</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;resample_functional_to_template_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
-</span><span class="line"><span class="c"># …</span>
-</span><span class="line"><span class="n">template_dataflow</span> <span class="o">=</span> <span class="n">create_mask_dataflow</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">templateSpecificationFile</span><span class="p">,</span> <span class="s">&#39;template_dataflow_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
-</span><span class="line"><span class="c"># …</span>
-</span><span class="line">
-</span><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_mni&#39;</span><span class="p">)</span>
-</span><span class="line"><span class="c"># resample the input functional file to template(roi/mask)</span>
-</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
-</span><span class="line">                 <span class="n">resample_functional_to_template</span><span class="p">,</span> <span class="s">&#39;in_file&#39;</span><span class="p">)</span>
-</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">template_dataflow</span><span class="p">,</span> <span class="s">&#39;outputspec.out_file&#39;</span><span class="p">,</span>
-</span><span class="line">                 <span class="n">resample_functional_to_template</span><span class="p">,</span> <span class="s">&#39;reference&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>So the space is actually whatever your mask template is in.</p>
-
-<h4 id="smoothing">Smoothing</h4>
-
-<p>If smoothing is required, then it is applied to the centrality outputs from the prior step.</p>
-
-<h3 id="centrality-workflow">Centrality Workflow</h3>
-
-<p>Let’s figure out what’s going on with the centrality workflow located principally in <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/network_centrality/resting_state_centrality.py"><code>network_centrality/resting_state_centrality.py</code></a>. The initial documentation is pretty good.</p>
-
-<h3 id="load">Load</h3>
-
-<p>It loads all the data as 32bit float so memory demands are decreased relative to float 64bit. While loading the data, it appears to save the masked functional time-series data as npy files. It’s not totally clear why this is needed by default. Furthermore, these 32bit files are later </p>
-
-<h3 id="calculate-centrality">Calculate Centrality</h3>
-
-<p>There are actually two functions for this step: <code>get_centrality</code> and <code>get_centrality_opt</code>. The first function saves the correlation matrix while the second function only saves for eigenvector centrality. In both approaches, I should check the correlation calculation and also how the block (to reduce memory) is implemented. It seems like the first function is called when there is need for a sparsity threshold and no memory limit is set.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">n2gb</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class="line"><span class="n">ntpts</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span><span class="line"><span class="c">#</span>
-</span><span class="line"><span class="n">mem_func</span> <span class="o">=</span> <span class="n">n2gb</span><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="n">ntpts</span><span class="p">)</span>
-</span><span class="line"><span class="n">mem_result</span> <span class="o">=</span> <span class="n">n2gb</span><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
-</span><span class="line"><span class="n">mem_cormaps</span> <span class="o">=</span> <span class="n">n2gb</span><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="mi">1</span><span class="p">)</span>
-</span><span class="line"><span class="c">#</span>
-</span><span class="line"><span class="c"># mem_limit = mem_func + mem_result + b*mem_cormaps</span>
-</span><span class="line"><span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">mem_limit</span> <span class="o">-</span> <span class="n">mem_func</span> <span class="o">-</span> <span class="n">mem_result</span><span class="p">)</span><span class="o">/</span><span class="n">mem_cormaps</span>
-</span><span class="line"><span class="c">#</span>
-</span><span class="line"><span class="k">return</span> <span class="n">b</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="cpac-centrality---code-changes">CPAC Centrality - Code Changes</h2>
-
-<p>Ok so let’s reorient. What do I want to do.</p>
-
-<ul>
-  <li>I want to do away with the step of saving an intermediate functional file. </li>
-  <li>I want to improve the calculation of the memory limit (I think they are being overly conservative before)</li>
-  <li>I want to change how the correlation is calculated</li>
-</ul>
-
-<h3 id="remove-saving-of-functionals">Remove saving of functionals</h3>
-
-<h2 id="opening-writedown-easy">Opening WriteDown Easy</h2>
-
-<p>I figured out that I’m slow and can actually open markdown files into WriteRoom from the command-line. For example:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="bash"><span class="line">open -a WriteDown <span class="nb">source</span>/_posts/2013-11-19-tuesday-week-47.markdown
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>I made this even easier with a simple bash script so I can call the above command with</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="bash"><span class="line">writedown <span class="nb">source</span>/_posts/2013-11-19-tuesday-week-47.markdown
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Thanks to the following link http://stackoverflow.com/questions/1308755/launch-an-app-on-os-x-with-command-line.</p>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1436,11 +1329,15 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 125.71428571428572%'>cmi(3)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 134.28571428571428%'>cmi(4)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/27/wednesday-week-48/">Wednesday - Week 48</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a>
@@ -1456,10 +1353,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a>
       </li>
     
   </ul>
@@ -1620,6 +1513,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('11/27/2013');
+  hightlightLinks.push('/blog/2013/11/27/wednesday-week-48/');
+  
   highlightArray.push('11/26/2013');
   hightlightLinks.push('/blog/2013/11/26/tuesday-week-48/');
   
@@ -1631,9 +1527,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('11/24/2013');
   hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
-  
-  highlightArray.push('11/24/2013');
-  hightlightLinks.push('/blog/2013/11/24/similarity-of-iq-cwas-across-scans/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-26T18:48:43-05:00</updated>
+  <updated>2013-11-27T14:02:02-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -385,6 +385,10 @@ sum(rowSums(pvals.mat&lt;0.05)==6)
 <p>Interesting that the correlation-based measures are all alike: concordance, kendall, pearson, and spearman with pearson as the most sensitive (180 significant voxels). Then euclidian and mahalanobois are fairly similar with both being the most sensitive overall (194 and 195 significant voxels, respectively). Significance here is p &lt; 0.05 (uncorrected…running analyses for corrected version now).</p>
 
 <p>It’s also interesting that there are still differences in what voxel’s are identified as significant between the euclidian-based ones and the correlation-ones. For instance about 103 voxels are commonly significant between mahalanobois and pearson distance. If I look at those that are not common between mahalanobois and pearson distance, I do find that some of them are sub-threshold in the other measure. For instance, with p&lt;0.1 for pearson there are now 141 significant voxels in common with mahalanobois of p&lt;0.05.</p>
+
+<h1 id="plotting">Plotting</h1>
+
+<p>I want to now plot the different distances in surface.</p>
 ]]></content>
   </entry>
   
