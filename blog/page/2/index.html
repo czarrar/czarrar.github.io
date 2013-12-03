@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="TODO QC Fix QC Pages Check QC output from Yang Do the QC Centrality (DONEISH) Look at centrality code and diagnose possible improvements in &hellip;">
+  <meta name="description" content="This page covers both Saturday and Sunday (which is technically week 48). TODO Permutation test for dice and spearman with IQ CWAS DONE Compare &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,493 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-23T13:54:00-05:00" pubdate data-updated="true">Nov 23<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This page covers both Saturday and Sunday (which is technically week 48).</p>
+
+<h2 id="todo">TODO</h2>
+
+<ul>
+  <li><strong>Permutation test for dice and spearman with IQ CWAS</strong>
+    <ul>
+      <li><em>DONE</em></li>
+    </ul>
+  </li>
+  <li><strong>Compare computational time for MDMR to other approaches</strong>
+    <ul>
+      <li><em>DONE</em></li>
+    </ul>
+  </li>
+  <li><strong>Bootstrap analyses</strong>
+    <ul>
+      <li><em>DONE</em></li>
+    </ul>
+  </li>
+  <li><strong>Compare different distances</strong>
+    <ul>
+      <li><em>DONE WITH TABLES</em></li>
+      <li><em>GENERATE SURFACE RESULTS</em></li>
+      <li><em>WRITE TEXT FOR PAPER</em></li>
+      <li><em>UPDATE RESPONSE</em></li>
+    </ul>
+  </li>
+  <li><strong>Simulations</strong>
+    <ul>
+      <li><em>WRITE CODE</em></li>
+      <li><em>GENERATE PLOTS</em></li>
+      <li><em>ADD TO RESPONSE LETTER</em></li>
+    </ul>
+  </li>
+  <li><strong>Results</strong>
+    <ul>
+      <li><em>RE-COMPUTE WHERE NEEDED</em></li>
+      <li><em>ADD TO PAPER</em></li>
+    </ul>
+  </li>
+  <li><strong>Update paper with stuff from response letter</strong>
+    <ul>
+      <li><em>I guess waiting for feedback on response letter</em></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
+
+<p>See details at <a href="/2013/11/24/similarity-of-iq-cwas-across-scans/">my other post</a>.</p>
+
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
+
+<h2 id="computational-time">Computational Time</h2>
+
+<p>Below is the average time (ms) across 100 iterations. MDMR is a little slower than GLM but comparable.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">   method      time
+1  Degree   5.76817
+2     GLM  30.12167
+3    MDMR  51.73251
+4     SVM 228.89548
+5 K-Means 788.41195</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Further details can be found on the <a href="/2013/11/24/timing-comparison/">following post</a>.</p>
+
+<h2 id="comparing-distances">Comparing Distances</h2>
+
+<p>Further details can be found on the <a href="/2013/11/09/comparing-distances">following post</a>.</p>
+
+<h2 id="simulations">Simulations</h2>
+
+<p>Getting a late start on the simulations. </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-22T15:44:00-05:00" pubdate data-updated="true">Nov 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="summary">Summary</h2>
+
+<h3 id="centrality-and-memory">Centrality and Memory</h3>
+
+<p>The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in memory load that then stays there.</p>
+
+<ol>
+  <li>When computing the correlations, additional memory is allocated then that used for the output (up to 0.5x more).</li>
+  <li>When converting any NaNs to 0s, more than 2x more than the current memory is used (I guess because a copy of the data is created but not wiped from memory at a later point).</li>
+  <li>When calculating the degree centrality from the connectivity about 2x the amount of memory is used at this step.</li>
+</ol>
+
+<p>We actually can deal with step 2, since this only occurs because some time-series are flat or all zeros. If we mask those time series out in advance, then we don’t need to worry about that particular issue.</p>
+
+<p>The third step might also be solved semi-easily with some cython. There is one nice tutorial/comparison here: http://technicaldiscovery.blogspot.com/2011/06/speeding-up-python-numpy-cython-and.html. We could then write a function that loops through the array, thresholds each element, and adds each element to a vector.</p>
+
+<p>Further details are given below on examining memory issues in centrality using (1) 3mm brain and breakpoints and (2) a toy example to get more details.</p>
+
+<h3 id="abide">ABIDE</h3>
+
+<p>I began running CPAC to register the participant functional data and derivatives to 3mm space.</p>
+
+<h2 id="memory-issues">Memory Issues</h2>
+
+<p>There are a couple of nice pages on some memory issues with numpy. One suggestion was to upgrade to version 1.7.1+ where some memory leaks were fixed. I’m currently using version 1.6.1 so it’s possible using a more advanced version could help…however, I did check with a version of numpy Dan has and this didn’t solve my particular issues.</p>
+
+<h2 id="detailed-memory-test">Detailed Memory Test</h2>
+
+<p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TODO</span><span class="p">:</span> <span class="n">breaks</span> <span class="n">pigments</span> <span class="n">will</span> <span class="nb">compile</span> <span class="n">elsewhere</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>block -&gt; 34382 0</p>
+
+<ol>
+  <li>93.88 MB</li>
+  <li>139.12 MB</li>
+  <li>6.45 GB (but note that before this point, memory goes up to 18.1GB)</li>
+  <li>6.45 GB</li>
+  <li>6.45 GB (but note that before this point, memory goes up to 13.75GB)</li>
+</ol>
+
+<p>block -&gt; 45262 34382</p>
+
+<p>Also there was a second block so points 3-4 repeat. They both had 2.49 GB as that used.</p>
+
+<p>Took about 324.71 secs or 5mins.</p>
+
+<h2 id="for-our-sanity">For our Sanity</h2>
+
+<p>So to confirm that we get sane numbers in python, one can run the following code and then monitor the memory externally with <code>./memtop</code>. Here, we will create a <code>corr_matrix</code> identical in size as in block 1 above. We find generally that our own calculation of this matrix is the same as that within python, which is the same as that using <code>memtop</code> (depends on <code>ps</code>). To get <code>memtop</code>, please follow this link: http://justinfranks.com/code/scripts/memtop.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">34382</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;float32&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Our assumption (4.4GB)</span>
+</span><span class="line"><span class="n">size_us</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nvoxs</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Using numpy (4.4GB)</span>
+</span><span class="line"><span class="n">size_np</span> <span class="o">=</span> <span class="n">corr_matrix</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># From the command-line (4.45GB)</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">os</span>
+</span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&quot;./memtop | grep ipython&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="understanding-memory-for-dot-product">Understanding memory for dot product</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nibabel-1.3.0-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pydicom-0.9.8-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/networkx-1.7-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pysurfer-0.3.1-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python27.zip&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/plat-linux2&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-tk&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-old&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-dynload&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages/PIL&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/site-packages&#39;</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Note there is a base memory of 84.86  MB</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="n">npsize</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">nbytes</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">10000</span>
+</span><span class="line"><span class="n">ntpts</span> <span class="o">=</span> <span class="mi">150</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># There is an increase to 100.7 MB with the time series</span>
+</span><span class="line"><span class="c"># this is a little larger then it&#39;s 11.5MB size</span>
+</span><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">ntpts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+</span><span class="line"><span class="n">timeseries</span><span class="p">[:,</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 863.73 MB</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">nvoxs</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 1.35 GB (even after it is done)</span>
+</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="n">nvoxs</span><span class="p">],</span> <span class="n">timeseries</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">corr_matrix</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 2.47 GB but stays at 2.09 GB</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># still at 2.09 GB</span>
+</span><span class="line"><span class="n">degree_centrality_weighted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvoxs</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># to 3.68 GB but stays at 2.84 GB</span>
+</span><span class="line"><span class="n">r_value</span> <span class="o">=</span> <span class="mf">0.2</span>
+</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">*</span><span class="p">(</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">degree_centrality_weighted</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Note that theoretically, we might have thought a limit of 0.75 GB</span>
+</span><span class="line"><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span><span class="o">*</span><span class="n">ntpts</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Below is the parallel commands that I ran to monitor the memory usage above.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">./memtop | grep ipython <span class="c"># get the pid</span>
+</span><span class="line"><span class="nv">PID</span><span class="o">=</span>7873
+</span><span class="line"><span class="k">while</span> <span class="o">[[</span> True <span class="o">]]</span>; <span class="k">do</span>
+</span><span class="line">	./memtop -s -p <span class="nv">$PID</span>
+</span><span class="line">	sleep 0.5
+</span><span class="line"><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="memory-leakage-links">Memory Leakage Links</h2>
+
+<ul>
+  <li>http://stackoverflow.com/questions/12422307/reducing-numpy-memory-footprint-in-long-running-application</li>
+  <li>http://stackoverflow.com/questions/12461413/why-does-comparison-of-a-numpy-array-with-a-list-consume-so-much-memory</li>
+  <li>http://stackoverflow.com/questions/15191391/how-to-avoid-this-four-line-memory-leak-with-numpymkl</li>
+</ul>
+
+<h2 id="running-centrality-on-abide">Running Centrality on ABIDE</h2>
+
+<p>The usage approaches 18GB when I set a 12GB limit. On gelert, each node has about 16GB of RAM. The easiest thing might be to run one process on each node with a limit of 6GB to keep well within range.</p>
+
+<h2 id="registering-data-to-3mm-space">Registering Data to 3mm Space</h2>
+
+<p>I also want to redo the registration to be in 3mm standard space, whereas it currently is in 2mm. I’m working on the script for that task and have started running this on gelert now.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-21T11:34:00-05:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today mostly revolved around memory profiling to work in python. Summary is as follows.</p>
+
+<ul>
+  <li>Looked into memory profiling
+    <ul>
+      <li>Had issues with memprof but got heapy to work (links below).</li>
+      <li>Got memprof to work not through numpy</li>
+      <li>Also applied memory_profiler (a little bit more accurate and useful than memprof).</li>
+      <li>Finally also applied memtop (a wrapper around ps)</li>
+    </ul>
+  </li>
+  <li>Attended lab meeting</li>
+  <li>Discussion of ABIDE with Chao-Gan and then Cameron</li>
+</ul>
+
+<h2 id="memory-profiling">Memory Profiling</h2>
+
+<p>Want to examine the memory usage of centrality in CPAC.</p>
+
+<h3 id="choosing-a-package">Choosing a Package</h3>
+
+<p>There are several python packages available with an extensive list available on stackoverflow: http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended.</p>
+
+<p>Some that do not seem appropriate for our purposes:</p>
+
+<ul>
+  <li><a href="https://launchpad.net/meliae">Meliae</a>: No documentation.</li>
+  <li><a href="http://pythonhosted.org/Pympler/muppy.html">Muppy</a>: Not that useful.</li>
+</ul>
+
+<p>One particular issue that I’ll be dealing with are how well it will work with nipype.</p>
+
+<h3 id="path-issue">Path Issue</h3>
+
+<p>The first problem I faced was the memory profiling not being on the path. This wasn’t so obvious because in the interactive shell of python and python, the memory profiling packages that were recently installed were available. However, when running python (the same python) from the command-line, then it couldn’t find it. The fix was simply to add my python site-packages to the path. Should know in the future that the paths for the interactive vs command-line python can be different.</p>
+
+<h3 id="heapy">Heapy</h3>
+
+<p>So when I actually ran memprof, it ended up failing. I went through all the other packages and was able to get <a href="http://smira.ru/wp-content/uploads/2011/08/heapy.html">heapy</a> to work. The approach taken with heapy is to call an individual function to measure the memory usage, whereas the other approaches all use a decorator of some kind. It worked, but the RAM values all seemed a bit low and not very convenient to read, so I tried another approach.</p>
+
+<h3 id="memprof">Memprof</h3>
+
+<p>Now I’ll be looking at <a href="http://jmdana.github.io/memprof">Memprof</a>, recommended by Cameron and also on the <a href="http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended">stackoverflow page</a>. Since it won’t work with nipype, I manually ran the <code>calc_centrality</code> function. This approach gave me some memory read outs. However, because it doesn’t actually record the memory usage of a particular command (when all the correlations are calculated), the maximum memory is about 160 + 11 or 171MB in total. This is a lot lower than I calculated and much lower than what I saw in top, which maxed out at around 4GB.</p>
+
+<p>[add pics]</p>
+
+<h3 id="memory-profiler">Memory Profiler</h3>
+
+<p>The other approach <a href="https://pypi.python.org/pypi/memory_profiler">memory_profiler</a> was a bit more useful. It showed about 1.4gb being used at the peak (around the correlation calculation).</p>
+
+<h3 id="memtop">Memtop</h3>
+
+<p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/20/wednesday-week-47/">Wednesday - Week 47</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-20T12:01:00-05:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="todo">TODO</h2>
+
+<h3 id="centrality">Centrality</h3>
+
+<ul>
+  <li>xx Look to using 4mm grey-matter mask</li>
+  <li>xx Run speed test on new analysis</li>
+  <li></li>
+</ul>
+
+<h2 id="centrality-1">Centrality</h2>
+
+<p>There a few issues related to needing to changing the inputs to the centrality nipype node. Those where straightforward.</p>
+
+<p>Now I’m having some weird bug where the centrality outputs are not being saved. Trying to debug at the <code>map_centrality_matrix</code> function. Ended up being a simple typo and returning the template_type instead of centrality file outputs from the <code>calc_centrality</code> command.</p>
+
+<p>I ran a comparison with AFNI’s 3dTcorrMap. When looking at the binarized result, almost all the voxels were the same except 8 in this particular case. I have tried doing centrality manually for those 8 voxels and keep getting the values from CPAC, which are 1 higher than the values from AFNI. I tried different correlation approaches as well as removing any voxel’s with constant time-series. However, since the difference is so small (only 1 for the binarized results) and there are so few voxels involved (8/19+k), I’m leaving it right now as a to be continued.</p>
+
+<p>I ‘ve also changed the way the correlations are calculated. Now the time-series will all be first normalized and then a dot product will be computed. This is in contrast, to doing both steps all at once for each block that the correlation is computed. So this will be a much greater speed boon when there are many blocks. In a small speed comparison using the normalization approach leads to a 2x improvement in speed.</p>
+
+<p>Although the setting of the block size does seem off, I will leave it for now. The actual amount of RAM being used is less than the amount </p>
+
+<blockquote>
+  <p>There were initially a lot more differences but a small change in the code to correct for auto-correlations in centrality took care of that issue.</p>
+</blockquote>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1174,470 +1661,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/09/comparing-distances/">Comparing Distances</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-09T18:02:00-05:00" pubdate data-updated="true">Nov 9<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>We want to show that the choice of your distance metric won’t substantially change your results. I’ll be using the first scan of the IQ dataset. I would like to compare the following measures:</p>
-
-<ul>
-  <li>Pearson Correlation</li>
-  <li>Spearman Rank</li>
-  <li>Kendall Tau</li>
-  <li>Lin’s concordance correlation</li>
-  <li>Euclidean distance</li>
-  <li>Chebychev distance</li>
-  <li>Mahalanobis distance</li>
-</ul>
-
-<p>All the measures except the last are used in the Zapala et al. (2006) <em>PNAS</em> paper, and the last measure is something used in Kriegeskorte’s work. It is essentially the mean distance between two features/vectors relative to the variance in each of them. Thus, 2 sets of points could be very close on average but have huge variability, meaning that small distance is less meaningful.</p>
-
-<h1 id="low-level-code">Low-Level Code</h1>
-
-<p>Most of the measures are fairly straightforward. I will add them all to the internal <code>.subdist_distance</code> function, which is called to compute the distance between the different participant connectivity maps for a given voxel. Right now, I have the pearson distance, shrinkage pearson distance, and inverse covariance distance. I added the other distance functions from my list above as additional options.</p>
-
-<p>How do you call the different distances? Note that I have made all of these functions internal so you would call it internally (within the package) as <code>.subdist_distance</code>. However, below I will use the globally accessible <code>test_sdist</code> function that is a simple wrapper around <code>.subdist_distance</code>.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">.test_sdist<span class="p">(</span>seedMaps<span class="p">,</span> dmats<span class="p">,</span> colind<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;pearson&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>As you can see, we pass a matrix of participant seed maps (voxels as rows and participants as columns), a big matrix of distances (columns as voxels and rows as the vectorized distance matrix for that voxel), the index of the voxel examined in the distances, and your method of choice.</p>
-
-<h2 id="measures">Measures</h2>
-
-<h3 id="pearson">Pearson</h3>
-
-<p>I updated the connectir pearson distance C function (<code>subdist_pearson_distance</code>) to compute the transformed correlation that has euclidean properties. I should make sure to test this for confirmation.</p>
-
-<h3 id="mahalanobis-distance">Mahalanobis Distance</h3>
-
-<p>I borrowed code for this measure from the following two links:</p>
-
-<p>http://stats.stackexchange.com/questions/33518/pairwise-mahalanobis-distance-in-r</p>
-
-<p>http://stats.stackexchange.com/questions/65705/pairwise-mahalanobis-distance/66325#66325</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">library<span class="p">(</span>connectir<span class="p">)</span>
-</span><span class="line">library<span class="p">(</span>corpcor<span class="p">)</span>
-</span><span class="line">seedMaps <span class="o">&lt;-</span> t<span class="p">(</span>matrix<span class="p">(</span>runif<span class="p">(</span><span class="m">500</span><span class="p">,</span> min<span class="o">=</span><span class="m">0</span><span class="p">,</span> max<span class="o">=</span><span class="m">2</span><span class="p">),</span> <span class="m">100</span><span class="p">,</span> <span class="m">5</span><span class="p">))</span>
-</span><span class="line"><span class="c1"># invCov &lt;- ginv(cov(seedMaps))</span>
-</span><span class="line">invCov <span class="o">&lt;-</span> invcov.shrink<span class="p">(</span>seedMaps<span class="p">)</span>
-</span><span class="line">SQRT <span class="o">&lt;-</span> with<span class="p">(</span>svd<span class="p">(</span>invCov<span class="p">),</span> u <span class="o">%*%</span> diag<span class="p">(</span>d<span class="o">^</span><span class="m">0.5</span><span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>v<span class="p">))</span>
-</span><span class="line">dmat <span class="o">&lt;-</span> as.matrix<span class="p">(</span>dist<span class="p">(</span>seedMaps <span class="o">%*%</span> SQRT<span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Note that here I am using a shrinkage method to deal with the ill-posed problem of inverting a n « p issue. So far it normally fails if I take the traditional approach.</p>
-
-<h3 id="concordance">Concordance</h3>
-
-<p>I took the implementation in the <code>epiR</code> package and made it more suitable for a matrix approach (e.g., correlated everything with everything else). Note that the results using this alternative matrix-based approach are very close to using the epiR function but not exact. Should investigate in the future.</p>
-
-<h3 id="others">Others</h3>
-
-<p>Here’s some example code from the spearman distance. For the most part, I tried to use the currently available functions.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">.distance_spearman <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>seedMaps<span class="p">,</span> dmats<span class="p">,</span> colind<span class="p">,</span> transpose<span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
-</span><span class="line">    seedMaps <span class="o">&lt;-</span> ifelse<span class="p">(</span>transpose<span class="p">,</span> t<span class="p">(</span>seedMaps<span class="p">[,]),</span> seedMaps<span class="p">[,])</span>
-</span><span class="line">    smat <span class="o">&lt;-</span> cor<span class="p">(</span>seedMaps<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;spearman&quot;</span><span class="p">)</span>
-</span><span class="line">    dmat <span class="o">&lt;-</span> sqrt<span class="p">(</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">-</span>smat<span class="p">))</span>
-</span><span class="line">    dmats<span class="p">[,</span>colind<span class="p">]</span> <span class="o">&lt;-</span> as.vector<span class="p">(</span>dmat<span class="p">)</span>
-</span><span class="line"><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="issues">Issues</h2>
-
-<p>I had an NaN error after running the first pearson distance. I realized that this error is related to the fact that the correlation can sometimes go over 1 due to precision errors. To combat this I added a tolerance level, where I adjust the correlation down by 1e-8. This should ensure that no correlation is above 1, which would lead to a negative number in the transformation and a NaN when trying to get the square root. Note that this is really only an issue for the pearson distance.</p>
-
-<h1 id="higher-level-code">Higher-Level Code</h1>
-
-<p>After computing the connectivity maps, I’d ideally want to have some manual code that runs all the possible distances and saves them in different file-backed distance matrices. However, this seems to be a bit hairy and would require lots of coding/testing. Main issues are with memory (i.e., holding all the distances in memory or partially in memory). Instead, I’ll take the easier but longer approach of running the distances for each method separately. To speed things up, I plan to use the 800 random ROIs.</p>
-
-<p>The details for this code can be found in <code>10_subdist.bash</code>.</p>
-
-<h1 id="running-the-analyses">Running the Analyses</h1>
-
-<p>I’ve started to run the analyses. I ended up going with two separate workflows since the kendall was taking forever!</p>
-
-<p>I will need to re-run the concordance since there was an error in the code. I should make sure to remove the following folder beforehand: <code>/home/data/Projects/CWAS/nki/cwas/short/try_distances/concordance_k0800_to_k0800</code>.</p>
-
-<blockquote>
-  <p>Below the time in parentheses represents computation time but excludes setup time (i.e., reading in distance matrix and creating the hat matrix).</p>
-</blockquote>
-
-<h2 id="finished">Finished</h2>
-
-<ul>
-  <li>Pearson (0.9 mins)</li>
-  <li>Spearman (2.5 mins)</li>
-  <li>Chebyshev (25 mins)</li>
-  <li>Euclidean (6.8 mins)</li>
-  <li>Kendall (1883.3 mins)</li>
-  <li>Concordance (0.4 mins)</li>
-  <li>Mahalanobois (14.5 mins)</li>
-</ul>
-
-<h1 id="comparing-distances">Comparing Distances</h1>
-
-<p>Here is some quick code to compare the MDMR results using the different distance measures.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line"><span class="c1"># Setup</span>
-</span><span class="line">setwd<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas/short/try_distances/&quot;</span><span class="p">)</span>
-</span><span class="line">library<span class="p">(</span>bigmemory<span class="p">)</span>
-</span><span class="line">dirs <span class="o">&lt;-</span> Sys.glob<span class="p">(</span><span class="s">&quot;*/iq_age+sex+meanFD.mdmr/pvals.desc&quot;</span><span class="p">)</span>
-</span><span class="line">pvals.mat <span class="o">&lt;-</span> sapply<span class="p">(</span>dirs<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>d<span class="p">)</span> attach.big.matrix<span class="p">(</span>d<span class="p">)[,</span><span class="m">1</span><span class="p">])</span>
-</span><span class="line">colnames<span class="p">(</span>pvals.mat<span class="p">)</span> <span class="o">&lt;-</span> sub<span class="p">(</span><span class="s">&quot;_k0800_to_k0800&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> dirname<span class="p">(</span>dirname<span class="p">(</span>dirs<span class="p">)))</span>
-</span><span class="line"><span class="c1"># reorder according to Zapala paper</span>
-</span><span class="line">tmp <span class="o">&lt;-</span> pvals.mat<span class="p">[,</span>c<span class="p">(</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">5</span><span class="p">)]</span>
-</span><span class="line"><span class="c1"># Percent significant</span>
-</span><span class="line">round<span class="p">(</span>cbind<span class="p">(</span>
-</span><span class="line">	<span class="s">&#39;1&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.01</span><span class="p">),</span> 	
-</span><span class="line">	<span class="s">&#39;5&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.05</span><span class="p">),</span>
-</span><span class="line">	<span class="s">&#39;25&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.25</span><span class="p">),</span>
-</span><span class="line">	<span class="s">&#39;50&#39;</span><span class="o">=</span>colMeans<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.50</span><span class="p">)</span>
-</span><span class="line"><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
-</span><span class="line"><span class="c1"># Correlate</span>
-</span><span class="line">cor<span class="p">(</span>pvals.mat<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">)</span>
-</span><span class="line"><span class="c1"># Dice-esque</span>
-</span><span class="line">d.mat <span class="o">&lt;-</span> crossprod<span class="p">(</span>tmp<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span>
-</span><span class="line">print<span class="p">(</span>d.mat<span class="p">)</span> <span class="c1"># counts</span>
-</span><span class="line">round<span class="p">(</span>sweep<span class="p">(</span>d.mat<span class="p">,</span> <span class="m">1</span><span class="p">,</span> diag<span class="p">(</span>d.mat<span class="p">),</span> <span class="s">&#39;/&#39;</span><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span> <span class="c1"># percent overlap</span>
-</span><span class="line"><span class="c1"># Dice</span>
-</span><span class="line">numer <span class="o">&lt;-</span> <span class="m">2</span><span class="o">*</span>d.mat
-</span><span class="line">denom <span class="o">&lt;-</span> <span class="p">(</span>diag<span class="p">(</span>d.mat<span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>rep<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">)))</span> <span class="o">+</span> t<span class="p">(</span>diag<span class="p">(</span>d.mat<span class="p">)</span> <span class="o">%*%</span> t<span class="p">(</span>rep<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">)))</span>
-</span><span class="line">dice <span class="o">&lt;-</span> numer<span class="o">/</span>denom
-</span><span class="line">print<span class="p">(</span>round<span class="p">(</span>dice<span class="p">,</span> <span class="m">2</span><span class="p">))</span>
-</span><span class="line"><span class="c1"># Voxels present in all distance measures</span>
-</span><span class="line">sum<span class="p">(</span>rowSums<span class="p">(</span>pvals.mat<span class="o">&lt;</span><span class="m">0.05</span><span class="p">)</span><span class="o">==</span><span class="m">6</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Interesting that the correlation-based measures are all alike: concordance, kendall, pearson, and spearman with pearson as the most sensitive (180 significant voxels). Then euclidian and mahalanobois are fairly similar with both being the most sensitive overall (194 and 195 significant voxels, respectively). Significance here is p &lt; 0.05 (uncorrected…running analyses for corrected version now).</p>
-
-<p>It’s also interesting that there are still differences in what voxel’s are identified as significant between the euclidian-based ones and the correlation-ones. For instance about 103 voxels are commonly significant between mahalanobois and pearson distance. If I look at those that are not common between mahalanobois and pearson distance, I do find that some of them are sub-threshold in the other measure. For instance, with p&lt;0.1 for pearson there are now 141 significant voxels in common with mahalanobois of p&lt;0.05.</p>
-
-<h1 id="plotting">Plotting</h1>
-
-<p>I want to now plot the different distances in surface.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/08/friday-save-the-date/">Friday - Save the Date</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-08T09:28:00-05:00" pubdate data-updated="true">Nov 8<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="abide">ABIDE</h1>
-
-<p>I am continuing to look into the ‘no space left on device’ error on gelert. First, I’ll attempt to understand what subject’s were deleted if at all.</p>
-
-<h2 id="any-working-directories-deleted">Any Working Directories Deleted?</h2>
-
-<p>I want to first figure out if the working directories are never deleted on gelert, which is potentially an easy fix, or if it is more sporadic. To test this, I will look at the subjects in the output directory but not in any of the working directories on gelert. Below are the 46 subjects that fall in that category indicating that some subjects are at least deleted.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-</pre></td><td class="code"><pre><code class=""><span class="line"> [1] "0050642" "0050644" "0050650" "0050651" "0050652" "0050653" "0050654"
-</span><span class="line"> [8] "0050655" "0050656" "0050657" "0050660" "0050661" "0050664" "0050666"
-</span><span class="line">[15] "0050669" "0050682" "0050774" "0050776" "0050781" "0050785" "0050789"
-</span><span class="line">[22] "0050791" "0050792" "0050794" "0050799" "0050802" "0050807" "0050808"
-</span><span class="line">[29] "0050815" "0050825" "0050826" "0051456" "0051458" "0051461" "0051463"
-</span><span class="line">[36] "0051464" "0051471" "0051475" "0051478" "0051480" "0051483" "0051485"
-</span><span class="line">[43] "0051487" "0051491" "0051492" "0051493"</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="a-mix-of-working-directories-were-removed">A mix of working directories were removed</h3>
-
-<p>Are these deleted working directories belong to participants with one of the first subject ids? That is are these the first subjects that were run? The answer appears both a yes and no, as you can see from the subject indices.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class=""><span class="line"> [1]   1   3   9  10  11  12  13  14  15  16  19  20  22  24  27  28  94  96 101
-</span><span class="line">[20] 105 109 111 112 114 119 122 127 128 135 145 146 149 151 154 156 157 164 168
-</span><span class="line">[39] 171 173 176 178 180 184 185 186</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="the-removed-directories-completed-functional-preprocessing">The removed directories completed functional preprocessing</h3>
-
-<p>Now I wonder if participant’s with deleted working directories have completed workflows. I checked and all the 46 participants had a <code>functional_mni</code> that exists. Here is a sample path for the first participant: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-05/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0050642_session_1/scan_rest_1_rest/func/functional_mni.nii.gz</code>.</p>
-
-<h3 id="the-kept-directories-also-completed-functional-preprocessing">The kept directories also completed functional preprocessing</h3>
-
-<p>I thought some of these might have failed at generating the <code>functional_mni</code>, however they are all there.</p>
-
-<blockquote>
-  <p>Note: the relevant script is <code>x_find_tmps.R</code>.</p>
-</blockquote>
-
-<hr />
-
-<p>You regress out the covariates and </p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/thursday-lib-cmi-nyu/">Thursday Lib Cmi Nyu</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T11:17:00-05:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="abide">ABIDE</h1>
-
-<p>On gelert, it has been over 2 days and it is now (morning of the 7th) on the 125th to 186th participant. However, it appears that there were many crashes for some participants.</p>
-
-<p>Below are some crash files that I tried. Ultimately, it appears that there is no space left on the device for /tmp. This likely implies that the working directory folder is not being removed when it should. Ugh.</p>
-
-<p>On rocky, the removal of the working directory works fine. I thought I had tried it for gelert too and found it was fine. I see a few possibilities.</p>
-
-<ol>
-  <li>Some error might occur as CPAC runs, which might lead it to skip removing the directory.</li>
-  <li>It doesn’t actually remove the directory when running through SGE (maybe because it is using a different function). Note that removal of the working directory occurs at the very end in the cpac runner run function.</li>
-  <li>There’s some issue with permissions and so a /tmp directory can be created but not removed. This can be easily tested.</li>
-</ol>
-
-<h2 id="sample-crash-file-a">Sample Crash File A</h2>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">os</span>
-</span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;/data/Projects/ABIDE_Initiative/CPAC/crash&#39;</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="kn">from</span> <span class="nn">nipype.utils.filemanip</span> <span class="kn">import</span> <span class="n">loadflat</span>
-</span><span class="line"><span class="n">crashfile</span> <span class="o">=</span> <span class="n">loadflat</span><span class="p">(</span><span class="s">&#39;crash-20131107-103920-qli-_apply_ants_3d_warp149.npz&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>This gives the following error</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TraitError</span><span class="p">:</span> <span class="n">Each</span> <span class="n">element</span> <span class="n">of</span> <span class="n">the</span> <span class="s">&#39;transformation_series&#39;</span> <span class="n">trait</span> <span class="n">of</span> <span class="n">a</span> <span class="n">WarpImageMultiTransformInputSpec</span> <span class="n">instance</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">existing</span> <span class="nb">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">but</span> <span class="n">a</span> <span class="n">value</span> <span class="n">of</span> <span class="s">&#39;/tmp/resting_preproc_00</span>
-</span><span class="line"><span class="mi">50699</span><span class="n">_session_1</span><span class="o">/</span><span class="n">anat_mni_ants_register_0</span><span class="o">/</span><span class="n">warp_brain</span><span class="o">/</span><span class="n">ants_Warp</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="s">&#39; &lt;type &#39;</span><span class="nb">str</span><span class="s">&#39;&gt; was specified.</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>It seems like a working directory file for this particular subject does not exist from this error. However, looking at the various functional/derivative outputs in subject’s folder that are in standard space, stuff appears the fine:</p>
-
-<ul>
-  <li>functional: <strong>good</strong></li>
-  <li>alff: <strong>good</strong></li>
-  <li>centrality: <strong>good</strong></li>
-  <li>reho: <strong>good</strong></li>
-  <li>sca_roi: Is there no standard space SCA map?</li>
-  <li>dr: Is there no standard space SCA map?</li>
-  <li>vmhc: <strong>good</strong></li>
-</ul>
-
-<p>I believe I might be missing some other relevant outputs.</p>
-
-<h2 id="sample-crash-file-b">Sample Crash File B</h2>
-
-<p>I get the following error for this crash file <code>crash-20131107-114514-qli-_network_centrality_smooth_10.npz</code>.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TraitError</span><span class="p">:</span> <span class="n">The</span> <span class="s">&#39;in_file&#39;</span> <span class="n">trait</span> <span class="n">of</span> <span class="n">a</span> <span class="n">MultiImageMathsInput</span> <span class="n">instance</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">existing</span> <span class="nb">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">but</span> <span class="n">a</span> <span class="n">value</span> <span class="n">of</span> <span class="s">&#39;/tmp/resting_preproc_0050702_session_1/centrality_zscore_1/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/_bandpass_freqs_0.01.0.1/_mask_mask_abide_90percent_gm/z_score/mapflow/_z_score0/degree_centrality_binarize_maths.nii.gz&#39;</span> <span class="o">&lt;</span><span class="nb">type</span> <span class="s">&#39;str&#39;</span><span class="o">&gt;</span> <span class="n">was</span> <span class="n">specified</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>So it seems like for this participant the fslmaths command was not run on the centrality outputs and later the smoothing was not applied. </p>
-
-<h1 id="quick-pack">Quick Pack</h1>
-
-<p>Let’s recre</p>
-
-<h1 id="emotional-bs">Emotional-BS</h1>
-
-<p>I want to focus on the QC to get that out of the way.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/06/wednesday-nki/">Wednesday Nki</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-06T14:59:00-05:00" pubdate data-updated="true">Nov 6<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="abide">ABIDE</h1>
-
-<p>We brought over the two drives with preprocessed ABIDE data from Pierre and Xinian to NKI. We attempted to mount the drives to rocky but got a “Not Authorized” error. I sent an email to Stan with Cameron cc’ed to see if we could deal with this issue (thinks we need sudo privileges).</p>
-
-<p>Cameron will be getting sudo access and will figure out mounting the drive.</p>
-
-<h1 id="nilearn">NiLearn</h1>
-
-<p>The subjects for nilearn (ADHD40) appear to be done. I modified my prior compile scripts to take from the new preprocessed output (without nuisance correction and bandpass filtering). I re-uploaded the files to connectir and sent an email to Gael et al. So should be all done here.</p>
-
-<p>I believe I do want to get access to ADHD200 nitrc sftp so I can upload the data to that site. Right now it is on my own connectir nitrc site.</p>
-
-<h1 id="emotional-bs">Emotional-BS</h1>
-
-<p>Read some articles. Check the QC.</p>
-
-<h1 id="quick-pack">Quick-Pack</h1>
-
-<p>Look into the GUI error…</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1655,30 +1678,30 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 160.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 134.28571428571428%'>cmi(4)</a> <a href='/blog/categories/cpac' style='font-size: 160.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(7)</a> <a href='/blog/categories/emotional-bs' style='font-size: 117.14285714285714%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 108.57142857142857%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 108.57142857142857%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 125.71428571428572%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 151.42857142857144%'>quickpack(6)</a> <a href='/blog/categories/writedown' style='font-size: 108.57142857142857%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 146.66666666666666%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 133.33333333333334%'>cmi(5)</a> <a href='/blog/categories/cpac' style='font-size: 146.66666666666666%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(9)</a> <a href='/blog/categories/emotional-bs' style='font-size: 113.33333333333333%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.66666666666667%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.66666666666667%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 120.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 140.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.66666666666667%'>r(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.66666666666667%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/02/week-49-monday/">Week 49 - Monday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/01/cwas-simulations/">CWAS Simulations</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/30/week-49-sunday/">Week 49 - Sunday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/30/plotting-images-in-r/">Plotting Images in R</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/27/wednesday-week-48/">Wednesday - Week 48</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/25/updating-centrality/">Updating Centrality</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/25/monday-week-48/">Monday - Week 48</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/24/timing-comparison/">Timing Comparison</a>
       </li>
     
   </ul>
@@ -1839,20 +1862,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/02/2013');
+  hightlightLinks.push('/blog/2013/12/02/week-49-monday/');
+  
+  highlightArray.push('12/01/2013');
+  hightlightLinks.push('/blog/2013/12/01/cwas-simulations/');
+  
+  highlightArray.push('11/30/2013');
+  hightlightLinks.push('/blog/2013/11/30/week-49-sunday/');
+  
+  highlightArray.push('11/30/2013');
+  hightlightLinks.push('/blog/2013/11/30/plotting-images-in-r/');
+  
   highlightArray.push('11/27/2013');
   hightlightLinks.push('/blog/2013/11/27/wednesday-week-48/');
-  
-  highlightArray.push('11/26/2013');
-  hightlightLinks.push('/blog/2013/11/26/tuesday-week-48/');
-  
-  highlightArray.push('11/25/2013');
-  hightlightLinks.push('/blog/2013/11/25/updating-centrality/');
-  
-  highlightArray.push('11/25/2013');
-  hightlightLinks.push('/blog/2013/11/25/monday-week-48/');
-  
-  highlightArray.push('11/24/2013');
-  hightlightLinks.push('/blog/2013/11/24/timing-comparison/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

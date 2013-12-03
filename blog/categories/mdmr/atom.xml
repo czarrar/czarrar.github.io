@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mdmr | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/mdmr/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-27T22:46:58-05:00</updated>
+  <updated>2013-12-02T19:34:09-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,14 +18,19 @@
     <link href="http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity/"/>
     <updated>2013-11-03T20:06:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/11/03/cwas-computational-complexity</id>
-    <content type="html"><![CDATA[<p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+    <content type="html"><![CDATA[<p>I want to look at the theoretical complexity below and also the empirical complexity both as a function of the number of subjects and voxels. For the empirical complexity, let me note the total time and also the times for each of the subunits. This way, I can concur my theoretical timing. But really in the end, I want to see that as I increase the number of subjects and the number of connections, what is the relative change in the time.</p>
 
-<p>In summary, the complexity (I think) is</p>
+<hr />
+
+<p>I’m trying to address some reviewer questions regarding the computational complexity of CWAS and particularly the MDMR step.</p>
+
+<p>In summary, the complexity is</p>
 
 <ul>
-  <li>O(V*n^2) for computing the distance matrices</li>
+  <li>O(V^3*n) for computing the connectivity maps</li>
+  <li>O(V^2*n^2) for computing the distance matrices</li>
   <li>O(k*n^2) for creating the hat matrices</li>
-  <li>O(n^3) for gower centering the distance matrices</li>
+  <li>O(V*n^3) for gower centering the distance matrices</li>
   <li>O(Pxn^2xV) for MDMR</li>
 </ul>
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: r | Zarrar's Journaling]]></title>
+  <link href="http://czarrar.github.io/blog/categories/r/atom.xml" rel="self"/>
+  <link href="http://czarrar.github.io/"/>
+  <updated>2013-12-02T19:34:09-05:00</updated>
+  <id>http://czarrar.github.io/</id>
+  <author>
+    <name><![CDATA[Zarrar Shehzad]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Plotting Images in R]]></title>
+    <link href="http://czarrar.github.io/blog/2013/11/30/plotting-images-in-r/"/>
+    <updated>2013-11-30T19:37:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/11/30/plotting-images-in-r</id>
+    <content type="html"><![CDATA[<p>Plotting images or 2D graphs are fairly easy in R. You can use the <code>image</code> function or for a nice legend, you can also use the <code>image.plot</code> function in the <code>fields</code> package. The issue I encountered for the <code>image.plot</code> function is when I want the labels from my x and y axis to be different due to a log transformation. This was not possible.</p>
+
+<p>To get around this issue, I adapted the <code>image.plot</code> function as <code>image.zplot</code> and added the following lines that are run right after the image is generated.</p>
+
+<p><code>r
+if (!is.null(axis.x)) {
+  axis.x$side &lt;- 1
+  do.call("axis", axis.x)
+}
+if (!is.null(axis.y)) {
+  axis.y$side &lt;- 2
+  do.call("axis", axis.y)
+} 
+box()
+</code></p>
+
+<p>This also adds the <code>axis.x</code> and <code>axis.y</code> options, which are options with list as the argument. The list entries are the key/value pairs when calling the particular axis function. This means I can use my custom log transformed x and y axis but provide the original numbers.</p>
+]]></content>
+  </entry>
+  
+</feed>

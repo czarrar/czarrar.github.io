@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-11-27T22:46:58-05:00</updated>
+  <updated>2013-12-02T19:34:09-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Week 49 - Monday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/02/week-49-monday/"/>
+    <updated>2013-12-02T13:25:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/02/week-49-monday</id>
+    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
+
+<ul>
+  <li>Checked and finalized fixing a subject.</li>
+  <li>Resolved questions with QC</li>
+  <li>Discussed issue with VMHC</li>
+  <li>Setup quick pack for Xinian’s dataset</li>
+  <li>Read through the eigenvector centrality paper</li>
+  <li>Went through a few articles for tagging with updated instructions</li>
+</ul>
+
+<h2 id="todos">TODOs</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>Check on fixed subject</li>
+      <li>Email about QC</li>
+      <li>Look into VMHC issue on github</li>
+      <li>Create quick packs for everyone</li>
+      <li>Email to ask about eigenvector centrality</li>
+    </ul>
+  </li>
+  <li>Check fixed subject</li>
+  <li>Find out about tagging</li>
+</ul>
+
+<h2 id="abide---fixed-subject">ABIDE - Fixed Subject</h2>
+
+<p>I reran one participant with missing derivatives. It appears that everything is good.</p>
+
+<h2 id="abide---quick-packs">ABIDE - Quick Packs</h2>
+
+<p>We are looking to have the following derivatives:</p>
+
+<ul>
+  <li>Timeseries for different regions of interest</li>
+  <li>Dual Regression maps</li>
+  <li>ALFF/fALFF</li>
+  <li>REHO</li>
+  <li>Degree/Eigen Centrality</li>
+  <li>VMHC</li>
+</ul>
+
+<h3 id="cameron">Cameron</h3>
+
+<p>For our data, we already have most of the above derivatives and need the following:</p>
+
+<ul>
+  <li>Degree/Eigen Centrality</li>
+  <li>VMHC</li>
+</ul>
+
+<p>Degree I should be able to run now but need to wait on Eigen and VMHC.</p>
+
+<h3 id="xinian">Xinian</h3>
+
+<p>I started to create the quick pack for this dataset. The one issue is that it’s unclear whether the global signal correction was applied to either the filtered or non-filtered data. It should be applied to both so will need to contact some people in order to figure out how to resolve this issue. Hopefully no heads will roll.</p>
+
+<p>The scripts and what not for this dataset quick pack are located in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/32_xinian</code>. I still need to write some code to generate the standard brain mask and of course test it all as well.</p>
+
+<h3 id="pierre">Pierre</h3>
+
+<p>Pierre’s is already in standard space so I believe I should simply be able to turn off <code>runRegisterFuncToMNI</code> and also my custom option <code>applyRegisterFuncToMNI</code>. The regular outputs should be good enough.</p>
+
+<h3 id="chao-gan">Chao-Gan</h3>
+
+<p>Check with Chao-Gan.</p>
+
+<h2 id="abide---qc">ABIDE - QC</h2>
+
+<p>I should do a similar approach as Yang and reference an email from Pierre with some guidelines.</p>
+
+<h2 id="eigenvector-centrality">Eigenvector Centrality</h2>
+
+<p>I did a bit of reading last time about a faster approach to eigenvector centrality. Now I went through the main paper again. It appears that their speed-up is primarily by not having to compute the cross product between a matrix of time series (voxels x time points). They split this step up into two parts that reduces the complexity from N^2 to 2NT where N = voxels and T = time points. They make a claim that for voxelwise data, they see a speedup of 1000x.</p>
+
+<h2 id="tagging">Tagging</h2>
+
+<p>Spoke to Cameron. We discussed some potential changes and I emailed these out to him and Matt.</p>
+
+<p>In terms of tagging, here were some important points to note:</p>
+
+<ul>
+  <li>use mike’s opinions as the standard</li>
+  <li>basic neuroscience is a superset of brain/behavior</li>
+  <li>only include resting-state fMRI studies!</li>
+</ul>
+
+<h2 id="cwas">CWAS</h2>
+
+<p>I got emails from Xavier and Phil with comments. I should look to integrate them.</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Wednesday - Week 48]]></title>
