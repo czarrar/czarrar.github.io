@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-02T19:34:09-05:00</updated>
+  <updated>2013-12-06T11:17:24-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -18,9 +18,28 @@
     <link href="http://czarrar.github.io/blog/2013/12/01/cwas-simulations/"/>
     <updated>2013-12-01T21:01:00-05:00</updated>
     <id>http://czarrar.github.io/blog/2013/12/01/cwas-simulations</id>
-    <content type="html"><![CDATA[<p>The code for the simulation analysis is located in <code>/home/data/Projects/CWAS/share/simulations</code>. I have added multiprocessing functionality to speed up the ability to go through the different parameters and iterations.</p>
+    <content type="html"><![CDATA[<p>I should check the data that I am plotted. Right now, I am examining the mean -log10p value of the MDMR results but I think I might want to look at the percent of significant results with each effect size. Should double check.</p>
 
-<p>I have started running one iteration of things including both variables of interest. Holy crap, it finished in like 30mins, super quick.</p>
+<p>The code for the simulation analysis is located in <code>/home/data/Projects/CWAS/share/simulations</code>. I have added multiprocessing functionality to speed up the ability to go through the different parameters and iterations.</p>
+
+<p>I have started running one iteration of things including both variables of interest. Holy crap, it finished in like 30mins, super quick. I saved the values in an rda file within the same folder. The contents of that rda are as follows:</p>
+
+<ul>
+  <li>logp.cov1</li>
+  <li>fstat.cov1</li>
+  <li>logp.cov0</li>
+  <li>fstat.cov0</li>
+</ul>
+
+<p>The <code>cov1</code> term means that the covariate was modeled whereas <code>cov0</code> means the covariate wasn’t modeled. For <code>cov1</code> matrices, the dimensions were 2 terms x 11 group difference x 11 correlation. For <code>cov0</code> matrices, the dimensions were 11 group difference x 11 correlation (only for the group difference term). The correlation was between the age covariate and the response.</p>
+
+<h2 id="plot">Plot</h2>
+
+<p>I generated plots of the results on my computer using the <code>.../pro42/scripts2add/simulations/20_plot.R</code> script. Since I used Rnotebook, I was able to publish those results online at http://rpubs.com/czarrar/cwas_simulations.</p>
+
+<h2 id="status">Status</h2>
+
+<p>So I had to rerun the analyses since I should have been calculating power as percent of significant iterations (p &lt; 05). I upped the number of iterations to 20, hopefully this is enough.</p>
 ]]></content>
   </entry>
   

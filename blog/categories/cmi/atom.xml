@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-02T19:34:09-05:00</updated>
+  <updated>2013-12-06T11:17:24-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,147 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Week 49 - Friday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/06/week-49-friday/"/>
+    <updated>2013-12-06T10:35:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/06/week-49-friday</id>
+    <content type="html"><![CDATA[<h2 id="plan">Plan</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>[] QC (1 hour)</li>
+    </ul>
+  </li>
+  <li>CPAC
+    <ul>
+      <li>[] Finish adapting fast eigenvector code (30 mins)</li>
+      <li>[] Write SVD version of eigenvector (1 hour)</li>
+      <li>[] Test new eigenvector code (2 hours)</li>
+      <li>[] @Steve CWAS Regression Test (1 hour)</li>
+    </ul>
+  </li>
+  <li>Tagging
+    <ul>
+      <li>[] Meeting to discuss criteria (1 hour)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="fast-eigenvector-centrality">Fast Eigenvector Centrality</h2>
+
+<p>The plan for testing would be to first make sure that the code results are close to the original approach and possibly also compare to an SVD approach.</p>
+
+<h2 id="thoughts">Thoughts</h2>
+
+<h3 id="plan-better">Plan Better</h3>
+
+<p>Last few days I feel that I haven’t gotten through as much as I could have. Possibly due to not sleeping as much and partly due to more socializing like with the speaker’s visit and a new office mate. Let’s try differently today.</p>
+
+<h3 id="link-to-pages-by-week-and-month">Link to pages by week and month</h3>
+
+<p>Another nice thing would be to have a summary page at the end of the week with links to all the other pages that week (might want to check if those exist?) and similarly at the end of the month could have a page with the lists for that month. I wonder if this could be within the pages section?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Week 49 - Wednesday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/04/week-49-wednesday/"/>
+    <updated>2013-12-04T10:02:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/04/week-49-wednesday</id>
+    <content type="html"><![CDATA[<h2 id="summarytodo">Summary/TODO</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>[x] QC (1 hour)</li>
+    </ul>
+  </li>
+  <li>CPAC (related to ABIDE)
+    <ul>
+      <li>[] Functional Density Mapping</li>
+      <li>[] Fast Eigenvector Centrality
+        <ul>
+          <li>[x] Respond to Wink</li>
+          <li>[x] Tried installing the C++ version (1 hr)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>[] Tagging</li>
+  <li>Dan Dickstein CWAS
+    <ul>
+      <li>[x] Get details from Dan</li>
+      <li>[x] Phil Meeting about CWAS Paper. Discussed way to get confidence intervals for simulation power analysis. (1 hr)</li>
+    </ul>
+  </li>
+  <li>CWAS with Steve. Worked out a plan to have a workable version of CWAS into the next release (30 min)</li>
+  <li>Went to talk with Matt Hutchinson. Asked a super intelligent question. (1-2 hrs)</li>
+</ul>
+
+<h2 id="abide-qc">ABIDE QC</h2>
+
+<p>Start at 10am till 11am.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Week 49 - Tuesday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/03/week-49-tuesday/"/>
+    <updated>2013-12-03T11:30:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/03/week-49-tuesday</id>
+    <content type="html"><![CDATA[<p>testing draft</p>
+
+<h2 id="summarytodo">Summary/TODO</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>[x] Create quick pack for degree centrality</li>
+      <li>[x] Email Xinian about GSR data and having filtered/non-filtered</li>
+      <li>[x] Finish creating quick pack for LFCD</li>
+    </ul>
+  </li>
+  <li>CPAC
+    <ul>
+      <li>[] Run an initial test of the functional node</li>
+    </ul>
+  </li>
+  <li>Tag</li>
+</ul>
+
+<p>I also took the speaker (Matt) out to lunch with Zhen, and then showed him some of my slides about CWAS.</p>
+
+<h2 id="quick-pack-for-centrality">Quick Pack for Centrality</h2>
+
+<h3 id="cpac-preprocessed-data">CPAC Preprocessed Data</h3>
+
+<p>The scripts for this analysis are located in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/30_centrality</code>. I was able to first generate a subject list YAML file with <code>10_gen_quick_pack.py</code>. Below is a sample of what a file for one subject looks like:</p>
+
+<p><code>
+  functional_brain_mask: {filt_global: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
+    filt_noglobal: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
+    nofilt_global: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
+    nofilt_noglobal: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz}
+</code></p>
+
+<p>We can see that we have each filtering and global option as the input. This is a little bit of cheating since the different input keys are interpreted as different scans.</p>
+
+<p>We can then use these different inputs in one CPAC run with <code>20_run_gen_quick_pack.py</code>. This script is currently running and the output/working directories can be found in <code>/data/Projects/ABIDE_Initiative/Derivatives/CPAC/Cent</code>.</p>
+
+<h2 id="eigenvector-centrality">Eigenvector Centrality</h2>
+
+<p>I emailed out to the author of the fast implementation paper to ask for his C++ code. However, if the author does not respond, the paper is fairly descriptive and I imagine it would be possible to write our own code based on the methods description.</p>
+
+<h2 id="qc">QC</h2>
+
+<p>I created the new excel file and looked through one subject. Should confirm the following: should have columns for anat, func, and reg with comments for each of those, and a final status column and final comments column. Do I need anything for the segmentations?</p>
+
+<h2 id="functional-density-mapping">Functional Density Mapping</h2>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Week 49 - Monday]]></title>
@@ -212,299 +353,6 @@ CPAC.utils.create_all_qc.run('/path/to/output_directory')
 <p>I think I should go through and check the first 45 that I did. I believe that I may not have properly added the type of connectivity (seed-based, unsupervised, etc) properly.</p>
 
 <p>Sent out an email with some issues/guidance on tagging.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Tuesday - Week 48]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/26/tuesday-week-48/"/>
-    <updated>2013-11-26T10:41:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/26/tuesday-week-48</id>
-    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
-
-<p>I was able to get through a fair amount of what I planned (next section). Here is what I did do:</p>
-
-<ul>
-  <li>Finished updating centrality code to be memory efficient</li>
-  <li>Created a command-line tool to run said centrality code</li>
-  <li>Ran memory test on final centrality code. The memory limit that a user sets is roughly (within 50MB) the amount that is actually used.</li>
-  <li>Found path to Yang’s QC report for ABIDE</li>
-  <li>Finished writing script to check what CPAC outputs exist. Most of the data appear to have been written with only a few missing data.</li>
-</ul>
-
-<h2 id="plans">Plans</h2>
-
-<ul>
-  <li>Do final memory test for centrality code</li>
-  <li>Create command-line centrality wrapper</li>
-  <li>Finish 10mins (from yesterday) for CMI librarian tagging</li>
-  <li>Find Yang’s old QCing and related PDF</li>
-  <li>Get details on ABIDE preprocessing output (what completed and what didn’t)</li>
-  <li>Start creating quick packs for different strategies (CPAC, Pierre, Xinian, and Chao-Gan).</li>
-</ul>
-
-<h3 id="questions">Questions</h3>
-
-<ul>
-  <li>How will quick pack work for Pierre’s data? Do we provide the identity matrix?</li>
-</ul>
-
-<h2 id="abide-processing-output">ABIDE Processing Output</h2>
-
-<p>One thing to check is if all scans have been preprocessed (i.e., if a subject has 3 scans as is the case with OHSU). I could check to see what other’s have done. Hmm not a bad idea. First find subjects with more than one scan and then see what happens with these subjects. Yes, the OHSU data has more than 1 scan per participant (can be up to 3 scans). Our CPAC processing did produce output for all scans. Ok so Xinian and I think Chao-Gan did not actually preprocess the additional scans, but Pierre did. Also Xinian and Chao-Gan did not concatenate their data for those subjects as the number of time-points was the same.</p>
-
-<p>I also finished creating a script that checks on the filtered and globally corrected data.</p>
-
-<p><code>r
-df &lt;- read.csv("zcheck_exists_filt_global.csv")
-rownames(df) &lt;- df$X
-df &lt;- df[,-1]
-nrow(df) - colSums(df)
-</code></p>
-
-<p>Here is the output below. We can see that we have most of the data but there are a couple of bad (possibly very bad) subject data.</p>
-
-<p><code>
-                             alff                  anatomical_brain 
-                                3                                 0 
-              anatomical_reorient   anatomical_to_mni_nonlinear_xfm 
-                                0                                 0 
-                  ants_affine_xfm                                dr 
-                                0                                 3 
-                            falff             functional_brain_mask 
-                                3                                 2 
-functional_brain_mask_to_standard          functional_freq_filtered 
-                                2                                 3 
-                   functional_mni     functional_nuisance_residuals 
-                                3                                 3 
-    functional_to_anat_linear_xfm                   mean_functional 
-                                2                                 2 
-        mni_normalized_anatomical                      preprocessed 
-                                0                                 2 
-                             reho 
-                                3
-</code></p>
-
-<h2 id="abide-qc">ABIDE QC</h2>
-
-<p>I was able to find Yang’s QC report in <code>/data/Projects/ABIDE_Initiative/CPAC/QC</code>.</p>
-
-<p>Didn’t get a chance to regenerate the QC outputs but I think I might want to do this after I resolve that all the subject’s have data output with CPAC.</p>
-
-<h2 id="centrality">Centrality</h2>
-
-<p>Details for the military tactics taken to resolving the memory overage issues in the centrality, see <a href="/blog/2013/11/25/updating-centrality">this page</a>.</p>
-
-<h3 id="memory-test">Memory Test</h3>
-
-<p>Below are the results of running <code>./memtopX ./x_test_memprof.py</code> in <code>.../config/test_quick_pack</code>. I set a 1GB memory limit here, which led to two blocks being used. It seems further down that it came close to the this limit with 1.05GB being used.</p>
-
-<p>Note that I’ve used 4mm data in standard space here, although later I also test with similar results using 3mm data.</p>
-
-<p><code>
-sorted nodes [0.0, 1.0]
-threshold_option --&gt; 0
-p_value -&gt; 0.266037302736
-r_value --&gt;  0.0913878943802
-inside optimized_centraltity, r_value -&gt; 0.0913878943802
-block_size -&gt;  14236
-Setup Degree Output
-Normalize TimeSeries
-Computing centrality across 18091 voxels
-running block -&gt; 14236 0
-...correlating
-...calculating degree
-...removing correlation matrix
-running block -&gt; 18091 14236
-...correlating
-...calculating degree
-...removing correlation matrix
-timing: 32.47
-</code></p>
-
-<p>Here is the corresponding output of <code>mem.log</code> that recorded the memory usage for my script every 30 seconds.</p>
-
-<p>File /Users/zarrar/Dropbox/Journal/octopress/source/downloads/code/cpac_centrality_memory.log could not be found</p>
-
-<p>With the 3mm data, I set a memory limit of 4GB at first. This leads to a maximum usage of 4.03GB in the first block (it’s lower in the next block). Pretty nice! If I set a memory limit instead of 1GB, then I get a maximum usage of 1.03GB (consistent in most blocks). Score.</p>
-
-<h3 id="command-line-tool">Command-Line Tool</h3>
-
-<p>To make it easier to directly call the centrality code, I created a command-line interface. This is in <code>C-PAC/tools</code> and the script is called <code>cpac_centrality.py</code>. The auto-generated help is shown below.</p>
-
-<p>``` 
-usage: cpac_centrality.py [-h] -i INPUT [-m MASK] [–degree] [–eigen]
-                          [–binarize] [–weighted] [–sparsity SPARSITY]
-                          [–pvalue PVALUE] [–rho RHO] [–memlimit MEMLIMIT]
-                          [-o OUTDIR]</p>
-
-<p>Compute centrality for a given timeseries.</p>
-
-<p>optional arguments:
-  -h, –help            show this help message and exit
-  -i INPUT, –input INPUT
-                        Input timeseries data file
-  -m MASK, –mask MASK  Brain mask (by default the program will create a mask
-                        where voxels have non-zero variance regardeless of the
-                        user specified mask).
-  –degree              Calculate degree centrality
-  –eigen               Calculate eigen centrality
-  –binarize            For a given voxel, save the number of connections that
-                        pass a threshold
-  –weighted            For a given voxel, save the sum of all connection
-                        weights that pass a threshold.
-  –sparsity SPARSITY   Sparsity based threshold. (Only one threshold option
-                        can be specified.)
-  –pvalue PVALUE       P-value threshold for each connection. (Only one
-                        threshold option can be specified.)
-  –rho RHO             Regular correlation threshold. (Only one threshold
-                        option can be specified.)
-  –memlimit MEMLIMIT   Memory limit that should be set.
-  -o OUTDIR, –outdir OUTDIR
-                        Output directory
-```</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Monday - Week 48]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/25/monday-week-48/"/>
-    <updated>2013-11-25T09:59:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/25/monday-week-48</id>
-    <content type="html"><![CDATA[<h2 id="plans">Plans</h2>
-
-<p>Today, I planned to work on…see summary section for what actually got done.</p>
-
-<ul>
-  <li>finish memory fixes to centrality code</li>
-  <li>checking on the 3mm registration of ABIDE</li>
-  <li>setup quick pack for Pierre &amp; Xinian’s data</li>
-  <li>setup quick pack for ABIDE data (centrality and VMHC)</li>
-</ul>
-
-<h2 id="summary">Summary</h2>
-
-<p>I wasn’t able to get through a lot that was planned. I worked on the following (described more later):</p>
-
-<ul>
-  <li>Centrality Coding</li>
-  <li>Checking paths for ABIDE preprocessing</li>
-</ul>
-
-<h2 id="centrality-code">Centrality Code</h2>
-
-<p>I updated the centrality code with several fixes and cleaned up some of the functions. Details of this work can be found on this <a href="/blog/2013/11/25/update-centrality">other post</a>.</p>
-
-<h2 id="qc">QC</h2>
-
-<p>The 3mm registration is done. I want to now take a closer look at the data. I want to take a look at a few things:</p>
-
-<ul>
-  <li>Are all the outputs there? Maybe make some type of table or record of what is good with what?</li>
-  <li>Can we fix up the QC pages?</li>
-  <li>Do the images look good?</li>
-</ul>
-
-<p>I began to create the code to find the needed paths in the preprocessing directory. This can be found in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/24_check/10_check_path.py</code>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Another Quick Pack Journey]]></title>
-    <link href="http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey/"/>
-    <updated>2013-10-30T15:55:00-04:00</updated>
-    <id>http://czarrar.github.io/blog/2013/10/30/another-look-at-quick-pack-journey</id>
-    <content type="html"><![CDATA[<p>Today, I’ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for </p>
-
-<p>Some minor things, I helped Krishna with some ROI error he had in CPAC. It turned out that his issue was due to incorrectly binarizing the mask.</p>
-
-<h1 id="quickpack">QuickPack</h1>
-
-<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn’t track. I am re-running the complete run to see what errors I get again and try to figure those out. I’m also rerunning the alff to see what happens there.</p>
-
-<h2 id="complete-run">Complete Run</h2>
-
-<p>This appears to be re-running smoothly (knock on wood). The last time I ran a complete (preprocessing + derivatives) run, it led to some unclear problems.</p>
-
-<h2 id="alff-qp">ALFF QP</h2>
-
-<p>I get the same link error as I did before. The error occurs on line 562 in <code>utils.py</code> within the <code>create_symbolic_links</code>. The line and error are</p>
-
-<pre><code>ext = fname.split('.', 1)[1]
-IndexError: list index out of range
-</code></pre>
-
-<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don’t have much sense about what is going on with this file.</p>
-
-<p>Other bits of information:</p>
-
-<ul>
-  <li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
-z</code>.</li>
-  <li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
-</ul>
-
-<h3 id="steve-talk">Steve Talk</h3>
-
-<p>I discussed this issue with Steve and it seems I will need to get down and dirty with nipype to understand the origin of this problem.</p>
-
-<h2 id="reho-qp">REHO QP</h2>
-
-<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link<em>16 it is link</em>5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
-
-<p>A snapshot of the error is given below:</p>
-
-<pre><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
-
-/home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
-     37     except KeyError:
-     38         raise ImageFileError('Cannot work out file type of "%s"' %
----&gt; 39                              filename)
-     40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
-     41         klass = class_map[img_type]['class']
-
-ImageFileError: Cannot work out file type of ""
-Interface Function failed to run. 
-</code></pre>
-
-<p>To run the crash file, see the code below.</p>
-
-<p>``` python
-import sys
-sys.path.insert(0, ‘/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages’)
-sys.path.insert(1, “/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC”)
-import CPAC
-import CPAC.reho.utils
-from nipype.utils.filemanip import loadflat</p>
-
-<p>crashinfo = loadflat(“/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz”)
-crashinfo[‘node’].run()
-```</p>
-
-<h1 id="preprocessing-emotionalbs">Preprocessing EmotionalBS</h1>
-
-<p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
-
-<ul>
-  <li>Used ANTS for registration</li>
-  <li>Two nuisance correction strategies
-      * compcor+motion+linear+quadratic
-      * compcor+global+motion+linear+quadratic</li>
-  <li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
-  <li>Smoothing of 4.5mm (only for derivatives)</li>
-  <li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
-</ul>
-
-<h2 id="install-fsl-5-for-gelert">Install FSL 5 for Gelert</h2>
-
-<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike’s account didn’t have. And even if I had those, it wasn’t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so </p>
-
-<h1 id="new-journal">New Journal</h1>
-
-<p>I also worked on setting up this blog/journal with github user account. The goal is to chronicle my work efforts with particular thought on any issues I encounter. A major side benefit will be easier communication with others in the lab (e.g., was able to easily show the error for ALFF quick pack to Steve). Previously, I had been using different journal pages for each of my projects. I ended up being a big confused where to post stuff and often lost track of the markdown pages that I had created before they were published. With one journal site, this should all be easier.</p>
-
-<p>I’m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
 ]]></content>
   </entry>
   
