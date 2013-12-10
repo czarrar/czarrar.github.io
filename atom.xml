@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-09T20:07:15-05:00</updated>
+  <updated>2013-12-09T20:11:39-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -20,20 +20,24 @@
     <id>http://czarrar.github.io/blog/2013/12/09/week-50-monday</id>
     <content type="html"><![CDATA[<h2 id="plansummary">Plan/Summary</h2>
 
-<p>[x] Email Maarten with the results
-[x] Add running Xinian’s filtering script to my Basecamp TODO
-[x] Integrate updated CWAS code into master CPAC branch
-[] Tagging (e 1 hr)
-[] QC (e 1 hr)
-[] Finish fast eigenvector centrality code (not workflow)</p>
+<ul>
+  <li>[x] Email Maarten with the results</li>
+  <li>[x] Add running Xinian’s filtering script to my Basecamp TODO</li>
+  <li>[x] Integrate updated CWAS code into master CPAC branch</li>
+  <li>[] Tagging (e 1 hr)</li>
+  <li>[] QC (e 1 hr)</li>
+  <li>[] Finish fast eigenvector centrality code (not workflow)</li>
+</ul>
 
 <p>While above were items that I had planned in the morning, items below reflect additions to this plan during the day.</p>
 
-<p>[x] cleaned up the code to use regression test data to run a python CPAC and R version of CWAS.
-[x] wrote code to smooth 4D functional data in standard space
-[x] write code to use smoothed data for CWAS
-[x] write some additional code to use internal CPAC filepaths for CWAS
-[x] write code to parse group analysis model inputs for CWAS</p>
+<ul>
+  <li>[x] cleaned up the code to use regression test data to run a python CPAC and R version of CWAS.</li>
+  <li>[x] wrote code to smooth 4D functional data in standard space</li>
+  <li>[x] write code to use smoothed data for CWAS</li>
+  <li>[x] write some additional code to use internal CPAC filepaths for CWAS</li>
+  <li>[x] write code to parse group analysis model inputs for CWAS</li>
+</ul>
 
 <p>The coding for CWAS in CPAC went surprisingly well. Hopefully, this streak might continue tomorrow when testing.</p>
 
