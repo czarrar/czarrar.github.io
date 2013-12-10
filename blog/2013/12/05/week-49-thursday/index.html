@@ -190,11 +190,19 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 146.66666666666666%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 153.33333333333334%'>cmi(8)</a> <a href='/blog/categories/cpac' style='font-size: 146.66666666666666%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(9)</a> <a href='/blog/categories/emotional-bs' style='font-size: 113.33333333333333%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.66666666666667%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.66666666666667%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 120.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 140.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.66666666666667%'>r(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.66666666666667%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 142.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 154.0%'>cmi(9)</a> <a href='/blog/categories/cpac' style='font-size: 142.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 112.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 118.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 136.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 106.0%'>simulations(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.0%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a>
@@ -206,14 +214,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/03/week-49-tuesday/">Week 49 - Tuesday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/02/week-49-monday/">Week 49 - Monday</a>
       </li>
     
   </ul>
@@ -374,6 +374,12 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/09/2013');
+  hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
+  
+  highlightArray.push('12/07/2013');
+  hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
+  
   highlightArray.push('12/06/2013');
   hightlightLinks.push('/blog/2013/12/06/week-49-friday/');
   
@@ -382,12 +388,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/04/2013');
   hightlightLinks.push('/blog/2013/12/04/week-49-wednesday/');
-  
-  highlightArray.push('12/03/2013');
-  hightlightLinks.push('/blog/2013/12/03/week-49-tuesday/');
-  
-  highlightArray.push('12/02/2013');
-  hightlightLinks.push('/blog/2013/12/02/week-49-monday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

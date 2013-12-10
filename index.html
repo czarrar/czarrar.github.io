@@ -9,7 +9,9 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Plan ABIDE [] QC (1 hour) CPAC [] Finish adapting fast eigenvector code (30 mins) [] Write SVD version of eigenvector (1 hour) [] Test new &hellip;">
+  <meta name="description" content="Plan/Summary [x] Email Maarten with the results
+[x] Add running Xinian’s filtering script to my Basecamp TODO
+[x] Integrate updated CWAS code into &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +81,142 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-09T20:03:00-05:00" pubdate data-updated="true">Dec 9<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="plansummary">Plan/Summary</h2>
+
+<p>[x] Email Maarten with the results
+[x] Add running Xinian’s filtering script to my Basecamp TODO
+[x] Integrate updated CWAS code into master CPAC branch
+[] Tagging (e 1 hr)
+[] QC (e 1 hr)
+[] Finish fast eigenvector centrality code (not workflow)</p>
+
+<p>While above were items that I had planned in the morning, items below reflect additions to this plan during the day.</p>
+
+<p>[x] cleaned up the code to use regression test data to run a python CPAC and R version of CWAS.
+[x] wrote code to smooth 4D functional data in standard space
+[x] write code to use smoothed data for CWAS
+[x] write some additional code to use internal CPAC filepaths for CWAS
+[x] write code to parse group analysis model inputs for CWAS</p>
+
+<p>The coding for CWAS in CPAC went surprisingly well. Hopefully, this streak might continue tomorrow when testing.</p>
+
+<h2 id="integrating-cwas-code-with-cpac">Integrating CWAS Code with CPAC</h2>
+
+<p>My issue in using the main CPAC repository was that although I was a member, I needed to be made an owner. After figuring this out, I created a ‘cwas’ branch and added the relevant changes to the cwas folder.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-07T16:39:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It seems that my previous set of simulations may go down the drain as they weren’t relevant to the reviewer’s concern.</p>
+
+<p>So now, I am looking into a new set of simulations focused on examining properties of the MDMR approach using resting-state functional connectivity data.</p>
+
+<h2 id="methods">Methods</h2>
+
+<p>One question is how can we implement our simulations. Here are the general steps:</p>
+
+<ol>
+  <li>
+    <p>Compute 1000 voxelwise connectivity maps at 4mm isotropic for all my 104 participants.</p>
+  </li>
+  <li>
+    <p>Using GLM remove the effects of other variables to get residual connectivity maps</p>
+  </li>
+  <li>
+    <p>Add in group effect and vary certain factors</p>
+  </li>
+</ol>
+
+<p>Step three is crucial and is discussed later.</p>
+
+<h3 id="factors">Factors</h3>
+
+<p>What are the factors that we want to measure?</p>
+
+<ul>
+  <li>Number of ‘clusters’ that differ</li>
+  <li>Extent of each ‘cluster’ that differ</li>
+  <li>Effect size</li>
+</ul>
+
+<p>Another set of factors that could be examined is the variation in the effect size across the connectivity map. For now, I guess we shall assume a constant difference with some random noise.</p>
+
+<p>Do we really need to be examining some of these steps? I’m thinking that we just focus on the effect size and simply generate a gaussian random field </p>
+
+<h3 id="implementation">Implementation</h3>
+
+<p>I’m assuming that I have a matrix with each participant’s connectivity map at one voxel. </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
         <h1 class="entry-title"><a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a></h1>
       
     
@@ -126,9 +264,57 @@
   </li>
 </ul>
 
+<p>Look into SVD (20 mins). But it’s slower.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">svd</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">eigsh</span>
+</span><span class="line"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
+</span><span class="line"><span class="o">%</span><span class="n">timeit</span> <span class="n">u</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class="line"><span class="o">%</span><span class="n">timeit</span> <span class="n">evalue</span><span class="p">,</span> <span class="n">evector</span> <span class="o">=</span> <span class="n">eigsh</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s">&#39;LM&#39;</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>In this case the current approach took 45.2ms and the SVD approach took 135ms.</p>
+
 <h2 id="fast-eigenvector-centrality">Fast Eigenvector Centrality</h2>
 
 <p>The plan for testing would be to first make sure that the code results are close to the original approach and possibly also compare to an SVD approach.</p>
+
+<h2 id="brain-size-ala-maarten">Brain Size ala Maarten</h2>
+
+<p>We ended up dropping the ball in getting Maarten some of these scripts.</p>
+
+<p>I need to create an input file with <code>T1file,age,sex</code>. If I am using the NKI Rockland pilot dataset, then I believe I should be able to find the relevant path. For the most recent data, there have been additions so let me confirm that I have access to everything. Ok so first, pilot dataset.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">rawdir    <span class="o">&lt;-</span> <span class="s">&#39;/home2/data/Originals/Rockland/raw&#39;</span>
+</span><span class="line">phenofile <span class="o">&lt;-</span> <span class="s">&#39;/home2/data/Originals/Rockland/NKI.1-39_phenotypic.csv&#39;</span>
+</span><span class="line">
+</span><span class="line">pheno     <span class="o">&lt;-</span> read.csv<span class="p">(</span>phenofile<span class="p">)</span>
+</span><span class="line">df        <span class="o">&lt;-</span> pheno<span class="p">[,</span>c<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">12</span><span class="p">)]</span>
+</span><span class="line">df<span class="o">$</span>paths  <span class="o">&lt;-</span> file.path<span class="p">(</span>rawdir<span class="p">,</span> df<span class="o">$</span>Subject<span class="p">,</span> <span class="s">&quot;touse&quot;</span><span class="p">,</span> <span class="s">&quot;anat&quot;</span><span class="p">,</span> <span class="s">&quot;mprage.nii.gz&quot;</span><span class="p">)</span>
+</span><span class="line">df<span class="o">$</span>exists <span class="o">&lt;-</span> file.exists<span class="p">(</span>df<span class="o">$</span>paths<span class="p">)</span><span class="o">*</span><span class="m">1</span>
+</span><span class="line">
+</span><span class="line">df.txt <span class="o">&lt;-</span> df<span class="p">[</span>df<span class="o">$</span>exists<span class="o">==</span><span class="m">1</span><span class="p">,</span>c<span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">)]</span>
+</span><span class="line">write.table<span class="p">(</span>df.txt<span class="p">,</span> file<span class="o">=</span><span class="s">&quot;rockland_pilot.txt&quot;</span><span class="p">,</span> row.names<span class="o">=</span><span class="k-Variable">F</span><span class="p">,</span> col.names<span class="o">=</span><span class="k-Variable">F</span><span class="p">,</span> quote<span class="o">=</span><span class="k-Variable">F</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I want to now look at the Enhanced dataset.</p>
 
 <h2 id="thoughts">Thoughts</h2>
 
@@ -674,383 +860,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/27/wednesday-week-48/">Wednesday - Week 48</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-27T11:42:00-05:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="summary">Summary</h2>
-
-<p>I was able to get through at least at a partial level through the items in my TOOD list below. More details are of course below.</p>
-
-<ul>
-  <li>I checked the CPAC output and found that 1 subject had some missing preprocessing data due to a crash during nuisance. I am rerunning this subject on rocky so I can examine the working directory (it said a tissue prior was missing in the error). Everything else is good. It should be noted that there are 2 participants in OHSU that are missing the 1st scan but have 2 other scans.</li>
-  <li>I reran the QC and the output pages now seem good. Need to decide the procedure for QC now.</li>
-  <li>Looked into eigenvector centrality speedup. There is code to do the power iteration approach that is advocated in the Brain Connectivity paper with 1000x speedup in a fast eigenvector centrality approach. Could also email the people from that paper to ask for their code.</li>
-  <li>Discussed updating VMHC to have Cameron’s fixes (register regular MNI brain to symmetric MNI brain) with Steve. Also, discussed having the registration step be done in the assigned standard anatomical resolution and then apply the warp from this registration to the native functional image into the assigned standard functional resolution. This is not currently done.</li>
-  <li>Did tagging for about 30 minutes.</li>
-  <li>Created TODO items for ABIDE.</li>
-</ul>
-
-<h2 id="plans">Plans</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>Create TODOs</li>
-      <li>Finish checking CPAC output</li>
-      <li>Fix QC pages</li>
-      <li>Look into fixing VMHC error when running at 3mm</li>
-      <li>Look into eigenvector centrality</li>
-      <li>Create quick packs for CPAC and Xinian</li>
-    </ul>
-  </li>
-  <li>Do 1 hour of tagging</li>
-</ul>
-
-<h2 id="abide---todo">ABIDE - TODO</h2>
-
-<p>This is a partial list and the next time I will need to make a more thorough list.</p>
-
-<ul>
-  <li>Do QC</li>
-  <li>Check all outputs there for Pierre, Xinian, Chao-Gan</li>
-  <li>Optimize the eigenvector centrality</li>
-  <li>Make sure VMHC works properly when using 3mm output resolution</li>
-  <li>Setup Quick Packs</li>
-  <li>Run Quick Packs</li>
-</ul>
-
-<h2 id="abide---check-outputs">ABIDE - Check Outputs</h2>
-
-<p>I made a script <code>20_check_subjects.R</code> in <code>.../config/24_check</code> that checks which subject is missing some preprocessing output given that the raw data exists.</p>
-
-<p>For two subjects, we are missing the first rest scan. These subjects are from OHSU and are <code>0050155</code> and <code>0050165</code>.</p>
-
-<p>We need to redo <code>0051275</code> since there was a failure in calculating the nuisance regression. I ran this subject again on rocky with the relevant info/scripts in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/26_reprocess_3mm</code>.</p>
-
-<h2 id="abide---qc">ABIDE - QC</h2>
-
-<p>Simply rerunning the QC resolved some broken links and the QC pages appear fine. Need to set some system of getting through all these QC pages and confirm the protocol for checking.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
-</span><span class="line"><span class="n">CPAC</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">create_all_qc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;/path/to/output_directory&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="vmhc">VMHC</h2>
-
-<p>Currently there is a bit of an issue when we try to run VMHC at 3mm. Although it now works, the registration appears to to be done at that resolution (3mm). Talking to Steve, it seems a fix proposed by Cameron would resolve my issue as well. That is, the registration between the regular MNI to the symmetric MNI would be done in the anatomical resolution, which is usually specified at 1mm. Then, this warp would be combined with the previous one to standard space, and we would apply this warp to the functional in order to get to the specified standard functional space, which is in 3mm.</p>
-
-<h2 id="eigen-vector-centrality">Eigen-Vector Centrality</h2>
-
-<p>I did a brief search of faster implementations of eigenvector centrality, which is also sometimes referred to as google’s page rank.</p>
-
-<h3 id="paper-with-fast-implementation">Paper with Fast Implementation</h3>
-
-<p>The most relevant item is a paper recommended by Cameron: http://online.liebertpub.com.ezproxy.med.nyu.edu/doi/full/10.1089/brain.2012.0087. It appears their analyses were done in matlab so if we could also get their code, it would be fairly easy to integrate with CPAC. Below is a quote from the paper that indicates this approach is very fast, potentially faster than degree centrality! Note that they used a voxel size of 2mm.</p>
-
-<blockquote>
-  <p>The RS-fMRI data of each subject contain 195,704 in-brain voxels per volume and the time-series length is 200. The approximate gain in efficiency compared to the standard algorithm is a factor 1000. The computation times for ECM of the fMRI (excluding file I/O) are 39 sec on average (std. dev. 14 sec) on an Intel Xeon.</p>
-</blockquote>
-
-<p>So figure out if we should contact them or not?</p>
-
-<h3 id="related-links">Related Links</h3>
-
-<p>The above paper used the power iteration method to calculate the dominant eigenvector. I found various links on the code to run this power iteration method.</p>
-
-<ul>
-  <li>Some slides with well explained code. http://homepages.math.uic.edu/~jan/mcs507/numpyveclinalg.pdf</li>
-  <li>Easy to follow function although needs to be fixed: https://github.com/seckcoder/mmd/blob/9aba8a224c69daebc6f3f800e3847362911f2225/dimension_reduction.py</li>
-  <li>Super straightforward code: http://stackoverflow.com/questions/13739186/compute-eigenvector-using-a-dominant-eigenvalue</li>
-  <li>4 ways to compute: http://glowingpython.blogspot.com/2011/05/four-ways-to-compute-google-pagerank.html</li>
-</ul>
-
-<h2 id="tagging">Tagging</h2>
-
-<p>I think I should go through and check the first 45 that I did. I believe that I may not have properly added the type of connectivity (seed-based, unsupervised, etc) properly.</p>
-
-<p>Sent out an email with some issues/guidance on tagging.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-26T10:41:00-05:00" pubdate data-updated="true">Nov 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="summary">Summary</h2>
-
-<p>I was able to get through a fair amount of what I planned (next section). Here is what I did do:</p>
-
-<ul>
-  <li>Finished updating centrality code to be memory efficient</li>
-  <li>Created a command-line tool to run said centrality code</li>
-  <li>Ran memory test on final centrality code. The memory limit that a user sets is roughly (within 50MB) the amount that is actually used.</li>
-  <li>Found path to Yang’s QC report for ABIDE</li>
-  <li>Finished writing script to check what CPAC outputs exist. Most of the data appear to have been written with only a few missing data.</li>
-</ul>
-
-<h2 id="plans">Plans</h2>
-
-<ul>
-  <li>Do final memory test for centrality code</li>
-  <li>Create command-line centrality wrapper</li>
-  <li>Finish 10mins (from yesterday) for CMI librarian tagging</li>
-  <li>Find Yang’s old QCing and related PDF</li>
-  <li>Get details on ABIDE preprocessing output (what completed and what didn’t)</li>
-  <li>Start creating quick packs for different strategies (CPAC, Pierre, Xinian, and Chao-Gan).</li>
-</ul>
-
-<h3 id="questions">Questions</h3>
-
-<ul>
-  <li>How will quick pack work for Pierre’s data? Do we provide the identity matrix?</li>
-</ul>
-
-<h2 id="abide-processing-output">ABIDE Processing Output</h2>
-
-<p>One thing to check is if all scans have been preprocessed (i.e., if a subject has 3 scans as is the case with OHSU). I could check to see what other’s have done. Hmm not a bad idea. First find subjects with more than one scan and then see what happens with these subjects. Yes, the OHSU data has more than 1 scan per participant (can be up to 3 scans). Our CPAC processing did produce output for all scans. Ok so Xinian and I think Chao-Gan did not actually preprocess the additional scans, but Pierre did. Also Xinian and Chao-Gan did not concatenate their data for those subjects as the number of time-points was the same.</p>
-
-<p>I also finished creating a script that checks on the filtered and globally corrected data.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">df <span class="o">&lt;-</span> read.csv<span class="p">(</span><span class="s">&quot;zcheck_exists_filt_global.csv&quot;</span><span class="p">)</span>
-</span><span class="line">rownames<span class="p">(</span>df<span class="p">)</span> <span class="o">&lt;-</span> df<span class="o">$</span>X
-</span><span class="line">df <span class="o">&lt;-</span> df<span class="p">[,</span><span class="m">-1</span><span class="p">]</span>
-</span><span class="line">nrow<span class="p">(</span>df<span class="p">)</span> <span class="o">-</span> colSums<span class="p">(</span>df<span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Here is the output below. We can see that we have most of the data but there are a couple of bad (possibly very bad) subject data.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">                         alff                  anatomical_brain
-</span><span class="line">                            <span class="m">3</span>                                 <span class="m">0</span>
-</span><span class="line">          anatomical_reorient   anatomical_to_mni_nonlinear_xfm
-</span><span class="line">                            <span class="m">0</span>                                 <span class="m">0</span>
-</span><span class="line">              ants_affine_xfm                                dr
-</span><span class="line">                            <span class="m">0</span>                                 <span class="m">3</span>
-</span><span class="line">                        falff             functional_brain_mask
-</span><span class="line">                            <span class="m">3</span>                                 <span class="m">2</span>
-</span><span class="line">functional_brain_mask_to_standard          functional_freq_filtered
-</span><span class="line">                            <span class="m">2</span>                                 <span class="m">3</span>
-</span><span class="line">               functional_mni     functional_nuisance_residuals
-</span><span class="line">                            <span class="m">3</span>                                 <span class="m">3</span>
-</span><span class="line">functional_to_anat_linear_xfm                   mean_functional
-</span><span class="line">                            <span class="m">2</span>                                 <span class="m">2</span>
-</span><span class="line">    mni_normalized_anatomical                      preprocessed
-</span><span class="line">                            <span class="m">0</span>                                 <span class="m">2</span>
-</span><span class="line">                         reho
-</span><span class="line">                            <span class="m">3</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="abide-qc">ABIDE QC</h2>
-
-<p>I was able to find Yang’s QC report in <code>/data/Projects/ABIDE_Initiative/CPAC/QC</code>.</p>
-
-<p>Didn’t get a chance to regenerate the QC outputs but I think I might want to do this after I resolve that all the subject’s have data output with CPAC.</p>
-
-<h2 id="centrality">Centrality</h2>
-
-<p>Details for the military tactics taken to resolving the memory overage issues in the centrality, see <a href="/blog/2013/11/25/updating-centrality">this page</a>.</p>
-
-<h3 id="memory-test">Memory Test</h3>
-
-<p>Below are the results of running <code>./memtopX ./x_test_memprof.py</code> in <code>.../config/test_quick_pack</code>. I set a 1GB memory limit here, which led to two blocks being used. It seems further down that it came close to the this limit with 1.05GB being used.</p>
-
-<p>Note that I’ve used 4mm data in standard space here, although later I also test with similar results using 3mm data.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">sorted nodes <span class="p">[</span><span class="m">0.0</span><span class="p">,</span> <span class="m">1.0</span><span class="p">]</span>
-</span><span class="line">threshold_option <span class="o">--&gt;</span> <span class="m">0</span>
-</span><span class="line">p_value <span class="o">-&gt;</span> <span class="m">0.266037302736</span>
-</span><span class="line">r_value <span class="o">--&gt;</span>  <span class="m">0.0913878943802</span>
-</span><span class="line">inside optimized_centraltity<span class="p">,</span> r_value <span class="o">-&gt;</span> <span class="m">0.0913878943802</span>
-</span><span class="line">block_size <span class="o">-&gt;</span>  <span class="m">14236</span>
-</span><span class="line">Setup Degree Output
-</span><span class="line">Normalize TimeSeries
-</span><span class="line">Computing centrality across <span class="m">18091</span> voxels
-</span><span class="line">running block <span class="o">-&gt;</span> <span class="m">14236</span> <span class="m">0</span>
-</span><span class="line">...correlating
-</span><span class="line">...calculating degree
-</span><span class="line">...removing correlation matrix
-</span><span class="line">running block <span class="o">-&gt;</span> <span class="m">18091</span> <span class="m">14236</span>
-</span><span class="line">...correlating
-</span><span class="line">...calculating degree
-</span><span class="line">...removing correlation matrix
-</span><span class="line">timing<span class="o">:</span> <span class="m">32.47</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Here is the corresponding output of <code>mem.log</code> that recorded the memory usage for my script every 30 seconds.</p>
-
-<p>File /Users/zarrar/Dropbox/Journal/octopress/source/downloads/code/cpac_centrality_memory.log could not be found</p>
-
-<p>With the 3mm data, I set a memory limit of 4GB at first. This leads to a maximum usage of 4.03GB in the first block (it’s lower in the next block). Pretty nice! If I set a memory limit instead of 1GB, then I get a maximum usage of 1.03GB (consistent in most blocks). Score.</p>
-
-<h3 id="command-line-tool">Command-Line Tool</h3>
-
-<p>To make it easier to directly call the centrality code, I created a command-line interface. This is in <code>C-PAC/tools</code> and the script is called <code>cpac_centrality.py</code>. The auto-generated help is shown below.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">usage<span class="o">:</span> cpac_centrality.py <span class="p">[</span><span class="o">-</span>h<span class="p">]</span> <span class="o">-</span>i INPUT <span class="p">[</span><span class="o">-</span>m MASK<span class="p">]</span> <span class="p">[</span><span class="o">--</span>degree<span class="p">]</span> <span class="p">[</span><span class="o">--</span>eigen<span class="p">]</span>
-</span><span class="line">                          <span class="p">[</span><span class="o">--</span>binarize<span class="p">]</span> <span class="p">[</span><span class="o">--</span>weighted<span class="p">]</span> <span class="p">[</span><span class="o">--</span>sparsity SPARSITY<span class="p">]</span>
-</span><span class="line">                          <span class="p">[</span><span class="o">--</span>pvalue PVALUE<span class="p">]</span> <span class="p">[</span><span class="o">--</span>rho RHO<span class="p">]</span> <span class="p">[</span><span class="o">--</span>memlimit MEMLIMIT<span class="p">]</span>
-</span><span class="line">                          <span class="p">[</span><span class="o">-</span>o OUTDIR<span class="p">]</span>
-</span><span class="line">
-</span><span class="line">Compute centrality <span class="kr">for</span> a given timeseries.
-</span><span class="line">
-</span><span class="line">optional arguments<span class="o">:</span>
-</span><span class="line">  <span class="o">-</span>h<span class="p">,</span> <span class="o">--</span>help            show this help message and exit
-</span><span class="line">  <span class="o">-</span>i INPUT<span class="p">,</span> <span class="o">--</span>input INPUT
-</span><span class="line">                        Input timeseries data file
-</span><span class="line">  <span class="o">-</span>m MASK<span class="p">,</span> <span class="o">--</span>mask MASK  Brain mask <span class="p">(</span>by default the program will create a mask
-</span><span class="line">                        where voxels have non<span class="o">-</span>zero variance regardeless of the
-</span><span class="line">                        user specified mask<span class="p">)</span>.
-</span><span class="line">  <span class="o">--</span>degree              Calculate degree centrality
-</span><span class="line">  <span class="o">--</span>eigen               Calculate eigen centrality
-</span><span class="line">  <span class="o">--</span>binarize            For a given voxel<span class="p">,</span> save the number of connections that
-</span><span class="line">                        pass a threshold
-</span><span class="line">  <span class="o">--</span>weighted            For a given voxel<span class="p">,</span> save the sum of all connection
-</span><span class="line">                        weights that pass a threshold.
-</span><span class="line">  <span class="o">--</span>sparsity SPARSITY   Sparsity based threshold. <span class="p">(</span>Only one threshold option
-</span><span class="line">                        can be specified.<span class="p">)</span>
-</span><span class="line">  <span class="o">--</span>pvalue PVALUE       P<span class="o">-</span>value threshold <span class="kr">for</span> each connection. <span class="p">(</span>Only one
-</span><span class="line">                        threshold option can be specified.<span class="p">)</span>
-</span><span class="line">  <span class="o">--</span>rho RHO             Regular correlation threshold. <span class="p">(</span>Only one threshold
-</span><span class="line">                        option can be specified.<span class="p">)</span>
-</span><span class="line">  <span class="o">--</span>memlimit MEMLIMIT   Memory limit that should be set.
-</span><span class="line">  <span class="o">-</span>o OUTDIR<span class="p">,</span> <span class="o">--</span>outdir OUTDIR
-</span><span class="line">                        Output directory
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1066,11 +875,19 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 146.66666666666666%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 153.33333333333334%'>cmi(8)</a> <a href='/blog/categories/cpac' style='font-size: 146.66666666666666%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(9)</a> <a href='/blog/categories/emotional-bs' style='font-size: 113.33333333333333%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.66666666666667%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.66666666666667%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 120.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 140.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.66666666666667%'>r(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.66666666666667%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 142.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 154.0%'>cmi(9)</a> <a href='/blog/categories/cpac' style='font-size: 142.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 112.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 118.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 136.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 106.0%'>simulations(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.0%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a>
@@ -1082,14 +899,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/03/week-49-tuesday/">Week 49 - Tuesday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/02/week-49-monday/">Week 49 - Monday</a>
       </li>
     
   </ul>
@@ -1250,6 +1059,12 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/09/2013');
+  hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
+  
+  highlightArray.push('12/07/2013');
+  hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
+  
   highlightArray.push('12/06/2013');
   hightlightLinks.push('/blog/2013/12/06/week-49-friday/');
   
@@ -1258,12 +1073,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/04/2013');
   hightlightLinks.push('/blog/2013/12/04/week-49-wednesday/');
-  
-  highlightArray.push('12/03/2013');
-  hightlightLinks.push('/blog/2013/12/03/week-49-tuesday/');
-  
-  highlightArray.push('12/02/2013');
-  hightlightLinks.push('/blog/2013/12/02/week-49-monday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cwas | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cwas/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-06T11:17:24-05:00</updated>
+  <updated>2013-12-09T20:07:15-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CWAS Simulations]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/07/cwas-simulations/"/>
+    <updated>2013-12-07T16:39:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/07/cwas-simulations</id>
+    <content type="html"><![CDATA[<p>It seems that my previous set of simulations may go down the drain as they weren’t relevant to the reviewer’s concern.</p>
+
+<p>So now, I am looking into a new set of simulations focused on examining properties of the MDMR approach using resting-state functional connectivity data.</p>
+
+<h2 id="methods">Methods</h2>
+
+<p>One question is how can we implement our simulations. Here are the general steps:</p>
+
+<ol>
+  <li>
+    <p>Compute 1000 voxelwise connectivity maps at 4mm isotropic for all my 104 participants.</p>
+  </li>
+  <li>
+    <p>Using GLM remove the effects of other variables to get residual connectivity maps</p>
+  </li>
+  <li>
+    <p>Add in group effect and vary certain factors</p>
+  </li>
+</ol>
+
+<p>Step three is crucial and is discussed later.</p>
+
+<h3 id="factors">Factors</h3>
+
+<p>What are the factors that we want to measure?</p>
+
+<ul>
+  <li>Number of ‘clusters’ that differ</li>
+  <li>Extent of each ‘cluster’ that differ</li>
+  <li>Effect size</li>
+</ul>
+
+<p>Another set of factors that could be examined is the variation in the effect size across the connectivity map. For now, I guess we shall assume a constant difference with some random noise.</p>
+
+<p>Do we really need to be examining some of these steps? I’m thinking that we just focus on the effect size and simply generate a gaussian random field </p>
+
+<h3 id="implementation">Implementation</h3>
+
+<p>I’m assuming that I have a matrix with each participant’s connectivity map at one voxel. </p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CWAS Simulations]]></title>
@@ -202,91 +250,6 @@ cd /home2/data/Projects/CWAS/share/nki/05_cwas
 <h2 id="update-connectir">Update Connectir</h2>
 
 <p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Saturday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/23/saturday-week-47/"/>
-    <updated>2013-11-23T13:54:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/23/saturday-week-47</id>
-    <content type="html"><![CDATA[<p>This page covers both Saturday and Sunday (which is technically week 48).</p>
-
-<h2 id="todo">TODO</h2>
-
-<ul>
-  <li><strong>Permutation test for dice and spearman with IQ CWAS</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Compare computational time for MDMR to other approaches</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Bootstrap analyses</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Compare different distances</strong>
-    <ul>
-      <li><em>DONE WITH TABLES</em></li>
-      <li><em>GENERATE SURFACE RESULTS</em></li>
-      <li><em>WRITE TEXT FOR PAPER</em></li>
-      <li><em>UPDATE RESPONSE</em></li>
-    </ul>
-  </li>
-  <li><strong>Simulations</strong>
-    <ul>
-      <li><em>WRITE CODE</em></li>
-      <li><em>GENERATE PLOTS</em></li>
-      <li><em>ADD TO RESPONSE LETTER</em></li>
-    </ul>
-  </li>
-  <li><strong>Results</strong>
-    <ul>
-      <li><em>RE-COMPUTE WHERE NEEDED</em></li>
-      <li><em>ADD TO PAPER</em></li>
-    </ul>
-  </li>
-  <li><strong>Update paper with stuff from response letter</strong>
-    <ul>
-      <li><em>I guess waiting for feedback on response letter</em></li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
-
-<p>See details at <a href="/2013/11/24/similarity-of-iq-cwas-across-scans/">my other post</a>.</p>
-
-<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
-
-<h2 id="computational-time">Computational Time</h2>
-
-<p>Below is the average time (ms) across 100 iterations. MDMR is a little slower than GLM but comparable.</p>
-
-<p><code>
-   method      time
-1  Degree   5.76817
-2     GLM  30.12167
-3    MDMR  51.73251
-4     SVM 228.89548
-5 K-Means 788.41195
-</code></p>
-
-<p>Further details can be found on the <a href="/2013/11/24/timing-comparison/">following post</a>.</p>
-
-<h2 id="comparing-distances">Comparing Distances</h2>
-
-<p>Further details can be found on the <a href="/2013/11/09/comparing-distances">following post</a>.</p>
-
-<h2 id="simulations">Simulations</h2>
-
-<p>Getting a late start on the simulations. </p>
-
 ]]></content>
   </entry>
   

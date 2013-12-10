@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-06T11:17:24-05:00</updated>
+  <updated>2013-12-09T20:07:15-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,36 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Week 50 - Monday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/09/week-50-monday/"/>
+    <updated>2013-12-09T20:03:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/09/week-50-monday</id>
+    <content type="html"><![CDATA[<h2 id="plansummary">Plan/Summary</h2>
+
+<p>[x] Email Maarten with the results
+[x] Add running Xinian’s filtering script to my Basecamp TODO
+[x] Integrate updated CWAS code into master CPAC branch
+[] Tagging (e 1 hr)
+[] QC (e 1 hr)
+[] Finish fast eigenvector centrality code (not workflow)</p>
+
+<p>While above were items that I had planned in the morning, items below reflect additions to this plan during the day.</p>
+
+<p>[x] cleaned up the code to use regression test data to run a python CPAC and R version of CWAS.
+[x] wrote code to smooth 4D functional data in standard space
+[x] write code to use smoothed data for CWAS
+[x] write some additional code to use internal CPAC filepaths for CWAS
+[x] write code to parse group analysis model inputs for CWAS</p>
+
+<p>The coding for CWAS in CPAC went surprisingly well. Hopefully, this streak might continue tomorrow when testing.</p>
+
+<h2 id="integrating-cwas-code-with-cpac">Integrating CWAS Code with CPAC</h2>
+
+<p>My issue in using the main CPAC repository was that although I was a member, I needed to be made an owner. After figuring this out, I created a ‘cwas’ branch and added the relevant changes to the cwas folder.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Week 49 - Friday]]></title>
@@ -41,9 +71,43 @@
   </li>
 </ul>
 
+<p>Look into SVD (20 mins). But it’s slower.</p>
+
+<p><code>python
+import numpy as np
+from numpy.linalg import svd
+from scipy.sparse.linalg import eigsh
+mat = np.random.random((100,1000))
+%timeit u,s,v = svd(mat.T, False)
+%timeit evalue, evector = eigsh(mat.T.dot(mat), k=1, which='LM', maxiter=1000) 
+</code></p>
+
+<p>In this case the current approach took 45.2ms and the SVD approach took 135ms.</p>
+
 <h2 id="fast-eigenvector-centrality">Fast Eigenvector Centrality</h2>
 
 <p>The plan for testing would be to first make sure that the code results are close to the original approach and possibly also compare to an SVD approach.</p>
+
+<h2 id="brain-size-ala-maarten">Brain Size ala Maarten</h2>
+
+<p>We ended up dropping the ball in getting Maarten some of these scripts.</p>
+
+<p>I need to create an input file with <code>T1file,age,sex</code>. If I am using the NKI Rockland pilot dataset, then I believe I should be able to find the relevant path. For the most recent data, there have been additions so let me confirm that I have access to everything. Ok so first, pilot dataset.</p>
+
+<p>``` r
+rawdir    &lt;- ‘/home2/data/Originals/Rockland/raw’
+phenofile &lt;- ‘/home2/data/Originals/Rockland/NKI.1-39_phenotypic.csv’</p>
+
+<p>pheno     &lt;- read.csv(phenofile)
+df        &lt;- pheno[,c(1,3,12)]
+df$paths  &lt;- file.path(rawdir, df$Subject, “touse”, “anat”, “mprage.nii.gz”)
+df$exists &lt;- file.exists(df$paths)*1</p>
+
+<p>df.txt &lt;- df[df$exists==1,c(4,3,2)]
+write.table(df.txt, file=”rockland_pilot.txt”, row.names=F, col.names=F, quote=F)
+```</p>
+
+<p>I want to now look at the Enhanced dataset.</p>
 
 <h2 id="thoughts">Thoughts</h2>
 
@@ -252,107 +316,6 @@
 
 <p>I got emails from Xavier and Phil with comments. I should look to integrate them.</p>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Wednesday - Week 48]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/27/wednesday-week-48/"/>
-    <updated>2013-11-27T11:42:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/27/wednesday-week-48</id>
-    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
-
-<p>I was able to get through at least at a partial level through the items in my TOOD list below. More details are of course below.</p>
-
-<ul>
-  <li>I checked the CPAC output and found that 1 subject had some missing preprocessing data due to a crash during nuisance. I am rerunning this subject on rocky so I can examine the working directory (it said a tissue prior was missing in the error). Everything else is good. It should be noted that there are 2 participants in OHSU that are missing the 1st scan but have 2 other scans.</li>
-  <li>I reran the QC and the output pages now seem good. Need to decide the procedure for QC now.</li>
-  <li>Looked into eigenvector centrality speedup. There is code to do the power iteration approach that is advocated in the Brain Connectivity paper with 1000x speedup in a fast eigenvector centrality approach. Could also email the people from that paper to ask for their code.</li>
-  <li>Discussed updating VMHC to have Cameron’s fixes (register regular MNI brain to symmetric MNI brain) with Steve. Also, discussed having the registration step be done in the assigned standard anatomical resolution and then apply the warp from this registration to the native functional image into the assigned standard functional resolution. This is not currently done.</li>
-  <li>Did tagging for about 30 minutes.</li>
-  <li>Created TODO items for ABIDE.</li>
-</ul>
-
-<h2 id="plans">Plans</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>Create TODOs</li>
-      <li>Finish checking CPAC output</li>
-      <li>Fix QC pages</li>
-      <li>Look into fixing VMHC error when running at 3mm</li>
-      <li>Look into eigenvector centrality</li>
-      <li>Create quick packs for CPAC and Xinian</li>
-    </ul>
-  </li>
-  <li>Do 1 hour of tagging</li>
-</ul>
-
-<h2 id="abide---todo">ABIDE - TODO</h2>
-
-<p>This is a partial list and the next time I will need to make a more thorough list.</p>
-
-<ul>
-  <li>Do QC</li>
-  <li>Check all outputs there for Pierre, Xinian, Chao-Gan</li>
-  <li>Optimize the eigenvector centrality</li>
-  <li>Make sure VMHC works properly when using 3mm output resolution</li>
-  <li>Setup Quick Packs</li>
-  <li>Run Quick Packs</li>
-</ul>
-
-<h2 id="abide---check-outputs">ABIDE - Check Outputs</h2>
-
-<p>I made a script <code>20_check_subjects.R</code> in <code>.../config/24_check</code> that checks which subject is missing some preprocessing output given that the raw data exists.</p>
-
-<p>For two subjects, we are missing the first rest scan. These subjects are from OHSU and are <code>0050155</code> and <code>0050165</code>.</p>
-
-<p>We need to redo <code>0051275</code> since there was a failure in calculating the nuisance regression. I ran this subject again on rocky with the relevant info/scripts in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/26_reprocess_3mm</code>.</p>
-
-<h2 id="abide---qc">ABIDE - QC</h2>
-
-<p>Simply rerunning the QC resolved some broken links and the QC pages appear fine. Need to set some system of getting through all these QC pages and confirm the protocol for checking.</p>
-
-<p><code>python
-import CPAC
-CPAC.utils.create_all_qc.run('/path/to/output_directory')
-</code></p>
-
-<h2 id="vmhc">VMHC</h2>
-
-<p>Currently there is a bit of an issue when we try to run VMHC at 3mm. Although it now works, the registration appears to to be done at that resolution (3mm). Talking to Steve, it seems a fix proposed by Cameron would resolve my issue as well. That is, the registration between the regular MNI to the symmetric MNI would be done in the anatomical resolution, which is usually specified at 1mm. Then, this warp would be combined with the previous one to standard space, and we would apply this warp to the functional in order to get to the specified standard functional space, which is in 3mm.</p>
-
-<h2 id="eigen-vector-centrality">Eigen-Vector Centrality</h2>
-
-<p>I did a brief search of faster implementations of eigenvector centrality, which is also sometimes referred to as google’s page rank.</p>
-
-<h3 id="paper-with-fast-implementation">Paper with Fast Implementation</h3>
-
-<p>The most relevant item is a paper recommended by Cameron: http://online.liebertpub.com.ezproxy.med.nyu.edu/doi/full/10.1089/brain.2012.0087. It appears their analyses were done in matlab so if we could also get their code, it would be fairly easy to integrate with CPAC. Below is a quote from the paper that indicates this approach is very fast, potentially faster than degree centrality! Note that they used a voxel size of 2mm.</p>
-
-<blockquote>
-  <p>The RS-fMRI data of each subject contain 195,704 in-brain voxels per volume and the time-series length is 200. The approximate gain in efficiency compared to the standard algorithm is a factor 1000. The computation times for ECM of the fMRI (excluding file I/O) are 39 sec on average (std. dev. 14 sec) on an Intel Xeon.</p>
-</blockquote>
-
-<p>So figure out if we should contact them or not?</p>
-
-<h3 id="related-links">Related Links</h3>
-
-<p>The above paper used the power iteration method to calculate the dominant eigenvector. I found various links on the code to run this power iteration method.</p>
-
-<ul>
-  <li>Some slides with well explained code. http://homepages.math.uic.edu/~jan/mcs507/numpyveclinalg.pdf</li>
-  <li>Easy to follow function although needs to be fixed: https://github.com/seckcoder/mmd/blob/9aba8a224c69daebc6f3f800e3847362911f2225/dimension_reduction.py</li>
-  <li>Super straightforward code: http://stackoverflow.com/questions/13739186/compute-eigenvector-using-a-dominant-eigenvalue</li>
-  <li>4 ways to compute: http://glowingpython.blogspot.com/2011/05/four-ways-to-compute-google-pagerank.html</li>
-</ul>
-
-<h2 id="tagging">Tagging</h2>
-
-<p>I think I should go through and check the first 45 that I did. I believe that I may not have properly added the type of connectivity (seed-based, unsupervised, etc) properly.</p>
-
-<p>Sent out an email with some issues/guidance on tagging.</p>
 ]]></content>
   </entry>
   

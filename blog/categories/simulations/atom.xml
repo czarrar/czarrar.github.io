@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: simulations | Zarrar's Journaling]]></title>
+  <link href="http://czarrar.github.io/blog/categories/simulations/atom.xml" rel="self"/>
+  <link href="http://czarrar.github.io/"/>
+  <updated>2013-12-09T20:07:15-05:00</updated>
+  <id>http://czarrar.github.io/</id>
+  <author>
+    <name><![CDATA[Zarrar Shehzad]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CWAS Simulations]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/07/cwas-simulations/"/>
+    <updated>2013-12-07T16:39:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/07/cwas-simulations</id>
+    <content type="html"><![CDATA[<p>It seems that my previous set of simulations may go down the drain as they weren’t relevant to the reviewer’s concern.</p>
+
+<p>So now, I am looking into a new set of simulations focused on examining properties of the MDMR approach using resting-state functional connectivity data.</p>
+
+<h2 id="methods">Methods</h2>
+
+<p>One question is how can we implement our simulations. Here are the general steps:</p>
+
+<ol>
+  <li>
+    <p>Compute 1000 voxelwise connectivity maps at 4mm isotropic for all my 104 participants.</p>
+  </li>
+  <li>
+    <p>Using GLM remove the effects of other variables to get residual connectivity maps</p>
+  </li>
+  <li>
+    <p>Add in group effect and vary certain factors</p>
+  </li>
+</ol>
+
+<p>Step three is crucial and is discussed later.</p>
+
+<h3 id="factors">Factors</h3>
+
+<p>What are the factors that we want to measure?</p>
+
+<ul>
+  <li>Number of ‘clusters’ that differ</li>
+  <li>Extent of each ‘cluster’ that differ</li>
+  <li>Effect size</li>
+</ul>
+
+<p>Another set of factors that could be examined is the variation in the effect size across the connectivity map. For now, I guess we shall assume a constant difference with some random noise.</p>
+
+<p>Do we really need to be examining some of these steps? I’m thinking that we just focus on the effect size and simply generate a gaussian random field </p>
+
+<h3 id="implementation">Implementation</h3>
+
+<p>I’m assuming that I have a matrix with each participant’s connectivity map at one voxel. </p>
+
+]]></content>
+  </entry>
+  
+</feed>

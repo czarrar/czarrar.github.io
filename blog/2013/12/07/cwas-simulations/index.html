@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: cmi - Zarrar's Journaling</title>
+  <title>CWAS Simulations - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Category: cmi">
+  <meta name="description" content="It seems that my previous set of simulations may go down the drain as they weren’t relevant to the reviewer’s concern. So now, I am looking into a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.ioblog/categories/cmi/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/12/07/cwas-simulations/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,147 +71,127 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Cmi</h1>
+    
+      
+        <h1 class="entry-title">CWAS Simulations</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-07T16:39:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2013</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>It seems that my previous set of simulations may go down the drain as they weren’t relevant to the reviewer’s concern.</p>
 
-  
-  <h2>2013</h2>
+<p>So now, I am looking into a new set of simulations focused on examining properties of the MDMR approach using resting-state functional connectivity data.</p>
 
-<article>
-  
-<h1><a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a></h1>
-<time datetime="2013-12-09T20:03:00-05:00" pubdate><span class='month'>Dec</span> <span class='day'>09</span> <span class='year'>2013</span></time>
+<h2 id="methods">Methods</h2>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
+<p>One question is how can we implement our simulations. Here are the general steps:</p>
 
+<ol>
+  <li>
+    <p>Compute 1000 voxelwise connectivity maps at 4mm isotropic for all my 104 participants.</p>
+  </li>
+  <li>
+    <p>Using GLM remove the effects of other variables to get residual connectivity maps</p>
+  </li>
+  <li>
+    <p>Add in group effect and vary certain factors</p>
+  </li>
+</ol>
 
-</article>
+<p>Step three is crucial and is discussed later.</p>
 
+<h3 id="factors">Factors</h3>
 
+<p>What are the factors that we want to measure?</p>
 
-<article>
-  
-<h1><a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a></h1>
-<time datetime="2013-12-06T10:35:00-05:00" pubdate><span class='month'>Dec</span> <span class='day'>06</span> <span class='year'>2013</span></time>
+<ul>
+  <li>Number of ‘clusters’ that differ</li>
+  <li>Extent of each ‘cluster’ that differ</li>
+  <li>Effect size</li>
+</ul>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
+<p>Another set of factors that could be examined is the variation in the effect size across the connectivity map. For now, I guess we shall assume a constant difference with some random noise.</p>
 
+<p>Do we really need to be examining some of these steps? I’m thinking that we just focus on the effect size and simply generate a gaussian random field </p>
 
-</article>
+<h3 id="implementation">Implementation</h3>
 
-
-
-<article>
-  
-<h1><a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a></h1>
-<time datetime="2013-12-04T10:02:00-05:00" pubdate><span class='month'>Dec</span> <span class='day'>04</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/12/03/week-49-tuesday/">Week 49 - Tuesday</a></h1>
-<time datetime="2013-12-03T11:30:00-05:00" pubdate><span class='month'>Dec</span> <span class='day'>03</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/12/02/week-49-monday/">Week 49 - Monday</a></h1>
-<time datetime="2013-12-02T13:25:00-05:00" pubdate><span class='month'>Dec</span> <span class='day'>02</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/27/wednesday-week-48/">Wednesday - Week 48</a></h1>
-<time datetime="2013-11-27T11:42:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/26/tuesday-week-48/">Tuesday - Week 48</a></h1>
-<time datetime="2013-11-26T10:41:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>26</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/25/monday-week-48/">Monday - Week 48</a></h1>
-<time datetime="2013-11-25T09:59:00-05:00" pubdate><span class='month'>Nov</span> <span class='day'>25</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/10/30/another-look-at-quick-pack-journey/">Another Quick Pack Journey</a></h1>
-<time datetime="2013-10-30T15:55:00-04:00" pubdate><span class='month'>Oct</span> <span class='day'>30</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>, <a class='category' href='/blog/categories/emotional-bs/'>emotional-bs</a>, <a class='category' href='/blog/categories/jekyll/'>jekyll</a>, <a class='category' href='/blog/categories/quickpack/'>quickpack</a></span>
-</footer>
-
-
-</article>
+<p>I’m assuming that I have a matrix with each participant’s connectivity map at one voxel. </p>
 
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-07T16:39:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cwas/'>cwas</a>, <a class='category' href='/blog/categories/simulations/'>simulations</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/12/07/cwas-simulations/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/12/07/cwas-simulations/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/06/week-49-friday/" title="Previous Post: Week 49 - Friday">&laquo; Week 49 - Friday</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2013/12/09/week-50-monday/" title="Next Post: Week 50 - Monday">Week 50 - Monday &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>
