@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-09T20:11:39-05:00</updated>
+  <updated>2013-12-17T20:27:16-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,369 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CPAC Derivative Inputs]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs/"/>
+    <updated>2013-12-17T19:24:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs</id>
+    <content type="html"><![CDATA[<p>I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS pipeline:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anat_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;anatomical_brain&quot;</span><span class="p">:</span> <span class="s">&quot;mprage_sanlm.nii.gz&quot;</span><span class="p">,</span>     <span class="c"># check</span>
+</span><span class="line">    <span class="s">&quot;anatomical_reorient&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres_rpi.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;anatomical_to_mni_nonlinear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres2standard_warp.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;mni_normalized_anatomical&quot;</span><span class="p">:</span> <span class="s">&quot;reg/fnirt_highres2standard.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">func_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;preprocessed&quot;</span><span class="p">:</span> <span class="s">&quot;rest_res.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;mean_functional&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mean.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mask.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_nuisance_residuals&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_nofilt_sm0.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_freq_filtered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">],</span>
+</span><span class="line">    <span class="s">&quot;functional_mni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">],</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask_to_standard&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span> <span class="c"># I would need to make this myself</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">reg_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;functional_to_anat_linear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/example_func2highres.mat&quot;</span>
+</span><span class="line"><span class="c">#    &quot;functional_to_mni_linear_xfm&quot;: &quot;functional_to_mni_linear_xfm.mat&quot;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now I go through each of the files to see if they are really needed. If not, then I will want to make sure that it is also processed as optional in my ghetto quick pack code.</p>
+
+<h2 id="anatomicals">Anatomicals</h2>
+
+<h3 id="anatomicalbrain">anatomical_brain</h3>
+
+<p><strong>Yes</strong> it is needed for <strong>all the steps</strong> but <strong>only with ANTS</strong>. It is used by the applywarp sections of code and I think particularly for transforming FSL’s registration matrix to ANTs format (again i think).</p>
+
+<h3 id="anatomicalreorient">anatomical_reorient</h3>
+
+<p>Only <strong>VMHC?</strong>.</p>
+
+<h3 id="anatomicaltomninonlinearxfm">anatomical_to_mni_nonlinear_xfm</h3>
+
+<p><strong>Yes</strong> for <strong>all the steps</strong> but <strong>only for applying the registration</strong>.</p>
+
+<h3 id="mninormalizedanatomical">mni_normalized_anatomical</h3>
+
+<p><strong>No</strong>. This is only used in QC and so this can be removed from the set of inputs that I generate.</p>
+
+<h2 id="functional">Functional</h2>
+
+<h3 id="preprocessed">preprocessed</h3>
+
+<p><strong>No</strong>. This is used in scrubbing and QC so it too can be removed from the set of inputs that I generate.</p>
+
+<h3 id="meanfunctional">mean_functional</h3>
+
+<p><strong>No but in VMHC</strong> it is used. Not sure how long that will last.</p>
+
+<h3 id="functionalbrainmask">functional_brain_mask</h3>
+
+<p><strong>Yes</strong> it is used in <strong>many (all?) steps</strong>.</p>
+
+<h3 id="functionalnuisanceresiduals">functional_nuisance_residuals</h3>
+
+<p><strong>Yes</strong> for <strong>ALFF and fALFF</strong>. Note that this uses the set_leaf_properties and get_leaf_properties function to dynamically get so it won’t be so obvious. This option can also be used for the other derivatives if you don’t want them to be filtered.</p>
+
+<h3 id="functionalfreqfiltered">functional_freq_filtered</h3>
+
+<p><strong>Yes</strong> for <strong>everything where want filtering</strong>.</p>
+
+<h3 id="functionalmni">functional_mni</h3>
+
+<p><strong>Yes</strong> for <strong>Spatial Regression, ROI time series, Voxel time series, Temporal Regression for SCA, Network Centrality</strong></p>
+
+<h3 id="functionalbrainmasktostandard">functional_brain_mask_to_standard</h3>
+
+<p><strong>Yes</strong> but <strong>only when apply registration</strong>. Although should also need it for the above ones…</p>
+
+<h2 id="final">Final</h2>
+
+<p>Ok so the final list, here again. Note that I didn’t discuss the reg one.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anat_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;anatomical_brain&quot;</span><span class="p">:</span> <span class="s">&quot;mprage_sanlm.nii.gz&quot;</span><span class="p">,</span>          <span class="c"># REGISTRATION</span>
+</span><span class="line">    <span class="s">&quot;anatomical_reorient&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres_rpi.nii.gz&quot;</span><span class="p">,</span>    <span class="c"># VMHC?</span>
+</span><span class="line">    <span class="s">&quot;anatomical_to_mni_nonlinear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres2standard_warp.nii.gz&quot;</span><span class="p">,</span>  <span class="c"># REGISTRATION</span>
+</span><span class="line"><span class="c">#    &quot;mni_normalized_anatomical&quot;: &quot;reg/fnirt_highres2standard.nii.gz&quot;,      # NOT NEEDED </span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">func_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line"><span class="c">#    &quot;preprocessed&quot;: &quot;rest_res.nii.gz&quot;,             # NOT NEEDED</span>
+</span><span class="line"><span class="c">#    &quot;mean_functional&quot;: &quot;rest_pp_mean.nii.gz&quot;,      # VMHC?</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mask.nii.gz&quot;</span><span class="p">,</span> <span class="c"># YES </span>
+</span><span class="line">    <span class="s">&quot;functional_nuisance_residuals&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_nofilt_sm0.nii.gz&quot;</span><span class="p">,</span>  <span class="c"># YES (although not really used)</span>
+</span><span class="line">    <span class="s">&quot;functional_freq_filtered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">],</span>    <span class="c"># YES</span>
+</span><span class="line">    <span class="s">&quot;functional_mni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">],</span>      <span class="c"># YES</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask_to_standard&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>                                                                                         <span class="c"># Yes</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">reg_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;functional_to_anat_linear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/example_func2highres.mat&quot;</span> <span class="c"># REGISTRATION </span>
+</span><span class="line"><span class="c">#    &quot;functional_to_mni_linear_xfm&quot;: &quot;functional_to_mni_linear_xfm.mat&quot;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Week 50 - Friday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/13/week-50-friday/"/>
+    <updated>2013-12-13T12:01:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/13/week-50-friday</id>
+    <content type="html"><![CDATA[<p>There’s been a bit of a lull in writing these entries. Hoping to get back on the train.</p>
+
+<p><strong>What are the dominant issues for today?</strong></p>
+
+<ul>
+  <li>
+    <p>I found that yesterday that the fast eigencentrality code doesn’t work when the inputs are normalized data (mean=0, sd=1). I am not totally sure what’s going on but I can try to use the matlab code directly to see if my python port is missing something. I might first try with random data and then with some imaging data if possible. The imaging data could be used to directly compare with the python code. I might keep these test code blocks as gists.</p>
+  </li>
+  <li>
+    <p>I should make a table of all the processing steps that are needed for the ABIDE dataset. I want to run some of these things in the background as I can so as not to pile up.</p>
+  </li>
+</ul>
+
+<h2 id="testing-fast-eigenvector-code">Testing Fast Eigenvector Code</h2>
+
+<p>When I ran both the python and the fast code without the normalization of the time-series. I get the same results in both datasets. However, with normalization of the timeseries, I get different results. One suggestion from Steve was that there might be a difference in some normalization.</p>
+
+<p>Details of my simplified comparison can be found on https://gist.github.com/czarrar/7950474 and at the bottom of the post.</p>
+
+<h2 id="abide">ABIDE</h2>
+
+<p>Let’s first make a table and workflow explaining everything. I’ll add it here first and then move it to another spot later.</p>
+
+<p>I was able to start the processing for degree centrality with our dataset. I should be able to…</p>
+
+<h2 id="gist">Gist</h2>
+
+<div><script src="https://gist.github.com/7950474.js"></script>
+<noscript><pre><code>import numpy as np
+from CPAC.cwas.subdist import norm_cols
+from fast_ecm import fast_eigenvector_centrality # this is from the other gist; can ignore this and paste in the other function
+
+print 'Compare with non-normalized matrices'
+
+m  = np.random.random((200,1000))
+cm = m.T.dot(m)
+
+# Let's first call a basic approach
+# This actually doesn't work, not sure what I'm setting wrong
+from scipy import linalg as LA
+w01,v01 = LA.eigh(cm, eigvals=(0,0))
+e01     = cm.dot(np.abs(v01))/w01[0]
+
+# Let's call a second basic approach (used currently)
+from scipy.sparse import linalg as sLA
+w02,v02 = sLA.eigsh(cm, k=1, which='LM', maxiter=1000)
+e02     = cm.dot(np.abs(v02))/w02[0]
+
+# Finally let's call the fast eigenvector (power approach)
+v03     = fast_eigenvector_centrality(m, verbose=False)
+
+# How different are the second and third ones?
+print 'mean absolute diff: ', np.abs(e02-v03).mean()
+print 'correlation: ', np.corrcoef(e02.T, v03.T)[0,1]
+
+
+
+print 'Compare with normalized matrices'
+
+n  = norm_cols(m)
+cn = n.T.dot(n)
+
+# Let's first call a basic approach
+from scipy import linalg as LA
+w11,v11 = LA.eigh(cn, eigvals=(0,0))
+e11     = cn.dot(np.abs(v11))/w11[0]
+
+# Let's call a second basic approach (used currently)
+from scipy.sparse import linalg as sLA
+w12,v12 = sLA.eigsh(cn, k=1, which='LM', maxiter=1000)
+e12     = cn.dot(np.abs(v12))/w12[0]
+
+# Finally let's call the fast eigenvector (power approach)
+v13     = fast_eigenvector_centrality(n, verbose=False)
+
+# How different are the second and third ones?
+print 'mean absolute diff: ', np.abs(e12-v13).mean()
+print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
+</code></pre></noscript></div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Installing connectir]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/10/installing-connectir/"/>
+    <updated>2013-12-10T11:46:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/10/installing-connectir</id>
+    <content type="html"><![CDATA[<p>There are several steps that appear to lend themselves to a problem with installing all the dependencies and stuff for connectir. First let me go through trying to install R with openblas, which leads to problems when using any of the parallel processing in R. </p>
+
+<h2 id="r-with-openblas">R with OpenBlas</h2>
+
+<p>The below links are relevant in detailing the issue/solutions between openblas and parallel processing libraries. The issue is “On Linux, OpenBLAS sets the processor affinity by default. This may cause the conflict with R parallel. You can build the library with NO_AFFINITY=1.”</p>
+
+<ul>
+  <li>http://www.stat.cmu.edu/~nmv/2013/07/09/for-faster-r-use-openblas-instead-better-than-atlas-trivial-to-switch-to-on-ubuntu/#comment-128</li>
+  <li>https://stat.ethz.ch/pipermail/r-sig-hpc/2012-April/001348.html</li>
+  <li>https://github.com/xianyi/OpenBLAS/wiki/faq#wiki-no_affinity</li>
+</ul>
+
+<p>Note that you can also set this on runtime with <code>export OPENBLAS_MAIN_FREE=1</code>.</p>
+
+<p>Unfortunately on each loop of foreach I get the following error.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line"> <span class="o">***</span> caught segfault <span class="o">***</span>
+</span><span class="line">address <span class="mh">0x7f717d9b99d0</span><span class="p">,</span> cause <span class="s">&#39;memory not mapped&#39;</span>
+</span><span class="line">
+</span><span class="line">Traceback<span class="o">:</span>
+</span><span class="line"> <span class="m">1</span><span class="o">:</span> mcexit<span class="p">(</span><span class="m">0L</span><span class="p">)</span>
+</span><span class="line"> <span class="m">2</span><span class="o">:</span> FUN<span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">[[</span><span class="m">1L</span><span class="p">]],</span> <span class="kc">...</span><span class="p">)</span>
+</span><span class="line"> <span class="m">3</span><span class="o">:</span> lapply<span class="p">(</span>seq_len<span class="p">(</span>cores<span class="p">),</span> inner.do<span class="p">)</span>
+</span><span class="line"> <span class="m">4</span><span class="o">:</span> mclapply<span class="p">(</span>argsList<span class="p">,</span> FUN<span class="p">,</span> mc.preschedule <span class="o">=</span> preschedule<span class="p">,</span> mc.set.seed <span class="o">=</span> set.seed<span class="p">,</span>     mc.silent <span class="o">=</span> silent<span class="p">,</span> mc.cores <span class="o">=</span> cores<span class="p">)</span>
+</span><span class="line"> <span class="m">5</span><span class="o">:</span> e<span class="o">$</span>fun<span class="p">(</span>obj<span class="p">,</span> substitute<span class="p">(</span>ex<span class="p">),</span> parent.frame<span class="p">(),</span> e<span class="o">$</span>data<span class="p">)</span>
+</span><span class="line"> <span class="m">6</span><span class="o">:</span> foreach<span class="p">(</span>i <span class="o">=</span> <span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">)</span> <span class="o">%dopar%</span> rnorm<span class="p">(</span><span class="m">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I will need to come back to this error in this future for fixing.</p>
+
+<h2 id="test-smoothing">Test Smoothing</h2>
+
+<p>I created the following setup to test 2 subjects with the new smoothing of standard functionals.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">cd <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>CPAC_Regression_Test
+</span><span class="line">mkdir smooth_tests
+</span><span class="line"><span class="c1"># cwas branch of CPAC</span>
+</span><span class="line">cd smooth_tests
+</span><span class="line">git clone https<span class="o">://</span>github.com<span class="o">/</span>FCP<span class="o">-</span>INDI<span class="o">/</span>C<span class="o">-</span>PAC.git
+</span><span class="line">cd C<span class="o">-</span>PAC
+</span><span class="line">git checkout cwas
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I also copied over the following config files and edited them:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">cd</span> /home2/data/Projects/CPAC_Regression_Test
+</span><span class="line"><span class="c"># only use 2 subjects</span>
+</span><span class="line">cp 2013-12-05_v-0-3-3/run/CPAC_subject_list.yml smooth_tests/
+</span><span class="line"><span class="c"># remove any derivatives from being run</span>
+</span><span class="line">cp 2013-12-05_v-0-3-3/run/pipeline_config_regtest.yml smooth_tests/
+</span><span class="line"><span class="c"># </span>
+</span><span class="line">cp 2013-12-05_v-0-3-3/run/run-CPAC_v-0-3-3.py smooth_tests/
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Errors:
+- invalid connection
+- unknown func_preproc_0</p>
+
+<p>I fixed the above but then got some error with just running the pipeline.</p>
+
+<p>spent 3 hrs.</p>
+
+<h2 id="maarten-brain-sizes">Maarten Brain Sizes</h2>
+
+<p>Maarten received the results for NKI-RS and NK-RS enhanced fine but was missing one file (missing the ac-pc-fov.txt file for all subjects). In addition, he wanted to have results for the COBRA subjects. I got the path for this from Dan and should be easy to run the script on these participants.</p>
+
+<h3 id="fixing-missing-file">Fixing missing file</h3>
+
+<p>The file in question is <code>ac-pc-fov.txt</code> and is returned by the <code>DOfovC.sh</code> script. Below is the command that I ran for testing.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>anat_test.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>test <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It seems that some loop was being skipped and other files weren’t being generated, which led to the error. I did some other funnies to investigate and fix the issue such as convert the <code>DOfovC.sh</code> script to be bash.</p>
+
+<h3 id="re-running">Re-Running</h3>
+
+<p>I need to re-run two studies and run one for the first time. Run the following on gelert.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line"><span class="c1"># Rockland Pilot</span>
+</span><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>anat_demographics.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>results <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span><span class="line"><span class="c1"># Rockland Enhanced</span>
+</span><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">20</span>_rockland_enhanced<span class="o">/</span>anat_demographics.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">20</span>_rockland_enhanced<span class="o">/</span>results <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span><span class="line"><span class="c1"># COBRA</span>
+</span><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">30</span>_cobra<span class="o">/</span>anat_demographics.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">30</span>_cobra<span class="o">/</span>results <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Week 50 - Monday]]></title>
@@ -1227,293 +1590,6 @@
 
 <p>Getting a late start on the simulations. </p>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Friday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/22/friday-week-47/"/>
-    <updated>2013-11-22T15:44:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/22/friday-week-47</id>
-    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
-
-<h3 id="centrality-and-memory">Centrality and Memory</h3>
-
-<p>The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in memory load that then stays there.</p>
-
-<ol>
-  <li>When computing the correlations, additional memory is allocated then that used for the output (up to 0.5x more).</li>
-  <li>When converting any NaNs to 0s, more than 2x more than the current memory is used (I guess because a copy of the data is created but not wiped from memory at a later point).</li>
-  <li>When calculating the degree centrality from the connectivity about 2x the amount of memory is used at this step.</li>
-</ol>
-
-<p>We actually can deal with step 2, since this only occurs because some time-series are flat or all zeros. If we mask those time series out in advance, then we don’t need to worry about that particular issue.</p>
-
-<p>The third step might also be solved semi-easily with some cython. There is one nice tutorial/comparison here: http://technicaldiscovery.blogspot.com/2011/06/speeding-up-python-numpy-cython-and.html. We could then write a function that loops through the array, thresholds each element, and adds each element to a vector.</p>
-
-<p>Further details are given below on examining memory issues in centrality using (1) 3mm brain and breakpoints and (2) a toy example to get more details.</p>
-
-<h3 id="abide">ABIDE</h3>
-
-<p>I began running CPAC to register the participant functional data and derivatives to 3mm space.</p>
-
-<h2 id="memory-issues">Memory Issues</h2>
-
-<p>There are a couple of nice pages on some memory issues with numpy. One suggestion was to upgrade to version 1.7.1+ where some memory leaks were fixed. I’m currently using version 1.6.1 so it’s possible using a more advanced version could help…however, I did check with a version of numpy Dan has and this didn’t solve my particular issues.</p>
-
-<h2 id="detailed-memory-test">Detailed Memory Test</h2>
-
-<p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TODO</span><span class="p">:</span> <span class="n">breaks</span> <span class="n">pigments</span> <span class="n">will</span> <span class="nb">compile</span> <span class="n">elsewhere</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>block -&gt; 34382 0</p>
-
-<ol>
-  <li>93.88 MB</li>
-  <li>139.12 MB</li>
-  <li>6.45 GB (but note that before this point, memory goes up to 18.1GB)</li>
-  <li>6.45 GB</li>
-  <li>6.45 GB (but note that before this point, memory goes up to 13.75GB)</li>
-</ol>
-
-<p>block -&gt; 45262 34382</p>
-
-<p>Also there was a second block so points 3-4 repeat. They both had 2.49 GB as that used.</p>
-
-<p>Took about 324.71 secs or 5mins.</p>
-
-<h2 id="for-our-sanity">For our Sanity</h2>
-
-<p>So to confirm that we get sane numbers in python, one can run the following code and then monitor the memory externally with <code>./memtop</code>. Here, we will create a <code>corr_matrix</code> identical in size as in block 1 above. We find generally that our own calculation of this matrix is the same as that within python, which is the same as that using <code>memtop</code> (depends on <code>ps</code>). To get <code>memtop</code>, please follow this link: http://justinfranks.com/code/scripts/memtop.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class="line">
-</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">34382</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;float32&#39;</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Our assumption (4.4GB)</span>
-</span><span class="line"><span class="n">size_us</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nvoxs</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Using numpy (4.4GB)</span>
-</span><span class="line"><span class="n">size_np</span> <span class="o">=</span> <span class="n">corr_matrix</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># From the command-line (4.45GB)</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">os</span>
-</span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&quot;./memtop | grep ipython&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="understanding-memory-for-dot-product">Understanding memory for dot product</h2>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nibabel-1.3.0-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pydicom-0.9.8-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/networkx-1.7-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pysurfer-0.3.1-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python27.zip&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/plat-linux2&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-tk&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-old&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-dynload&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages/PIL&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/site-packages&#39;</span><span class="p">]</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Note there is a base memory of 84.86  MB</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class="line"><span class="n">npsize</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">nbytes</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">10000</span>
-</span><span class="line"><span class="n">ntpts</span> <span class="o">=</span> <span class="mi">150</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># There is an increase to 100.7 MB with the time series</span>
-</span><span class="line"><span class="c"># this is a little larger then it&#39;s 11.5MB size</span>
-</span><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">ntpts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-</span><span class="line"><span class="n">timeseries</span><span class="p">[:,</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 863.73 MB</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">nvoxs</span><span class="p">))</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 1.35 GB (even after it is done)</span>
-</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="n">nvoxs</span><span class="p">],</span> <span class="n">timeseries</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">corr_matrix</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 2.47 GB but stays at 2.09 GB</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># still at 2.09 GB</span>
-</span><span class="line"><span class="n">degree_centrality_weighted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvoxs</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 3.68 GB but stays at 2.84 GB</span>
-</span><span class="line"><span class="n">r_value</span> <span class="o">=</span> <span class="mf">0.2</span>
-</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">*</span><span class="p">(</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">degree_centrality_weighted</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Note that theoretically, we might have thought a limit of 0.75 GB</span>
-</span><span class="line"><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span><span class="o">*</span><span class="n">ntpts</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Below is the parallel commands that I ran to monitor the memory usage above.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="bash"><span class="line">./memtop | grep ipython <span class="c"># get the pid</span>
-</span><span class="line"><span class="nv">PID</span><span class="o">=</span>7873
-</span><span class="line"><span class="k">while</span> <span class="o">[[</span> True <span class="o">]]</span>; <span class="k">do</span>
-</span><span class="line">	./memtop -s -p <span class="nv">$PID</span>
-</span><span class="line">	sleep 0.5
-</span><span class="line"><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="memory-leakage-links">Memory Leakage Links</h2>
-
-<ul>
-  <li>http://stackoverflow.com/questions/12422307/reducing-numpy-memory-footprint-in-long-running-application</li>
-  <li>http://stackoverflow.com/questions/12461413/why-does-comparison-of-a-numpy-array-with-a-list-consume-so-much-memory</li>
-  <li>http://stackoverflow.com/questions/15191391/how-to-avoid-this-four-line-memory-leak-with-numpymkl</li>
-</ul>
-
-<h2 id="running-centrality-on-abide">Running Centrality on ABIDE</h2>
-
-<p>The usage approaches 18GB when I set a 12GB limit. On gelert, each node has about 16GB of RAM. The easiest thing might be to run one process on each node with a limit of 6GB to keep well within range.</p>
-
-<h2 id="registering-data-to-3mm-space">Registering Data to 3mm Space</h2>
-
-<p>I also want to redo the registration to be in 3mm standard space, whereas it currently is in 2mm. I’m working on the script for that task and have started running this on gelert now.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Thursday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/21/thursday-week-47/"/>
-    <updated>2013-11-21T11:34:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/21/thursday-week-47</id>
-    <content type="html"><![CDATA[<p>Today mostly revolved around memory profiling to work in python. Summary is as follows.</p>
-
-<ul>
-  <li>Looked into memory profiling
-    <ul>
-      <li>Had issues with memprof but got heapy to work (links below).</li>
-      <li>Got memprof to work not through numpy</li>
-      <li>Also applied memory_profiler (a little bit more accurate and useful than memprof).</li>
-      <li>Finally also applied memtop (a wrapper around ps)</li>
-    </ul>
-  </li>
-  <li>Attended lab meeting</li>
-  <li>Discussion of ABIDE with Chao-Gan and then Cameron</li>
-</ul>
-
-<h2 id="memory-profiling">Memory Profiling</h2>
-
-<p>Want to examine the memory usage of centrality in CPAC.</p>
-
-<h3 id="choosing-a-package">Choosing a Package</h3>
-
-<p>There are several python packages available with an extensive list available on stackoverflow: http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended.</p>
-
-<p>Some that do not seem appropriate for our purposes:</p>
-
-<ul>
-  <li><a href="https://launchpad.net/meliae">Meliae</a>: No documentation.</li>
-  <li><a href="http://pythonhosted.org/Pympler/muppy.html">Muppy</a>: Not that useful.</li>
-</ul>
-
-<p>One particular issue that I’ll be dealing with are how well it will work with nipype.</p>
-
-<h3 id="path-issue">Path Issue</h3>
-
-<p>The first problem I faced was the memory profiling not being on the path. This wasn’t so obvious because in the interactive shell of python and python, the memory profiling packages that were recently installed were available. However, when running python (the same python) from the command-line, then it couldn’t find it. The fix was simply to add my python site-packages to the path. Should know in the future that the paths for the interactive vs command-line python can be different.</p>
-
-<h3 id="heapy">Heapy</h3>
-
-<p>So when I actually ran memprof, it ended up failing. I went through all the other packages and was able to get <a href="http://smira.ru/wp-content/uploads/2011/08/heapy.html">heapy</a> to work. The approach taken with heapy is to call an individual function to measure the memory usage, whereas the other approaches all use a decorator of some kind. It worked, but the RAM values all seemed a bit low and not very convenient to read, so I tried another approach.</p>
-
-<h3 id="memprof">Memprof</h3>
-
-<p>Now I’ll be looking at <a href="http://jmdana.github.io/memprof">Memprof</a>, recommended by Cameron and also on the <a href="http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended">stackoverflow page</a>. Since it won’t work with nipype, I manually ran the <code>calc_centrality</code> function. This approach gave me some memory read outs. However, because it doesn’t actually record the memory usage of a particular command (when all the correlations are calculated), the maximum memory is about 160 + 11 or 171MB in total. This is a lot lower than I calculated and much lower than what I saw in top, which maxed out at around 4GB.</p>
-
-<p>[add pics]</p>
-
-<h3 id="memory-profiler">Memory Profiler</h3>
-
-<p>The other approach <a href="https://pypi.python.org/pypi/memory_profiler">memory_profiler</a> was a bit more useful. It showed about 1.4gb being used at the peak (around the correlation calculation).</p>
-
-<h3 id="memtop">Memtop</h3>
-
-<p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Wednesday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/20/wednesday-week-47/"/>
-    <updated>2013-11-20T12:01:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/20/wednesday-week-47</id>
-    <content type="html"><![CDATA[<h2 id="todo">TODO</h2>
-
-<h3 id="centrality">Centrality</h3>
-
-<ul>
-  <li>xx Look to using 4mm grey-matter mask</li>
-  <li>xx Run speed test on new analysis</li>
-  <li></li>
-</ul>
-
-<h2 id="centrality-1">Centrality</h2>
-
-<p>There a few issues related to needing to changing the inputs to the centrality nipype node. Those where straightforward.</p>
-
-<p>Now I’m having some weird bug where the centrality outputs are not being saved. Trying to debug at the <code>map_centrality_matrix</code> function. Ended up being a simple typo and returning the template_type instead of centrality file outputs from the <code>calc_centrality</code> command.</p>
-
-<p>I ran a comparison with AFNI’s 3dTcorrMap. When looking at the binarized result, almost all the voxels were the same except 8 in this particular case. I have tried doing centrality manually for those 8 voxels and keep getting the values from CPAC, which are 1 higher than the values from AFNI. I tried different correlation approaches as well as removing any voxel’s with constant time-series. However, since the difference is so small (only 1 for the binarized results) and there are so few voxels involved (8/19+k), I’m leaving it right now as a to be continued.</p>
-
-<p>I ‘ve also changed the way the correlations are calculated. Now the time-series will all be first normalized and then a dot product will be computed. This is in contrast, to doing both steps all at once for each block that the correlation is computed. So this will be a much greater speed boon when there are many blocks. In a small speed comparison using the normalization approach leads to a 2x improvement in speed.</p>
-
-<p>Although the setting of the block size does seem off, I will leave it for now. The actual amount of RAM being used is less than the amount </p>
-
-<blockquote>
-  <p>There were initially a lot more differences but a small change in the code to correct for auto-correlations in centrality took care of that issue.</p>
-</blockquote>
 ]]></content>
   </entry>
   

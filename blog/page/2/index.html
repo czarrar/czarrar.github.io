@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Summary I was able to get through at least at a partial level through the items in my TOOD list below. More details are of course below. I checked &hellip;">
+  <meta name="description" content="I should check the data that I am plotted. Right now, I am examining the mean -log10p value of the MDMR results but I think I might want to look at &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,177 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/01/cwas-simulations/">CWAS Simulations</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T21:01:00-05:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I should check the data that I am plotted. Right now, I am examining the mean -log10p value of the MDMR results but I think I might want to look at the percent of significant results with each effect size. Should double check.</p>
+
+<p>The code for the simulation analysis is located in <code>/home/data/Projects/CWAS/share/simulations</code>. I have added multiprocessing functionality to speed up the ability to go through the different parameters and iterations.</p>
+
+<p>I have started running one iteration of things including both variables of interest. Holy crap, it finished in like 30mins, super quick. I saved the values in an rda file within the same folder. The contents of that rda are as follows:</p>
+
+<ul>
+  <li>logp.cov1</li>
+  <li>fstat.cov1</li>
+  <li>logp.cov0</li>
+  <li>fstat.cov0</li>
+</ul>
+
+<p>The <code>cov1</code> term means that the covariate was modeled whereas <code>cov0</code> means the covariate wasn’t modeled. For <code>cov1</code> matrices, the dimensions were 2 terms x 11 group difference x 11 correlation. For <code>cov0</code> matrices, the dimensions were 11 group difference x 11 correlation (only for the group difference term). The correlation was between the age covariate and the response.</p>
+
+<h2 id="plot">Plot</h2>
+
+<p>I generated plots of the results on my computer using the <code>.../pro42/scripts2add/simulations/20_plot.R</code> script. Since I used Rnotebook, I was able to publish those results online at http://rpubs.com/czarrar/cwas_simulations.</p>
+
+<h2 id="status">Status</h2>
+
+<p>So I had to rerun the analyses since I should have been calculating power as percent of significant iterations (p &lt; 05). I upped the number of iterations to 20, hopefully this is enough.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/30/week-49-sunday/">Week 49 - Sunday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-30T21:47:00-05:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is a bit of a cheat since I started this on Saturday (week 48).</p>
+
+<h2 id="todo">TODO</h2>
+
+<p>I’m trying to use the workflow for this.</p>
+
+<h2 id="comparing-distances">Comparing Distances</h2>
+
+<p>I was able to finish making the figure as well as the text for the paper. I added all this information to the response letter.</p>
+
+<h2 id="simulations">Simulations</h2>
+
+<p>I ran this and need to double check. However, I do think that something went wrong here. I need to double check the code and spot check the effect sizes given. </p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/30/plotting-images-in-r/">Plotting Images in R</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-30T19:37:00-05:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Plotting images or 2D graphs are fairly easy in R. You can use the <code>image</code> function or for a nice legend, you can also use the <code>image.plot</code> function in the <code>fields</code> package. The issue I encountered for the <code>image.plot</code> function is when I want the labels from my x and y axis to be different due to a log transformation. This was not possible.</p>
+
+<p>To get around this issue, I adapted the <code>image.plot</code> function as <code>image.zplot</code> and added the following lines that are run right after the image is generated.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line"><span class="kr">if</span> <span class="p">(</span><span class="o">!</span>is.null<span class="p">(</span>axis.x<span class="p">))</span> <span class="p">{</span>
+</span><span class="line">  axis.x<span class="o">$</span>side <span class="o">&lt;-</span> <span class="m">1</span>
+</span><span class="line">  do.call<span class="p">(</span><span class="s">&quot;axis&quot;</span><span class="p">,</span> axis.x<span class="p">)</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line"><span class="kr">if</span> <span class="p">(</span><span class="o">!</span>is.null<span class="p">(</span>axis.y<span class="p">))</span> <span class="p">{</span>
+</span><span class="line">  axis.y<span class="o">$</span>side <span class="o">&lt;-</span> <span class="m">2</span>
+</span><span class="line">  do.call<span class="p">(</span><span class="s">&quot;axis&quot;</span><span class="p">,</span> axis.y<span class="p">)</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">box<span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This also adds the <code>axis.x</code> and <code>axis.y</code> options, which are options with list as the argument. The list entries are the key/value pairs when calling the particular axis function. This means I can use my custom log transformed x and y axis but provide the original numbers.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -994,380 +1165,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/22/friday-week-47/">Friday - Week 47</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-22T15:44:00-05:00" pubdate data-updated="true">Nov 22<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="summary">Summary</h2>
-
-<h3 id="centrality-and-memory">Centrality and Memory</h3>
-
-<p>The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in memory load that then stays there.</p>
-
-<ol>
-  <li>When computing the correlations, additional memory is allocated then that used for the output (up to 0.5x more).</li>
-  <li>When converting any NaNs to 0s, more than 2x more than the current memory is used (I guess because a copy of the data is created but not wiped from memory at a later point).</li>
-  <li>When calculating the degree centrality from the connectivity about 2x the amount of memory is used at this step.</li>
-</ol>
-
-<p>We actually can deal with step 2, since this only occurs because some time-series are flat or all zeros. If we mask those time series out in advance, then we don’t need to worry about that particular issue.</p>
-
-<p>The third step might also be solved semi-easily with some cython. There is one nice tutorial/comparison here: http://technicaldiscovery.blogspot.com/2011/06/speeding-up-python-numpy-cython-and.html. We could then write a function that loops through the array, thresholds each element, and adds each element to a vector.</p>
-
-<p>Further details are given below on examining memory issues in centrality using (1) 3mm brain and breakpoints and (2) a toy example to get more details.</p>
-
-<h3 id="abide">ABIDE</h3>
-
-<p>I began running CPAC to register the participant functional data and derivatives to 3mm space.</p>
-
-<h2 id="memory-issues">Memory Issues</h2>
-
-<p>There are a couple of nice pages on some memory issues with numpy. One suggestion was to upgrade to version 1.7.1+ where some memory leaks were fixed. I’m currently using version 1.6.1 so it’s possible using a more advanced version could help…however, I did check with a version of numpy Dan has and this didn’t solve my particular issues.</p>
-
-<h2 id="detailed-memory-test">Detailed Memory Test</h2>
-
-<p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">TODO</span><span class="p">:</span> <span class="n">breaks</span> <span class="n">pigments</span> <span class="n">will</span> <span class="nb">compile</span> <span class="n">elsewhere</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>block -&gt; 34382 0</p>
-
-<ol>
-  <li>93.88 MB</li>
-  <li>139.12 MB</li>
-  <li>6.45 GB (but note that before this point, memory goes up to 18.1GB)</li>
-  <li>6.45 GB</li>
-  <li>6.45 GB (but note that before this point, memory goes up to 13.75GB)</li>
-</ol>
-
-<p>block -&gt; 45262 34382</p>
-
-<p>Also there was a second block so points 3-4 repeat. They both had 2.49 GB as that used.</p>
-
-<p>Took about 324.71 secs or 5mins.</p>
-
-<h2 id="for-our-sanity">For our Sanity</h2>
-
-<p>So to confirm that we get sane numbers in python, one can run the following code and then monitor the memory externally with <code>./memtop</code>. Here, we will create a <code>corr_matrix</code> identical in size as in block 1 above. We find generally that our own calculation of this matrix is the same as that within python, which is the same as that using <code>memtop</code> (depends on <code>ps</code>). To get <code>memtop</code>, please follow this link: http://justinfranks.com/code/scripts/memtop.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class="line">
-</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">34382</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;float32&#39;</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Our assumption (4.4GB)</span>
-</span><span class="line"><span class="n">size_us</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nvoxs</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Using numpy (4.4GB)</span>
-</span><span class="line"><span class="n">size_np</span> <span class="o">=</span> <span class="n">corr_matrix</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># From the command-line (4.45GB)</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">os</span>
-</span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&quot;./memtop | grep ipython&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="understanding-memory-for-dot-product">Understanding memory for dot product</h2>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/nibabel-1.3.0-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pydicom-0.9.8-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/networkx-1.7-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/pysurfer-0.3.1-py2.7.egg&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python27.zip&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/plat-linux2&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-tk&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-old&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/lib-dynload&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/User/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Enthought/Canopy_64bit/System/lib/python2.7/site-packages/PIL&#39;</span><span class="p">,</span> <span class="s">&#39;/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86_64/lib/python2.7/site-packages&#39;</span><span class="p">]</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Note there is a base memory of 84.86  MB</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class="line"><span class="n">npsize</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">nbytes</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="n">nvoxs</span> <span class="o">=</span> <span class="mi">10000</span>
-</span><span class="line"><span class="n">ntpts</span> <span class="o">=</span> <span class="mi">150</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># There is an increase to 100.7 MB with the time series</span>
-</span><span class="line"><span class="c"># this is a little larger then it&#39;s 11.5MB size</span>
-</span><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">ntpts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-</span><span class="line"><span class="n">timeseries</span><span class="p">[:,</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 863.73 MB</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nvoxs</span><span class="p">,</span><span class="n">nvoxs</span><span class="p">))</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 1.35 GB (even after it is done)</span>
-</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="n">nvoxs</span><span class="p">],</span> <span class="n">timeseries</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">corr_matrix</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 2.47 GB but stays at 2.09 GB</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># still at 2.09 GB</span>
-</span><span class="line"><span class="n">degree_centrality_weighted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvoxs</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># to 3.68 GB but stays at 2.84 GB</span>
-</span><span class="line"><span class="n">r_value</span> <span class="o">=</span> <span class="mf">0.2</span>
-</span><span class="line"><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">*</span><span class="p">(</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">degree_centrality_weighted</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="c"># Note that theoretically, we might have thought a limit of 0.75 GB</span>
-</span><span class="line"><span class="p">(</span><span class="n">nvoxs</span><span class="o">*</span><span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span> <span class="o">+</span> <span class="n">nvoxs</span><span class="o">*</span><span class="n">ntpts</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Below is the parallel commands that I ran to monitor the memory usage above.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="bash"><span class="line">./memtop | grep ipython <span class="c"># get the pid</span>
-</span><span class="line"><span class="nv">PID</span><span class="o">=</span>7873
-</span><span class="line"><span class="k">while</span> <span class="o">[[</span> True <span class="o">]]</span>; <span class="k">do</span>
-</span><span class="line">	./memtop -s -p <span class="nv">$PID</span>
-</span><span class="line">	sleep 0.5
-</span><span class="line"><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="memory-leakage-links">Memory Leakage Links</h2>
-
-<ul>
-  <li>http://stackoverflow.com/questions/12422307/reducing-numpy-memory-footprint-in-long-running-application</li>
-  <li>http://stackoverflow.com/questions/12461413/why-does-comparison-of-a-numpy-array-with-a-list-consume-so-much-memory</li>
-  <li>http://stackoverflow.com/questions/15191391/how-to-avoid-this-four-line-memory-leak-with-numpymkl</li>
-</ul>
-
-<h2 id="running-centrality-on-abide">Running Centrality on ABIDE</h2>
-
-<p>The usage approaches 18GB when I set a 12GB limit. On gelert, each node has about 16GB of RAM. The easiest thing might be to run one process on each node with a limit of 6GB to keep well within range.</p>
-
-<h2 id="registering-data-to-3mm-space">Registering Data to 3mm Space</h2>
-
-<p>I also want to redo the registration to be in 3mm standard space, whereas it currently is in 2mm. I’m working on the script for that task and have started running this on gelert now.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/21/thursday-week-47/">Thursday - Week 47</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-21T11:34:00-05:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today mostly revolved around memory profiling to work in python. Summary is as follows.</p>
-
-<ul>
-  <li>Looked into memory profiling
-    <ul>
-      <li>Had issues with memprof but got heapy to work (links below).</li>
-      <li>Got memprof to work not through numpy</li>
-      <li>Also applied memory_profiler (a little bit more accurate and useful than memprof).</li>
-      <li>Finally also applied memtop (a wrapper around ps)</li>
-    </ul>
-  </li>
-  <li>Attended lab meeting</li>
-  <li>Discussion of ABIDE with Chao-Gan and then Cameron</li>
-</ul>
-
-<h2 id="memory-profiling">Memory Profiling</h2>
-
-<p>Want to examine the memory usage of centrality in CPAC.</p>
-
-<h3 id="choosing-a-package">Choosing a Package</h3>
-
-<p>There are several python packages available with an extensive list available on stackoverflow: http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended.</p>
-
-<p>Some that do not seem appropriate for our purposes:</p>
-
-<ul>
-  <li><a href="https://launchpad.net/meliae">Meliae</a>: No documentation.</li>
-  <li><a href="http://pythonhosted.org/Pympler/muppy.html">Muppy</a>: Not that useful.</li>
-</ul>
-
-<p>One particular issue that I’ll be dealing with are how well it will work with nipype.</p>
-
-<h3 id="path-issue">Path Issue</h3>
-
-<p>The first problem I faced was the memory profiling not being on the path. This wasn’t so obvious because in the interactive shell of python and python, the memory profiling packages that were recently installed were available. However, when running python (the same python) from the command-line, then it couldn’t find it. The fix was simply to add my python site-packages to the path. Should know in the future that the paths for the interactive vs command-line python can be different.</p>
-
-<h3 id="heapy">Heapy</h3>
-
-<p>So when I actually ran memprof, it ended up failing. I went through all the other packages and was able to get <a href="http://smira.ru/wp-content/uploads/2011/08/heapy.html">heapy</a> to work. The approach taken with heapy is to call an individual function to measure the memory usage, whereas the other approaches all use a decorator of some kind. It worked, but the RAM values all seemed a bit low and not very convenient to read, so I tried another approach.</p>
-
-<h3 id="memprof">Memprof</h3>
-
-<p>Now I’ll be looking at <a href="http://jmdana.github.io/memprof">Memprof</a>, recommended by Cameron and also on the <a href="http://stackoverflow.com/questions/110259/which-python-memory-profiler-is-recommended">stackoverflow page</a>. Since it won’t work with nipype, I manually ran the <code>calc_centrality</code> function. This approach gave me some memory read outs. However, because it doesn’t actually record the memory usage of a particular command (when all the correlations are calculated), the maximum memory is about 160 + 11 or 171MB in total. This is a lot lower than I calculated and much lower than what I saw in top, which maxed out at around 4GB.</p>
-
-<p>[add pics]</p>
-
-<h3 id="memory-profiler">Memory Profiler</h3>
-
-<p>The other approach <a href="https://pypi.python.org/pypi/memory_profiler">memory_profiler</a> was a bit more useful. It showed about 1.4gb being used at the peak (around the correlation calculation).</p>
-
-<h3 id="memtop">Memtop</h3>
-
-<p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/20/wednesday-week-47/">Wednesday - Week 47</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-20T12:01:00-05:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="todo">TODO</h2>
-
-<h3 id="centrality">Centrality</h3>
-
-<ul>
-  <li>xx Look to using 4mm grey-matter mask</li>
-  <li>xx Run speed test on new analysis</li>
-  <li></li>
-</ul>
-
-<h2 id="centrality-1">Centrality</h2>
-
-<p>There a few issues related to needing to changing the inputs to the centrality nipype node. Those where straightforward.</p>
-
-<p>Now I’m having some weird bug where the centrality outputs are not being saved. Trying to debug at the <code>map_centrality_matrix</code> function. Ended up being a simple typo and returning the template_type instead of centrality file outputs from the <code>calc_centrality</code> command.</p>
-
-<p>I ran a comparison with AFNI’s 3dTcorrMap. When looking at the binarized result, almost all the voxels were the same except 8 in this particular case. I have tried doing centrality manually for those 8 voxels and keep getting the values from CPAC, which are 1 higher than the values from AFNI. I tried different correlation approaches as well as removing any voxel’s with constant time-series. However, since the difference is so small (only 1 for the binarized results) and there are so few voxels involved (8/19+k), I’m leaving it right now as a to be continued.</p>
-
-<p>I ‘ve also changed the way the correlations are calculated. Now the time-series will all be first normalized and then a dot product will be computed. This is in contrast, to doing both steps all at once for each block that the correlation is computed. So this will be a much greater speed boon when there are many blocks. In a small speed comparison using the normalization approach leads to a 2x improvement in speed.</p>
-
-<p>Although the setting of the block size does seem off, I will leave it for now. The actual amount of RAM being used is less than the amount </p>
-
-<blockquote>
-  <p>There were initially a lot more differences but a small change in the code to correct for auto-correlations in centrality took care of that issue.</p>
-</blockquote>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1385,11 +1182,23 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 142.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 154.0%'>cmi(9)</a> <a href='/blog/categories/cpac' style='font-size: 142.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 112.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 118.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 136.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 106.0%'>simulations(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 138.1818181818182%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(11)</a> <a href='/blog/categories/cpac' style='font-size: 143.63636363636363%'>cpac(8)</a> <a href='/blog/categories/cwas' style='font-size: 154.54545454545456%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.9090909090909%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.45454545454545%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.45454545454545%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 116.36363636363636%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 132.72727272727272%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.45454545454545%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.45454545454545%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.45454545454545%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.45454545454545%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
@@ -1397,18 +1206,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/05/week-49-thursday/">Week 49 - Thursday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a>
       </li>
     
   </ul>
@@ -1569,20 +1366,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/17/2013');
+  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
+  
+  highlightArray.push('12/13/2013');
+  hightlightLinks.push('/blog/2013/12/13/week-50-friday/');
+  
+  highlightArray.push('12/10/2013');
+  hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
+  
   highlightArray.push('12/09/2013');
   hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
   
   highlightArray.push('12/07/2013');
   hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
-  
-  highlightArray.push('12/06/2013');
-  hightlightLinks.push('/blog/2013/12/06/week-49-friday/');
-  
-  highlightArray.push('12/05/2013');
-  hightlightLinks.push('/blog/2013/12/05/week-49-thursday/');
-  
-  highlightArray.push('12/04/2013');
-  hightlightLinks.push('/blog/2013/12/04/week-49-wednesday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

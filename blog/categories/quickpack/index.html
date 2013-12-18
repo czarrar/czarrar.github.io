@@ -181,11 +181,23 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 142.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 154.0%'>cmi(9)</a> <a href='/blog/categories/cpac' style='font-size: 142.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 112.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 118.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 136.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 106.0%'>simulations(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 138.1818181818182%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(11)</a> <a href='/blog/categories/cpac' style='font-size: 143.63636363636363%'>cpac(8)</a> <a href='/blog/categories/cwas' style='font-size: 154.54545454545456%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.9090909090909%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.45454545454545%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.45454545454545%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 116.36363636363636%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 132.72727272727272%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.45454545454545%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.45454545454545%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.45454545454545%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.45454545454545%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
@@ -193,18 +205,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/05/week-49-thursday/">Week 49 - Thursday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a>
       </li>
     
   </ul>
@@ -365,20 +365,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/17/2013');
+  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
+  
+  highlightArray.push('12/13/2013');
+  hightlightLinks.push('/blog/2013/12/13/week-50-friday/');
+  
+  highlightArray.push('12/10/2013');
+  hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
+  
   highlightArray.push('12/09/2013');
   hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
   
   highlightArray.push('12/07/2013');
   hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
-  
-  highlightArray.push('12/06/2013');
-  hightlightLinks.push('/blog/2013/12/06/week-49-friday/');
-  
-  highlightArray.push('12/05/2013');
-  hightlightLinks.push('/blog/2013/12/05/week-49-thursday/');
-  
-  highlightArray.push('12/04/2013');
-  hightlightLinks.push('/blog/2013/12/04/week-49-wednesday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

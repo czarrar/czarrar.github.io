@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CPAC Derivative Inputs - Zarrar's Journaling</title>
+  <meta name="author" content="Zarrar Shehzad">
+
+  
+  <meta name="description" content="I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">mob</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Zarrar's Journaling</a></h1>
+  
+    <h2>To the edge and beyond</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:czarrar.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">CPAC Derivative Inputs</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-17T19:24:00-05:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS pipeline:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anat_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;anatomical_brain&quot;</span><span class="p">:</span> <span class="s">&quot;mprage_sanlm.nii.gz&quot;</span><span class="p">,</span>     <span class="c"># check</span>
+</span><span class="line">    <span class="s">&quot;anatomical_reorient&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres_rpi.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;anatomical_to_mni_nonlinear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres2standard_warp.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;mni_normalized_anatomical&quot;</span><span class="p">:</span> <span class="s">&quot;reg/fnirt_highres2standard.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">func_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;preprocessed&quot;</span><span class="p">:</span> <span class="s">&quot;rest_res.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;mean_functional&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mean.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mask.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_nuisance_residuals&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_nofilt_sm0.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_freq_filtered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">],</span>
+</span><span class="line">    <span class="s">&quot;functional_mni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">],</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask_to_standard&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span> <span class="c"># I would need to make this myself</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">reg_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;functional_to_anat_linear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/example_func2highres.mat&quot;</span>
+</span><span class="line"><span class="c">#    &quot;functional_to_mni_linear_xfm&quot;: &quot;functional_to_mni_linear_xfm.mat&quot;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now I go through each of the files to see if they are really needed. If not, then I will want to make sure that it is also processed as optional in my ghetto quick pack code.</p>
+
+<h2 id="anatomicals">Anatomicals</h2>
+
+<h3 id="anatomicalbrain">anatomical_brain</h3>
+
+<p><strong>Yes</strong> it is needed for <strong>all the steps</strong> but <strong>only with ANTS</strong>. It is used by the applywarp sections of code and I think particularly for transforming FSL’s registration matrix to ANTs format (again i think).</p>
+
+<h3 id="anatomicalreorient">anatomical_reorient</h3>
+
+<p>Only <strong>VMHC?</strong>.</p>
+
+<h3 id="anatomicaltomninonlinearxfm">anatomical_to_mni_nonlinear_xfm</h3>
+
+<p><strong>Yes</strong> for <strong>all the steps</strong> but <strong>only for applying the registration</strong>.</p>
+
+<h3 id="mninormalizedanatomical">mni_normalized_anatomical</h3>
+
+<p><strong>No</strong>. This is only used in QC and so this can be removed from the set of inputs that I generate.</p>
+
+<h2 id="functional">Functional</h2>
+
+<h3 id="preprocessed">preprocessed</h3>
+
+<p><strong>No</strong>. This is used in scrubbing and QC so it too can be removed from the set of inputs that I generate.</p>
+
+<h3 id="meanfunctional">mean_functional</h3>
+
+<p><strong>No but in VMHC</strong> it is used. Not sure how long that will last.</p>
+
+<h3 id="functionalbrainmask">functional_brain_mask</h3>
+
+<p><strong>Yes</strong> it is used in <strong>many (all?) steps</strong>.</p>
+
+<h3 id="functionalnuisanceresiduals">functional_nuisance_residuals</h3>
+
+<p><strong>Yes</strong> for <strong>ALFF and fALFF</strong>. Note that this uses the set_leaf_properties and get_leaf_properties function to dynamically get so it won’t be so obvious. This option can also be used for the other derivatives if you don’t want them to be filtered.</p>
+
+<h3 id="functionalfreqfiltered">functional_freq_filtered</h3>
+
+<p><strong>Yes</strong> for <strong>everything where want filtering</strong>.</p>
+
+<h3 id="functionalmni">functional_mni</h3>
+
+<p><strong>Yes</strong> for <strong>Spatial Regression, ROI time series, Voxel time series, Temporal Regression for SCA, Network Centrality</strong></p>
+
+<h3 id="functionalbrainmasktostandard">functional_brain_mask_to_standard</h3>
+
+<p><strong>Yes</strong> but <strong>only when apply registration</strong>. Although should also need it for the above ones…</p>
+
+<h2 id="final">Final</h2>
+
+<p>Ok so the final list, here again. Note that I didn’t discuss the reg one.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anat_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;anatomical_brain&quot;</span><span class="p">:</span> <span class="s">&quot;mprage_sanlm.nii.gz&quot;</span><span class="p">,</span>          <span class="c"># REGISTRATION</span>
+</span><span class="line">    <span class="s">&quot;anatomical_reorient&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres_rpi.nii.gz&quot;</span><span class="p">,</span>    <span class="c"># VMHC?</span>
+</span><span class="line">    <span class="s">&quot;anatomical_to_mni_nonlinear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres2standard_warp.nii.gz&quot;</span><span class="p">,</span>  <span class="c"># REGISTRATION</span>
+</span><span class="line"><span class="c">#    &quot;mni_normalized_anatomical&quot;: &quot;reg/fnirt_highres2standard.nii.gz&quot;,      # NOT NEEDED </span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">func_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line"><span class="c">#    &quot;preprocessed&quot;: &quot;rest_res.nii.gz&quot;,             # NOT NEEDED</span>
+</span><span class="line"><span class="c">#    &quot;mean_functional&quot;: &quot;rest_pp_mean.nii.gz&quot;,      # VMHC?</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mask.nii.gz&quot;</span><span class="p">,</span> <span class="c"># YES </span>
+</span><span class="line">    <span class="s">&quot;functional_nuisance_residuals&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_nofilt_sm0.nii.gz&quot;</span><span class="p">,</span>  <span class="c"># YES (although not really used)</span>
+</span><span class="line">    <span class="s">&quot;functional_freq_filtered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">],</span>    <span class="c"># YES</span>
+</span><span class="line">    <span class="s">&quot;functional_mni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">],</span>      <span class="c"># YES</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask_to_standard&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>                                                                                         <span class="c"># Yes</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">reg_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;functional_to_anat_linear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/example_func2highres.mat&quot;</span> <span class="c"># REGISTRATION </span>
+</span><span class="line"><span class="c">#    &quot;functional_to_mni_linear_xfm&quot;: &quot;functional_to_mni_linear_xfm.mat&quot;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-17T19:24:00-05:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/13/week-50-friday/" title="Previous Post: Week 50 - Friday">&laquo; Week 50 - Friday</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 138.1818181818182%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(11)</a> <a href='/blog/categories/cpac' style='font-size: 143.63636363636363%'>cpac(8)</a> <a href='/blog/categories/cwas' style='font-size: 154.54545454545456%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.9090909090909%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.45454545454545%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.45454545454545%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 116.36363636363636%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 132.72727272727272%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.45454545454545%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.45454545454545%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.45454545454545%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.45454545454545%'>writedown(1)</a> </span>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:czarrar">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "czarrar"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
+<!--
+    Calendar aside/plugin for octopress blogging framework.
+    Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<style>
+	.highlighted-calendar-day
+	{
+		color : #CCC;
+		font-weight : bold;
+	}
+	
+	.calendar-header-day{
+		font-weight : bold;
+		color : #AAA;
+		font-size : 14px;
+	}
+	
+	.highlighted-calendar-day a
+	{
+		
+	}
+	
+	.prev-link
+	{
+		float:left;
+	}
+	
+	.next-link
+	{
+		float: right;
+	}
+	.calendar-day
+	{
+		color : #888;
+		font-weight : 12px;
+	}
+	
+	.calendar-table
+	{
+		width : 100%;
+		
+	}
+	
+	.calendar-table td
+	{
+		border-right : dotted 1px lightgrey;
+		text-align : center;
+	}
+	
+	.calendar-table td:last-child
+	{
+		border-right : none;
+	}
+	
+	.calendar-table th
+	{
+		background-color : lightgrey;
+		text-align : center;
+	}
+	.prevCalendarLink img
+	{	
+		
+		width : 20px;
+		height : 20px;
+		border: 0px;
+		float: left;
+		
+	}
+	
+	.nextCalendarLink img
+	{
+		
+		width : 20px;
+		height: 20px;
+		border: 0px;
+		float: right;
+		
+	}
+</style>
+<script type="text/javascript" src="/javascripts/calendar.js"></script>
+<section id="calendarDiv">
+	<h1>Calendar</h1>
+	<span style="display:block" id="calendarSpan"></span>
+	<div>
+		<a href="#" class="previousMonth show"/><a href="#" class="nextMonth hide"/>
+	</div>
+</section>
+<script type="text/javascript">
+  
+monthCalendar = function(id,year,month)
+{
+  var highlightArray = new Array();
+  var hightlightLinks = new Array();
+  
+  highlightArray.push('12/17/2013');
+  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
+  
+  highlightArray.push('12/13/2013');
+  hightlightLinks.push('/blog/2013/12/13/week-50-friday/');
+  
+  highlightArray.push('12/10/2013');
+  hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
+  
+  highlightArray.push('12/09/2013');
+  hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
+  
+  highlightArray.push('12/07/2013');
+  hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
+  		
+  var cal = new Calendar(month,year,highlightArray,hightlightLinks);
+  cal.generateHTML(id);
+  var element = document.getElementById(id);
+  element.innerHTML = cal.getHTML();
+}
+	
+loadCalendar = function(){
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  monthCalendar('calendarDiv',year,month);
+}
+	
+	if(Array.prototype.indexOf == undefined)
+	{
+		 Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+			"use strict";
+			if (this == null) {
+				throw new TypeError();
+			}
+			var t = Object(this);
+			var len = t.length >>> 0;
+			if (len === 0) {
+				return -1;
+			}
+			var n = 0;
+			if (arguments.length > 0) {
+				n = Number(arguments[1]);
+				if (n != n) { // shortcut for verifying if it's NaN
+					n = 0;
+				} else if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+			if (n >= len) {
+				return -1;
+			}
+			var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+			for (; k < len; k++) {
+				if (k in t && t[k] === searchElement) {
+					return k;
+				}
+			}
+			return -1;
+		}
+	}
+$(document).ready(function(){
+  loadCalendar();
+});
+</script>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Zarrar Shehzad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

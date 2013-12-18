@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Random Ideas Coalescing Into a Star - Zarrar's Journaling</title>
+  <title>Category: work - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Random Ideas Coalescing Into a Star Dec 4th, 2013 Stuff in my mind So in my version of computing a voxelwise connectivity map, I pick an ROI then &hellip;">
+  <meta name="description" content="Category: work">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/projects/ideas/">
+  <link rel="canonical" href="http://czarrar.github.ioblog/categories/work/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -74,111 +74,31 @@
 <article role="article">
   
   <header>
-    <h1 class="entry-title">Random Ideas Coalescing Into a Star</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-04T20:11:00-05:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time></p>
+    <h1 class="entry-title">Category: Work</h1>
+    
   </header>
   
-  <h2 id="stuff-in-my-mind">Stuff in my mind</h2>
-
-<p>So in my version of computing a voxelwise connectivity map, I pick an ROI then compute the connectivity with the rest of the brain. In order to get a good baseline, I apply a wavelet permutation of the time-series and then redo the connectivity map. I apply this procedure say 500 times and get 500 permutation connectivities at each voxel. This way, I can determine the p-value. I might want to compare this approach with the simpler approach of thresholding the connectivity map based on an r value with a p-value related to something sensible like 0.05, 0.01, or 0.001. If there are any negative connections, I’d prefer to threshold those out.</p>
-
-<p>Ok so the result of the above step is a thresholded positive connectivity map. I want to then visualize this map across all the participants, and then measure the variation across participants. So what kinds of things change:</p>
-
-<ul>
-  <li>clusters</li>
-  <li>are all the clusters within known group-level or network-level connectivity?</li>
-  <li>are there some clusters more prominent and consistently prominent in certain subjects?</li>
-  <li>when a connection is missing in a subject, how does it manifest?</li>
-  <li>we can see variation in the amplitude of the connections. there can be a complete here and not here effect. there can be spatial differences in the location.</li>
-</ul>
-
-<h2 id="visibility-graph-thoughts">Visibility Graph Thoughts</h2>
-
-<p>Interested in this approach. What does applying this to the time-series tell us about the time-series?</p>
-
-<h2 id="power-analysis">Power Analysis</h2>
-
-<p>Some thoughts about doing various types of analyses here with the aim. For instance, one approach would be to get clusters of frequencies based on the spatial maps. Other thing that could be done is that I could bandpass a small window and then compute the connectivity at that window (would need to figure out </p>
-
-<p>Information is present at different frequency bands. These might reflect different highways of information processing, potentially occurring in parallel. One question is how the total correlation between two items is influenced by the partial bandwidth correlation.</p>
-
-<p>One thing is that if I’m clustering each frequency across the entire brain with other frequencies, it’s possible that some voxels will be related across a window of frequencies but other’s won’t. So fucking suddenly, I have this massively complex problem.</p>
-
-<p>Going back, what does this tell us about the brain or something interesting.</p>
-
-<ol>
-  <li>A clinical group could show abnormalities in the power spectrum. If a region is having some problems in it’s functioning then it’s time-series might be a bit screwy and this would reflect in the power-spectrum.</li>
-  <li>Certain brain regions might have sensitivity for a particular power-spectrum (e.g., frontal polar cortex for lower frequencies).</li>
-</ol>
-
-<p>Get the cluster for each window. Then look at the difference between groups based on that window either via multivariate or a combination of univariate (e.g., number of significant t-tests in that window). This done at each voxel and the results could be plotted voxelwise.</p>
-
-<h2 id="cwas-using-glm">CWAS using GLM</h2>
-
-<p>Get the GLM map at each voxel looking at brain-behavior relationship. For one voxel, we can then get a summary measure such as </p>
-
-<ul>
-  <li>the sum/mean of the t-values</li>
-  <li>the number of significant t-values (corrected…likely via clusters)</li>
-  <li>the number of significant clusters?</li>
-  <li>some summary of the cluster sizes? for instance, number of sig voxels divided by the number of clusters.</li>
-</ul>
-
-<p>Regions found with the above approach would now literally be useful for subsequent seed-based analysis. And I think really the best way to determine the significance is via permutation test unless we can come up with a principled way to summarize. Also permutation is fairly easy to implement albeit time consuming. The other idea is that one could do a parcellation-based approach initially as sort-of a survey. The idea for all of this is that you could then use these regions to select subsequent regions of interest.</p>
-
-<p>Ask phil if there is some literature about combining t-values and having something about combining their results. Oh I guess I could also do some kind-of binomial test? Or for now also could do a permutation test using one of the parcellations? I forgot, how long does the permutation of the GLM maps take? Some of the timing can be shortened by having the hat matrix computed in advance.</p>
-
-<h2 id="other-thought-about-going-by-each-time-point">Other thought about going by each time-point</h2>
-
-<p>If this is something that works then I should be able to see a different in clustering from </p>
-
-<p>In this block design, I should be able to know what the spatial pattern might look like and which voxels might cluster together. I guess, the one thing to note is that different voxels might have different relationships with each other. I have too much on this.
-   —-
-–|    |—</p>
-
-
-  
-    <footer>
-      <p class="meta">
-        
-        
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2013</h2>
+
+<article>
+  
+<h1><a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a></h1>
+<time datetime="2013-12-13T12:01:00-05:00" pubdate><span class='month'>Dec</span> <span class='day'>13</span> <span class='year'>2013</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/work/'>work</a></span>
+</footer>
 
 
-<time datetime="2013-12-04T20:11:00-05:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
-        
-      </p>
-      
-        <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/projects/ideas/index.html" data-via="" data-counturl="http://czarrar.github.io/projects/ideas/index.html" >Tweet</a>
-  
-  
-  
+</article>
+
 </div>
 
-      
-    </footer>
   
 </article>
 
@@ -187,26 +107,7 @@
 <aside class="sidebar">
   
     
-  <section>
-  <h1>Contents</h1>
-  <ol class="nested" style="margin-left: 1.3em;">
-<li class="nested" style="list-style:inherit;">
-	<a href="#stuff-in-my-mind">Stuff in my mind</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#visibility-graph-thoughts">Visibility Graph Thoughts</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#power-analysis">Power Analysis</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#cwas-using-glm">CWAS using GLM</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#other-thought-about-going-by-each-time-point">Other thought about going by each time-point</a>
-
-</li></ol>
-  </section>
+  
 
 <section>
   <h1>Tag Cloud</h1>

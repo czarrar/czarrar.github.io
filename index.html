@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Plan/Summary [x] Email Maarten with the results [x] Add running Xinian’s filtering script to my Basecamp TODO [x] Integrate updated CWAS code into &hellip;">
+  <meta name="description" content="I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,456 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-17T19:24:00-05:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS pipeline:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anat_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;anatomical_brain&quot;</span><span class="p">:</span> <span class="s">&quot;mprage_sanlm.nii.gz&quot;</span><span class="p">,</span>     <span class="c"># check</span>
+</span><span class="line">    <span class="s">&quot;anatomical_reorient&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres_rpi.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;anatomical_to_mni_nonlinear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres2standard_warp.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;mni_normalized_anatomical&quot;</span><span class="p">:</span> <span class="s">&quot;reg/fnirt_highres2standard.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">func_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;preprocessed&quot;</span><span class="p">:</span> <span class="s">&quot;rest_res.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;mean_functional&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mean.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mask.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_nuisance_residuals&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_nofilt_sm0.nii.gz&quot;</span><span class="p">,</span>
+</span><span class="line">    <span class="s">&quot;functional_freq_filtered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">],</span>
+</span><span class="line">    <span class="s">&quot;functional_mni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">],</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask_to_standard&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span> <span class="c"># I would need to make this myself</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">reg_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;functional_to_anat_linear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/example_func2highres.mat&quot;</span>
+</span><span class="line"><span class="c">#    &quot;functional_to_mni_linear_xfm&quot;: &quot;functional_to_mni_linear_xfm.mat&quot;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now I go through each of the files to see if they are really needed. If not, then I will want to make sure that it is also processed as optional in my ghetto quick pack code.</p>
+
+<h2 id="anatomicals">Anatomicals</h2>
+
+<h3 id="anatomicalbrain">anatomical_brain</h3>
+
+<p><strong>Yes</strong> it is needed for <strong>all the steps</strong> but <strong>only with ANTS</strong>. It is used by the applywarp sections of code and I think particularly for transforming FSL’s registration matrix to ANTs format (again i think).</p>
+
+<h3 id="anatomicalreorient">anatomical_reorient</h3>
+
+<p>Only <strong>VMHC?</strong>.</p>
+
+<h3 id="anatomicaltomninonlinearxfm">anatomical_to_mni_nonlinear_xfm</h3>
+
+<p><strong>Yes</strong> for <strong>all the steps</strong> but <strong>only for applying the registration</strong>.</p>
+
+<h3 id="mninormalizedanatomical">mni_normalized_anatomical</h3>
+
+<p><strong>No</strong>. This is only used in QC and so this can be removed from the set of inputs that I generate.</p>
+
+<h2 id="functional">Functional</h2>
+
+<h3 id="preprocessed">preprocessed</h3>
+
+<p><strong>No</strong>. This is used in scrubbing and QC so it too can be removed from the set of inputs that I generate.</p>
+
+<h3 id="meanfunctional">mean_functional</h3>
+
+<p><strong>No but in VMHC</strong> it is used. Not sure how long that will last.</p>
+
+<h3 id="functionalbrainmask">functional_brain_mask</h3>
+
+<p><strong>Yes</strong> it is used in <strong>many (all?) steps</strong>.</p>
+
+<h3 id="functionalnuisanceresiduals">functional_nuisance_residuals</h3>
+
+<p><strong>Yes</strong> for <strong>ALFF and fALFF</strong>. Note that this uses the set_leaf_properties and get_leaf_properties function to dynamically get so it won’t be so obvious. This option can also be used for the other derivatives if you don’t want them to be filtered.</p>
+
+<h3 id="functionalfreqfiltered">functional_freq_filtered</h3>
+
+<p><strong>Yes</strong> for <strong>everything where want filtering</strong>.</p>
+
+<h3 id="functionalmni">functional_mni</h3>
+
+<p><strong>Yes</strong> for <strong>Spatial Regression, ROI time series, Voxel time series, Temporal Regression for SCA, Network Centrality</strong></p>
+
+<h3 id="functionalbrainmasktostandard">functional_brain_mask_to_standard</h3>
+
+<p><strong>Yes</strong> but <strong>only when apply registration</strong>. Although should also need it for the above ones…</p>
+
+<h2 id="final">Final</h2>
+
+<p>Ok so the final list, here again. Note that I didn’t discuss the reg one.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anat_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;anatomical_brain&quot;</span><span class="p">:</span> <span class="s">&quot;mprage_sanlm.nii.gz&quot;</span><span class="p">,</span>          <span class="c"># REGISTRATION</span>
+</span><span class="line">    <span class="s">&quot;anatomical_reorient&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres_rpi.nii.gz&quot;</span><span class="p">,</span>    <span class="c"># VMHC?</span>
+</span><span class="line">    <span class="s">&quot;anatomical_to_mni_nonlinear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/highres2standard_warp.nii.gz&quot;</span><span class="p">,</span>  <span class="c"># REGISTRATION</span>
+</span><span class="line"><span class="c">#    &quot;mni_normalized_anatomical&quot;: &quot;reg/fnirt_highres2standard.nii.gz&quot;,      # NOT NEEDED </span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">func_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line"><span class="c">#    &quot;preprocessed&quot;: &quot;rest_res.nii.gz&quot;,             # NOT NEEDED</span>
+</span><span class="line"><span class="c">#    &quot;mean_functional&quot;: &quot;rest_pp_mean.nii.gz&quot;,      # VMHC?</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_mask.nii.gz&quot;</span><span class="p">,</span> <span class="c"># YES </span>
+</span><span class="line">    <span class="s">&quot;functional_nuisance_residuals&quot;</span><span class="p">:</span> <span class="s">&quot;rest_pp_nofilt_sm0.nii.gz&quot;</span><span class="p">,</span>  <span class="c"># YES (although not really used)</span>
+</span><span class="line">    <span class="s">&quot;functional_freq_filtered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest_pp_</span><span class="si">%(pipeline)s</span><span class="s">_sm0.nii.gz&quot;</span><span class="p">],</span>    <span class="c"># YES</span>
+</span><span class="line">    <span class="s">&quot;functional_mni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%(strategy)s</span><span class="s">/rest.</span><span class="si">%(pipeline)s</span><span class="s">.sm0.mni152.nii.gz&quot;</span><span class="p">],</span>      <span class="c"># YES</span>
+</span><span class="line">    <span class="s">&quot;functional_brain_mask_to_standard&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>                                                                                         <span class="c"># Yes</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">reg_suffixes</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&quot;functional_to_anat_linear_xfm&quot;</span><span class="p">:</span> <span class="s">&quot;reg/example_func2highres.mat&quot;</span> <span class="c"># REGISTRATION </span>
+</span><span class="line"><span class="c">#    &quot;functional_to_mni_linear_xfm&quot;: &quot;functional_to_mni_linear_xfm.mat&quot;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-13T12:01:00-05:00" pubdate data-updated="true">Dec 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There’s been a bit of a lull in writing these entries. Hoping to get back on the train.</p>
+
+<p><strong>What are the dominant issues for today?</strong></p>
+
+<ul>
+  <li>
+    <p>I found that yesterday that the fast eigencentrality code doesn’t work when the inputs are normalized data (mean=0, sd=1). I am not totally sure what’s going on but I can try to use the matlab code directly to see if my python port is missing something. I might first try with random data and then with some imaging data if possible. The imaging data could be used to directly compare with the python code. I might keep these test code blocks as gists.</p>
+  </li>
+  <li>
+    <p>I should make a table of all the processing steps that are needed for the ABIDE dataset. I want to run some of these things in the background as I can so as not to pile up.</p>
+  </li>
+</ul>
+
+<h2 id="testing-fast-eigenvector-code">Testing Fast Eigenvector Code</h2>
+
+<p>When I ran both the python and the fast code without the normalization of the time-series. I get the same results in both datasets. However, with normalization of the timeseries, I get different results. One suggestion from Steve was that there might be a difference in some normalization.</p>
+
+<p>Details of my simplified comparison can be found on https://gist.github.com/czarrar/7950474 and at the bottom of the post.</p>
+
+<h2 id="abide">ABIDE</h2>
+
+<p>Let’s first make a table and workflow explaining everything. I’ll add it here first and then move it to another spot later.</p>
+
+<p>I was able to start the processing for degree centrality with our dataset. I should be able to…</p>
+
+<h2 id="gist">Gist</h2>
+
+<div><script src="https://gist.github.com/7950474.js"></script>
+<noscript><pre><code>import numpy as np
+from CPAC.cwas.subdist import norm_cols
+from fast_ecm import fast_eigenvector_centrality # this is from the other gist; can ignore this and paste in the other function
+
+print 'Compare with non-normalized matrices'
+
+m  = np.random.random((200,1000))
+cm = m.T.dot(m)
+
+# Let's first call a basic approach
+# This actually doesn't work, not sure what I'm setting wrong
+from scipy import linalg as LA
+w01,v01 = LA.eigh(cm, eigvals=(0,0))
+e01     = cm.dot(np.abs(v01))/w01[0]
+
+# Let's call a second basic approach (used currently)
+from scipy.sparse import linalg as sLA
+w02,v02 = sLA.eigsh(cm, k=1, which='LM', maxiter=1000)
+e02     = cm.dot(np.abs(v02))/w02[0]
+
+# Finally let's call the fast eigenvector (power approach)
+v03     = fast_eigenvector_centrality(m, verbose=False)
+
+# How different are the second and third ones?
+print 'mean absolute diff: ', np.abs(e02-v03).mean()
+print 'correlation: ', np.corrcoef(e02.T, v03.T)[0,1]
+
+
+
+print 'Compare with normalized matrices'
+
+n  = norm_cols(m)
+cn = n.T.dot(n)
+
+# Let's first call a basic approach
+from scipy import linalg as LA
+w11,v11 = LA.eigh(cn, eigvals=(0,0))
+e11     = cn.dot(np.abs(v11))/w11[0]
+
+# Let's call a second basic approach (used currently)
+from scipy.sparse import linalg as sLA
+w12,v12 = sLA.eigsh(cn, k=1, which='LM', maxiter=1000)
+e12     = cn.dot(np.abs(v12))/w12[0]
+
+# Finally let's call the fast eigenvector (power approach)
+v13     = fast_eigenvector_centrality(n, verbose=False)
+
+# How different are the second and third ones?
+print 'mean absolute diff: ', np.abs(e12-v13).mean()
+print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
+</code></pre></noscript></div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-10T11:46:00-05:00" pubdate data-updated="true">Dec 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There are several steps that appear to lend themselves to a problem with installing all the dependencies and stuff for connectir. First let me go through trying to install R with openblas, which leads to problems when using any of the parallel processing in R. </p>
+
+<h2 id="r-with-openblas">R with OpenBlas</h2>
+
+<p>The below links are relevant in detailing the issue/solutions between openblas and parallel processing libraries. The issue is “On Linux, OpenBLAS sets the processor affinity by default. This may cause the conflict with R parallel. You can build the library with NO_AFFINITY=1.”</p>
+
+<ul>
+  <li>http://www.stat.cmu.edu/~nmv/2013/07/09/for-faster-r-use-openblas-instead-better-than-atlas-trivial-to-switch-to-on-ubuntu/#comment-128</li>
+  <li>https://stat.ethz.ch/pipermail/r-sig-hpc/2012-April/001348.html</li>
+  <li>https://github.com/xianyi/OpenBLAS/wiki/faq#wiki-no_affinity</li>
+</ul>
+
+<p>Note that you can also set this on runtime with <code>export OPENBLAS_MAIN_FREE=1</code>.</p>
+
+<p>Unfortunately on each loop of foreach I get the following error.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line"> <span class="o">***</span> caught segfault <span class="o">***</span>
+</span><span class="line">address <span class="mh">0x7f717d9b99d0</span><span class="p">,</span> cause <span class="s">&#39;memory not mapped&#39;</span>
+</span><span class="line">
+</span><span class="line">Traceback<span class="o">:</span>
+</span><span class="line"> <span class="m">1</span><span class="o">:</span> mcexit<span class="p">(</span><span class="m">0L</span><span class="p">)</span>
+</span><span class="line"> <span class="m">2</span><span class="o">:</span> FUN<span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">[[</span><span class="m">1L</span><span class="p">]],</span> <span class="kc">...</span><span class="p">)</span>
+</span><span class="line"> <span class="m">3</span><span class="o">:</span> lapply<span class="p">(</span>seq_len<span class="p">(</span>cores<span class="p">),</span> inner.do<span class="p">)</span>
+</span><span class="line"> <span class="m">4</span><span class="o">:</span> mclapply<span class="p">(</span>argsList<span class="p">,</span> FUN<span class="p">,</span> mc.preschedule <span class="o">=</span> preschedule<span class="p">,</span> mc.set.seed <span class="o">=</span> set.seed<span class="p">,</span>     mc.silent <span class="o">=</span> silent<span class="p">,</span> mc.cores <span class="o">=</span> cores<span class="p">)</span>
+</span><span class="line"> <span class="m">5</span><span class="o">:</span> e<span class="o">$</span>fun<span class="p">(</span>obj<span class="p">,</span> substitute<span class="p">(</span>ex<span class="p">),</span> parent.frame<span class="p">(),</span> e<span class="o">$</span>data<span class="p">)</span>
+</span><span class="line"> <span class="m">6</span><span class="o">:</span> foreach<span class="p">(</span>i <span class="o">=</span> <span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">)</span> <span class="o">%dopar%</span> rnorm<span class="p">(</span><span class="m">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I will need to come back to this error in this future for fixing.</p>
+
+<h2 id="test-smoothing">Test Smoothing</h2>
+
+<p>I created the following setup to test 2 subjects with the new smoothing of standard functionals.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">cd <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>CPAC_Regression_Test
+</span><span class="line">mkdir smooth_tests
+</span><span class="line"><span class="c1"># cwas branch of CPAC</span>
+</span><span class="line">cd smooth_tests
+</span><span class="line">git clone https<span class="o">://</span>github.com<span class="o">/</span>FCP<span class="o">-</span>INDI<span class="o">/</span>C<span class="o">-</span>PAC.git
+</span><span class="line">cd C<span class="o">-</span>PAC
+</span><span class="line">git checkout cwas
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I also copied over the following config files and edited them:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">cd</span> /home2/data/Projects/CPAC_Regression_Test
+</span><span class="line"><span class="c"># only use 2 subjects</span>
+</span><span class="line">cp 2013-12-05_v-0-3-3/run/CPAC_subject_list.yml smooth_tests/
+</span><span class="line"><span class="c"># remove any derivatives from being run</span>
+</span><span class="line">cp 2013-12-05_v-0-3-3/run/pipeline_config_regtest.yml smooth_tests/
+</span><span class="line"><span class="c"># </span>
+</span><span class="line">cp 2013-12-05_v-0-3-3/run/run-CPAC_v-0-3-3.py smooth_tests/
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Errors:
+- invalid connection
+- unknown func_preproc_0</p>
+
+<p>I fixed the above but then got some error with just running the pipeline.</p>
+
+<p>spent 3 hrs.</p>
+
+<h2 id="maarten-brain-sizes">Maarten Brain Sizes</h2>
+
+<p>Maarten received the results for NKI-RS and NK-RS enhanced fine but was missing one file (missing the ac-pc-fov.txt file for all subjects). In addition, he wanted to have results for the COBRA subjects. I got the path for this from Dan and should be easy to run the script on these participants.</p>
+
+<h3 id="fixing-missing-file">Fixing missing file</h3>
+
+<p>The file in question is <code>ac-pc-fov.txt</code> and is returned by the <code>DOfovC.sh</code> script. Below is the command that I ran for testing.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>anat_test.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>test <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It seems that some loop was being skipped and other files weren’t being generated, which led to the error. I did some other funnies to investigate and fix the issue such as convert the <code>DOfovC.sh</code> script to be bash.</p>
+
+<h3 id="re-running">Re-Running</h3>
+
+<p>I need to re-run two studies and run one for the first time. Run the following on gelert.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line"><span class="c1"># Rockland Pilot</span>
+</span><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>anat_demographics.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">10</span>_rockland_pilot<span class="o">/</span>results <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span><span class="line"><span class="c1"># Rockland Enhanced</span>
+</span><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">20</span>_rockland_enhanced<span class="o">/</span>anat_demographics.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">20</span>_rockland_enhanced<span class="o">/</span>results <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span><span class="line"><span class="c1"># COBRA</span>
+</span><span class="line">.<span class="o">/</span>get_brain_size.py <span class="o">-</span>inputfile <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">30</span>_cobra<span class="o">/</span>anat_demographics.txt <span class="o">-</span>tempdir <span class="o">/</span>home2<span class="o">/</span>data<span class="o">/</span>Projects<span class="o">/</span>brain_sizes<span class="o">/</span><span class="m">30</span>_cobra<span class="o">/</span>results <span class="o">-</span>scriptdir <span class="o">$</span><span class="p">(</span>pwd<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -691,177 +1141,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/01/cwas-simulations/">CWAS Simulations</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-01T21:01:00-05:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I should check the data that I am plotted. Right now, I am examining the mean -log10p value of the MDMR results but I think I might want to look at the percent of significant results with each effect size. Should double check.</p>
-
-<p>The code for the simulation analysis is located in <code>/home/data/Projects/CWAS/share/simulations</code>. I have added multiprocessing functionality to speed up the ability to go through the different parameters and iterations.</p>
-
-<p>I have started running one iteration of things including both variables of interest. Holy crap, it finished in like 30mins, super quick. I saved the values in an rda file within the same folder. The contents of that rda are as follows:</p>
-
-<ul>
-  <li>logp.cov1</li>
-  <li>fstat.cov1</li>
-  <li>logp.cov0</li>
-  <li>fstat.cov0</li>
-</ul>
-
-<p>The <code>cov1</code> term means that the covariate was modeled whereas <code>cov0</code> means the covariate wasn’t modeled. For <code>cov1</code> matrices, the dimensions were 2 terms x 11 group difference x 11 correlation. For <code>cov0</code> matrices, the dimensions were 11 group difference x 11 correlation (only for the group difference term). The correlation was between the age covariate and the response.</p>
-
-<h2 id="plot">Plot</h2>
-
-<p>I generated plots of the results on my computer using the <code>.../pro42/scripts2add/simulations/20_plot.R</code> script. Since I used Rnotebook, I was able to publish those results online at http://rpubs.com/czarrar/cwas_simulations.</p>
-
-<h2 id="status">Status</h2>
-
-<p>So I had to rerun the analyses since I should have been calculating power as percent of significant iterations (p &lt; 05). I upped the number of iterations to 20, hopefully this is enough.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/30/week-49-sunday/">Week 49 - Sunday</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-30T21:47:00-05:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is a bit of a cheat since I started this on Saturday (week 48).</p>
-
-<h2 id="todo">TODO</h2>
-
-<p>I’m trying to use the workflow for this.</p>
-
-<h2 id="comparing-distances">Comparing Distances</h2>
-
-<p>I was able to finish making the figure as well as the text for the paper. I added all this information to the response letter.</p>
-
-<h2 id="simulations">Simulations</h2>
-
-<p>I ran this and need to double check. However, I do think that something went wrong here. I need to double check the code and spot check the effect sizes given. </p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/30/plotting-images-in-r/">Plotting Images in R</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-30T19:37:00-05:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Plotting images or 2D graphs are fairly easy in R. You can use the <code>image</code> function or for a nice legend, you can also use the <code>image.plot</code> function in the <code>fields</code> package. The issue I encountered for the <code>image.plot</code> function is when I want the labels from my x and y axis to be different due to a log transformation. This was not possible.</p>
-
-<p>To get around this issue, I adapted the <code>image.plot</code> function as <code>image.zplot</code> and added the following lines that are run right after the image is generated.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line"><span class="kr">if</span> <span class="p">(</span><span class="o">!</span>is.null<span class="p">(</span>axis.x<span class="p">))</span> <span class="p">{</span>
-</span><span class="line">  axis.x<span class="o">$</span>side <span class="o">&lt;-</span> <span class="m">1</span>
-</span><span class="line">  do.call<span class="p">(</span><span class="s">&quot;axis&quot;</span><span class="p">,</span> axis.x<span class="p">)</span>
-</span><span class="line"><span class="p">}</span>
-</span><span class="line"><span class="kr">if</span> <span class="p">(</span><span class="o">!</span>is.null<span class="p">(</span>axis.y<span class="p">))</span> <span class="p">{</span>
-</span><span class="line">  axis.y<span class="o">$</span>side <span class="o">&lt;-</span> <span class="m">2</span>
-</span><span class="line">  do.call<span class="p">(</span><span class="s">&quot;axis&quot;</span><span class="p">,</span> axis.y<span class="p">)</span>
-</span><span class="line"><span class="p">}</span>
-</span><span class="line">box<span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>This also adds the <code>axis.x</code> and <code>axis.y</code> options, which are options with list as the argument. The list entries are the key/value pairs when calling the particular axis function. This means I can use my custom log transformed x and y axis but provide the original numbers.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -877,11 +1156,23 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 142.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 154.0%'>cmi(9)</a> <a href='/blog/categories/cpac' style='font-size: 142.0%'>cpac(7)</a> <a href='/blog/categories/cwas' style='font-size: 160.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 112.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 106.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 106.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 118.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 136.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 106.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 106.0%'>simulations(1)</a> <a href='/blog/categories/writedown' style='font-size: 106.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 138.1818181818182%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(11)</a> <a href='/blog/categories/cpac' style='font-size: 143.63636363636363%'>cpac(8)</a> <a href='/blog/categories/cwas' style='font-size: 154.54545454545456%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.9090909090909%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.45454545454545%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.45454545454545%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 116.36363636363636%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 132.72727272727272%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.45454545454545%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.45454545454545%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.45454545454545%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.45454545454545%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
@@ -889,18 +1180,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/05/week-49-thursday/">Week 49 - Thursday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a>
       </li>
     
   </ul>
@@ -1061,20 +1340,20 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/17/2013');
+  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
+  
+  highlightArray.push('12/13/2013');
+  hightlightLinks.push('/blog/2013/12/13/week-50-friday/');
+  
+  highlightArray.push('12/10/2013');
+  hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
+  
   highlightArray.push('12/09/2013');
   hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
   
   highlightArray.push('12/07/2013');
   hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
-  
-  highlightArray.push('12/06/2013');
-  hightlightLinks.push('/blog/2013/12/06/week-49-friday/');
-  
-  highlightArray.push('12/05/2013');
-  hightlightLinks.push('/blog/2013/12/05/week-49-thursday/');
-  
-  highlightArray.push('12/04/2013');
-  hightlightLinks.push('/blog/2013/12/04/week-49-wednesday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

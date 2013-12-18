@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-09T20:11:39-05:00</updated>
+  <updated>2013-12-17T20:27:16-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,207 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CPAC Derivative Inputs]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs/"/>
+    <updated>2013-12-17T19:24:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs</id>
+    <content type="html"><![CDATA[<p>I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS pipeline:</p>
+
+<p>``` python
+anat_suffixes = {
+    “anatomical_brain”: “mprage_sanlm.nii.gz”,     # check
+    “anatomical_reorient”: “reg/highres_rpi.nii.gz”, 
+    “anatomical_to_mni_nonlinear_xfm”: “reg/highres2standard_warp.nii.gz”, 
+    “mni_normalized_anatomical”: “reg/fnirt_highres2standard.nii.gz”, 
+}</p>
+
+<p>func_suffixes = {
+    “preprocessed”: “rest_res.nii.gz”, 
+    “mean_functional”: “rest_pp_mean.nii.gz”, 
+    “functional_brain_mask”: “rest_pp_mask.nii.gz”, 
+    “functional_nuisance_residuals”: “rest_pp_nofilt_sm0.nii.gz”,<br />
+    “functional_freq_filtered”: [”%(strategy)srest_pp<em>%(pipeline)s_sm0.nii.gz”, “%(strategy)s/rest_pp</em>%(pipeline)s_sm0.nii.gz”],
+    “functional_mni”: [”%(strategy)srest.%(pipeline)s.sm0.mni152.nii.gz”, “%(strategy)s/rest.%(pipeline)s.sm0.mni152.nii.gz”],
+    “functional_brain_mask_to_standard”: “” # I would need to make this myself
+}</p>
+
+<p>reg_suffixes = {
+    “functional_to_anat_linear_xfm”: “reg/example_func2highres.mat” 
+#    “functional_to_mni_linear_xfm”: “functional_to_mni_linear_xfm.mat”
+} </p>
+
+<p>```</p>
+
+<p>Now I go through each of the files to see if they are really needed. If not, then I will want to make sure that it is also processed as optional in my ghetto quick pack code.</p>
+
+<h2 id="anatomicals">Anatomicals</h2>
+
+<h3 id="anatomicalbrain">anatomical_brain</h3>
+
+<p><strong>Yes</strong> it is needed for <strong>all the steps</strong> but <strong>only with ANTS</strong>. It is used by the applywarp sections of code and I think particularly for transforming FSL’s registration matrix to ANTs format (again i think).</p>
+
+<h3 id="anatomicalreorient">anatomical_reorient</h3>
+
+<p>Only <strong>VMHC?</strong>.</p>
+
+<h3 id="anatomicaltomninonlinearxfm">anatomical_to_mni_nonlinear_xfm</h3>
+
+<p><strong>Yes</strong> for <strong>all the steps</strong> but <strong>only for applying the registration</strong>.</p>
+
+<h3 id="mninormalizedanatomical">mni_normalized_anatomical</h3>
+
+<p><strong>No</strong>. This is only used in QC and so this can be removed from the set of inputs that I generate.</p>
+
+<h2 id="functional">Functional</h2>
+
+<h3 id="preprocessed">preprocessed</h3>
+
+<p><strong>No</strong>. This is used in scrubbing and QC so it too can be removed from the set of inputs that I generate.</p>
+
+<h3 id="meanfunctional">mean_functional</h3>
+
+<p><strong>No but in VMHC</strong> it is used. Not sure how long that will last.</p>
+
+<h3 id="functionalbrainmask">functional_brain_mask</h3>
+
+<p><strong>Yes</strong> it is used in <strong>many (all?) steps</strong>.</p>
+
+<h3 id="functionalnuisanceresiduals">functional_nuisance_residuals</h3>
+
+<p><strong>Yes</strong> for <strong>ALFF and fALFF</strong>. Note that this uses the set_leaf_properties and get_leaf_properties function to dynamically get so it won’t be so obvious. This option can also be used for the other derivatives if you don’t want them to be filtered.</p>
+
+<h3 id="functionalfreqfiltered">functional_freq_filtered</h3>
+
+<p><strong>Yes</strong> for <strong>everything where want filtering</strong>.</p>
+
+<h3 id="functionalmni">functional_mni</h3>
+
+<p><strong>Yes</strong> for <strong>Spatial Regression, ROI time series, Voxel time series, Temporal Regression for SCA, Network Centrality</strong></p>
+
+<h3 id="functionalbrainmasktostandard">functional_brain_mask_to_standard</h3>
+
+<p><strong>Yes</strong> but <strong>only when apply registration</strong>. Although should also need it for the above ones…</p>
+
+<h2 id="final">Final</h2>
+
+<p>Ok so the final list, here again. Note that I didn’t discuss the reg one.</p>
+
+<p>``` python
+anat_suffixes = {
+    “anatomical_brain”: “mprage_sanlm.nii.gz”,          # REGISTRATION
+    “anatomical_reorient”: “reg/highres_rpi.nii.gz”,    # VMHC?
+    “anatomical_to_mni_nonlinear_xfm”: “reg/highres2standard_warp.nii.gz”,  # REGISTRATION
+#    “mni_normalized_anatomical”: “reg/fnirt_highres2standard.nii.gz”,      # NOT NEEDED 
+}</p>
+
+<p>func_suffixes = {
+#    “preprocessed”: “rest_res.nii.gz”,             # NOT NEEDED
+#    “mean_functional”: “rest_pp_mean.nii.gz”,      # VMHC?
+    “functional_brain_mask”: “rest_pp_mask.nii.gz”, # YES 
+    “functional_nuisance_residuals”: “rest_pp_nofilt_sm0.nii.gz”,  # YES (although not really used)
+    “functional_freq_filtered”: [”%(strategy)srest_pp<em>%(pipeline)s_sm0.nii.gz”, “%(strategy)s/rest_pp</em>%(pipeline)s_sm0.nii.gz”],    # YES
+    “functional_mni”: [”%(strategy)srest.%(pipeline)s.sm0.mni152.nii.gz”, “%(strategy)s/rest.%(pipeline)s.sm0.mni152.nii.gz”],      # YES
+    “functional_brain_mask_to_standard”: “”                                                                                         # Yes
+}</p>
+
+<p>reg_suffixes = {
+    “functional_to_anat_linear_xfm”: “reg/example_func2highres.mat” # REGISTRATION 
+#    “functional_to_mni_linear_xfm”: “functional_to_mni_linear_xfm.mat”
+} </p>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Week 50 - Friday]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/13/week-50-friday/"/>
+    <updated>2013-12-13T12:01:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/13/week-50-friday</id>
+    <content type="html"><![CDATA[<p>There’s been a bit of a lull in writing these entries. Hoping to get back on the train.</p>
+
+<p><strong>What are the dominant issues for today?</strong></p>
+
+<ul>
+  <li>
+    <p>I found that yesterday that the fast eigencentrality code doesn’t work when the inputs are normalized data (mean=0, sd=1). I am not totally sure what’s going on but I can try to use the matlab code directly to see if my python port is missing something. I might first try with random data and then with some imaging data if possible. The imaging data could be used to directly compare with the python code. I might keep these test code blocks as gists.</p>
+  </li>
+  <li>
+    <p>I should make a table of all the processing steps that are needed for the ABIDE dataset. I want to run some of these things in the background as I can so as not to pile up.</p>
+  </li>
+</ul>
+
+<h2 id="testing-fast-eigenvector-code">Testing Fast Eigenvector Code</h2>
+
+<p>When I ran both the python and the fast code without the normalization of the time-series. I get the same results in both datasets. However, with normalization of the timeseries, I get different results. One suggestion from Steve was that there might be a difference in some normalization.</p>
+
+<p>Details of my simplified comparison can be found on https://gist.github.com/czarrar/7950474 and at the bottom of the post.</p>
+
+<h2 id="abide">ABIDE</h2>
+
+<p>Let’s first make a table and workflow explaining everything. I’ll add it here first and then move it to another spot later.</p>
+
+<p>I was able to start the processing for degree centrality with our dataset. I should be able to…</p>
+
+<h2 id="gist">Gist</h2>
+
+<p><div><script src='https://gist.github.com/7950474.js'></script>
+<noscript><pre><code>import numpy as np
+from CPAC.cwas.subdist import norm_cols
+from fast_ecm import fast_eigenvector_centrality # this is from the other gist; can ignore this and paste in the other function
+
+print 'Compare with non-normalized matrices'
+
+m  = np.random.random((200,1000))
+cm = m.T.dot(m)
+
+# Let's first call a basic approach
+# This actually doesn't work, not sure what I'm setting wrong
+from scipy import linalg as LA
+w01,v01 = LA.eigh(cm, eigvals=(0,0))
+e01     = cm.dot(np.abs(v01))/w01[0]
+
+# Let's call a second basic approach (used currently)
+from scipy.sparse import linalg as sLA
+w02,v02 = sLA.eigsh(cm, k=1, which='LM', maxiter=1000)
+e02     = cm.dot(np.abs(v02))/w02[0]
+
+# Finally let's call the fast eigenvector (power approach)
+v03     = fast_eigenvector_centrality(m, verbose=False)
+
+# How different are the second and third ones?
+print 'mean absolute diff: ', np.abs(e02-v03).mean()
+print 'correlation: ', np.corrcoef(e02.T, v03.T)[0,1]
+
+
+
+print 'Compare with normalized matrices'
+
+n  = norm_cols(m)
+cn = n.T.dot(n)
+
+# Let's first call a basic approach
+from scipy import linalg as LA
+w11,v11 = LA.eigh(cn, eigvals=(0,0))
+e11     = cn.dot(np.abs(v11))/w11[0]
+
+# Let's call a second basic approach (used currently)
+from scipy.sparse import linalg as sLA
+w12,v12 = sLA.eigsh(cn, k=1, which='LM', maxiter=1000)
+e12     = cn.dot(np.abs(v12))/w12[0]
+
+# Finally let's call the fast eigenvector (power approach)
+v13     = fast_eigenvector_centrality(n, verbose=False)
+
+# How different are the second and third ones?
+print 'mean absolute diff: ', np.abs(e12-v13).mean()
+print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
+</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Week 50 - Monday]]></title>
@@ -163,163 +364,6 @@ write.table(df.txt, file=”rockland_pilot.txt”, row.names=F, col.names=F, quo
 <h2 id="abide-qc">ABIDE QC</h2>
 
 <p>Start at 10am till 11am.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Week 49 - Tuesday]]></title>
-    <link href="http://czarrar.github.io/blog/2013/12/03/week-49-tuesday/"/>
-    <updated>2013-12-03T11:30:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/12/03/week-49-tuesday</id>
-    <content type="html"><![CDATA[<p>testing draft</p>
-
-<h2 id="summarytodo">Summary/TODO</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>[x] Create quick pack for degree centrality</li>
-      <li>[x] Email Xinian about GSR data and having filtered/non-filtered</li>
-      <li>[x] Finish creating quick pack for LFCD</li>
-    </ul>
-  </li>
-  <li>CPAC
-    <ul>
-      <li>[] Run an initial test of the functional node</li>
-    </ul>
-  </li>
-  <li>Tag</li>
-</ul>
-
-<p>I also took the speaker (Matt) out to lunch with Zhen, and then showed him some of my slides about CWAS.</p>
-
-<h2 id="quick-pack-for-centrality">Quick Pack for Centrality</h2>
-
-<h3 id="cpac-preprocessed-data">CPAC Preprocessed Data</h3>
-
-<p>The scripts for this analysis are located in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/30_centrality</code>. I was able to first generate a subject list YAML file with <code>10_gen_quick_pack.py</code>. Below is a sample of what a file for one subject looks like:</p>
-
-<p><code>
-  functional_brain_mask: {filt_global: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
-    filt_noglobal: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
-    nofilt_global: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
-    nofilt_noglobal: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz}
-</code></p>
-
-<p>We can see that we have each filtering and global option as the input. This is a little bit of cheating since the different input keys are interpreted as different scans.</p>
-
-<p>We can then use these different inputs in one CPAC run with <code>20_run_gen_quick_pack.py</code>. This script is currently running and the output/working directories can be found in <code>/data/Projects/ABIDE_Initiative/Derivatives/CPAC/Cent</code>.</p>
-
-<h2 id="eigenvector-centrality">Eigenvector Centrality</h2>
-
-<p>I emailed out to the author of the fast implementation paper to ask for his C++ code. However, if the author does not respond, the paper is fairly descriptive and I imagine it would be possible to write our own code based on the methods description.</p>
-
-<h2 id="qc">QC</h2>
-
-<p>I created the new excel file and looked through one subject. Should confirm the following: should have columns for anat, func, and reg with comments for each of those, and a final status column and final comments column. Do I need anything for the segmentations?</p>
-
-<h2 id="functional-density-mapping">Functional Density Mapping</h2>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Week 49 - Monday]]></title>
-    <link href="http://czarrar.github.io/blog/2013/12/02/week-49-monday/"/>
-    <updated>2013-12-02T13:25:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/12/02/week-49-monday</id>
-    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
-
-<ul>
-  <li>Checked and finalized fixing a subject.</li>
-  <li>Resolved questions with QC</li>
-  <li>Discussed issue with VMHC</li>
-  <li>Setup quick pack for Xinian’s dataset</li>
-  <li>Read through the eigenvector centrality paper</li>
-  <li>Went through a few articles for tagging with updated instructions</li>
-</ul>
-
-<h2 id="todos">TODOs</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>Check on fixed subject</li>
-      <li>Email about QC</li>
-      <li>Look into VMHC issue on github</li>
-      <li>Create quick packs for everyone</li>
-      <li>Email to ask about eigenvector centrality</li>
-    </ul>
-  </li>
-  <li>Check fixed subject</li>
-  <li>Find out about tagging</li>
-</ul>
-
-<h2 id="abide---fixed-subject">ABIDE - Fixed Subject</h2>
-
-<p>I reran one participant with missing derivatives. It appears that everything is good.</p>
-
-<h2 id="abide---quick-packs">ABIDE - Quick Packs</h2>
-
-<p>We are looking to have the following derivatives:</p>
-
-<ul>
-  <li>Timeseries for different regions of interest</li>
-  <li>Dual Regression maps</li>
-  <li>ALFF/fALFF</li>
-  <li>REHO</li>
-  <li>Degree/Eigen Centrality</li>
-  <li>VMHC</li>
-</ul>
-
-<h3 id="cameron">Cameron</h3>
-
-<p>For our data, we already have most of the above derivatives and need the following:</p>
-
-<ul>
-  <li>Degree/Eigen Centrality</li>
-  <li>VMHC</li>
-</ul>
-
-<p>Degree I should be able to run now but need to wait on Eigen and VMHC.</p>
-
-<h3 id="xinian">Xinian</h3>
-
-<p>I started to create the quick pack for this dataset. The one issue is that it’s unclear whether the global signal correction was applied to either the filtered or non-filtered data. It should be applied to both so will need to contact some people in order to figure out how to resolve this issue. Hopefully no heads will roll.</p>
-
-<p>The scripts and what not for this dataset quick pack are located in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/32_xinian</code>. I still need to write some code to generate the standard brain mask and of course test it all as well.</p>
-
-<h3 id="pierre">Pierre</h3>
-
-<p>Pierre’s is already in standard space so I believe I should simply be able to turn off <code>runRegisterFuncToMNI</code> and also my custom option <code>applyRegisterFuncToMNI</code>. The regular outputs should be good enough.</p>
-
-<h3 id="chao-gan">Chao-Gan</h3>
-
-<p>Check with Chao-Gan.</p>
-
-<h2 id="abide---qc">ABIDE - QC</h2>
-
-<p>I should do a similar approach as Yang and reference an email from Pierre with some guidelines.</p>
-
-<h2 id="eigenvector-centrality">Eigenvector Centrality</h2>
-
-<p>I did a bit of reading last time about a faster approach to eigenvector centrality. Now I went through the main paper again. It appears that their speed-up is primarily by not having to compute the cross product between a matrix of time series (voxels x time points). They split this step up into two parts that reduces the complexity from N^2 to 2NT where N = voxels and T = time points. They make a claim that for voxelwise data, they see a speedup of 1000x.</p>
-
-<h2 id="tagging">Tagging</h2>
-
-<p>Spoke to Cameron. We discussed some potential changes and I emailed these out to him and Matt.</p>
-
-<p>In terms of tagging, here were some important points to note:</p>
-
-<ul>
-  <li>use mike’s opinions as the standard</li>
-  <li>basic neuroscience is a superset of brain/behavior</li>
-  <li>only include resting-state fMRI studies!</li>
-</ul>
-
-<h2 id="cwas">CWAS</h2>
-
-<p>I got emails from Xavier and Phil with comments. I should look to integrate them.</p>
-
 ]]></content>
   </entry>
   

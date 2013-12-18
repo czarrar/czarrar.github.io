@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cpac | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cpac/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-09T20:11:39-05:00</updated>
+  <updated>2013-12-17T20:27:16-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,119 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CPAC Derivative Inputs]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs/"/>
+    <updated>2013-12-17T19:24:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/17/cpac-derivative-inputs</id>
+    <content type="html"><![CDATA[<p>I want to try to organize what inputs are needed for what derivates for CPAC. First, I have the list of template inputs for quick pack for the CCS pipeline:</p>
+
+<p>``` python
+anat_suffixes = {
+    “anatomical_brain”: “mprage_sanlm.nii.gz”,     # check
+    “anatomical_reorient”: “reg/highres_rpi.nii.gz”, 
+    “anatomical_to_mni_nonlinear_xfm”: “reg/highres2standard_warp.nii.gz”, 
+    “mni_normalized_anatomical”: “reg/fnirt_highres2standard.nii.gz”, 
+}</p>
+
+<p>func_suffixes = {
+    “preprocessed”: “rest_res.nii.gz”, 
+    “mean_functional”: “rest_pp_mean.nii.gz”, 
+    “functional_brain_mask”: “rest_pp_mask.nii.gz”, 
+    “functional_nuisance_residuals”: “rest_pp_nofilt_sm0.nii.gz”,<br />
+    “functional_freq_filtered”: [”%(strategy)srest_pp<em>%(pipeline)s_sm0.nii.gz”, “%(strategy)s/rest_pp</em>%(pipeline)s_sm0.nii.gz”],
+    “functional_mni”: [”%(strategy)srest.%(pipeline)s.sm0.mni152.nii.gz”, “%(strategy)s/rest.%(pipeline)s.sm0.mni152.nii.gz”],
+    “functional_brain_mask_to_standard”: “” # I would need to make this myself
+}</p>
+
+<p>reg_suffixes = {
+    “functional_to_anat_linear_xfm”: “reg/example_func2highres.mat” 
+#    “functional_to_mni_linear_xfm”: “functional_to_mni_linear_xfm.mat”
+} </p>
+
+<p>```</p>
+
+<p>Now I go through each of the files to see if they are really needed. If not, then I will want to make sure that it is also processed as optional in my ghetto quick pack code.</p>
+
+<h2 id="anatomicals">Anatomicals</h2>
+
+<h3 id="anatomicalbrain">anatomical_brain</h3>
+
+<p><strong>Yes</strong> it is needed for <strong>all the steps</strong> but <strong>only with ANTS</strong>. It is used by the applywarp sections of code and I think particularly for transforming FSL’s registration matrix to ANTs format (again i think).</p>
+
+<h3 id="anatomicalreorient">anatomical_reorient</h3>
+
+<p>Only <strong>VMHC?</strong>.</p>
+
+<h3 id="anatomicaltomninonlinearxfm">anatomical_to_mni_nonlinear_xfm</h3>
+
+<p><strong>Yes</strong> for <strong>all the steps</strong> but <strong>only for applying the registration</strong>.</p>
+
+<h3 id="mninormalizedanatomical">mni_normalized_anatomical</h3>
+
+<p><strong>No</strong>. This is only used in QC and so this can be removed from the set of inputs that I generate.</p>
+
+<h2 id="functional">Functional</h2>
+
+<h3 id="preprocessed">preprocessed</h3>
+
+<p><strong>No</strong>. This is used in scrubbing and QC so it too can be removed from the set of inputs that I generate.</p>
+
+<h3 id="meanfunctional">mean_functional</h3>
+
+<p><strong>No but in VMHC</strong> it is used. Not sure how long that will last.</p>
+
+<h3 id="functionalbrainmask">functional_brain_mask</h3>
+
+<p><strong>Yes</strong> it is used in <strong>many (all?) steps</strong>.</p>
+
+<h3 id="functionalnuisanceresiduals">functional_nuisance_residuals</h3>
+
+<p><strong>Yes</strong> for <strong>ALFF and fALFF</strong>. Note that this uses the set_leaf_properties and get_leaf_properties function to dynamically get so it won’t be so obvious. This option can also be used for the other derivatives if you don’t want them to be filtered.</p>
+
+<h3 id="functionalfreqfiltered">functional_freq_filtered</h3>
+
+<p><strong>Yes</strong> for <strong>everything where want filtering</strong>.</p>
+
+<h3 id="functionalmni">functional_mni</h3>
+
+<p><strong>Yes</strong> for <strong>Spatial Regression, ROI time series, Voxel time series, Temporal Regression for SCA, Network Centrality</strong></p>
+
+<h3 id="functionalbrainmasktostandard">functional_brain_mask_to_standard</h3>
+
+<p><strong>Yes</strong> but <strong>only when apply registration</strong>. Although should also need it for the above ones…</p>
+
+<h2 id="final">Final</h2>
+
+<p>Ok so the final list, here again. Note that I didn’t discuss the reg one.</p>
+
+<p>``` python
+anat_suffixes = {
+    “anatomical_brain”: “mprage_sanlm.nii.gz”,          # REGISTRATION
+    “anatomical_reorient”: “reg/highres_rpi.nii.gz”,    # VMHC?
+    “anatomical_to_mni_nonlinear_xfm”: “reg/highres2standard_warp.nii.gz”,  # REGISTRATION
+#    “mni_normalized_anatomical”: “reg/fnirt_highres2standard.nii.gz”,      # NOT NEEDED 
+}</p>
+
+<p>func_suffixes = {
+#    “preprocessed”: “rest_res.nii.gz”,             # NOT NEEDED
+#    “mean_functional”: “rest_pp_mean.nii.gz”,      # VMHC?
+    “functional_brain_mask”: “rest_pp_mask.nii.gz”, # YES 
+    “functional_nuisance_residuals”: “rest_pp_nofilt_sm0.nii.gz”,  # YES (although not really used)
+    “functional_freq_filtered”: [”%(strategy)srest_pp<em>%(pipeline)s_sm0.nii.gz”, “%(strategy)s/rest_pp</em>%(pipeline)s_sm0.nii.gz”],    # YES
+    “functional_mni”: [”%(strategy)srest.%(pipeline)s.sm0.mni152.nii.gz”, “%(strategy)s/rest.%(pipeline)s.sm0.mni152.nii.gz”],      # YES
+    “functional_brain_mask_to_standard”: “”                                                                                         # Yes
+}</p>
+
+<p>reg_suffixes = {
+    “functional_to_anat_linear_xfm”: “reg/example_func2highres.mat” # REGISTRATION 
+#    “functional_to_mni_linear_xfm”: “functional_to_mni_linear_xfm.mat”
+} </p>
+
+<p>```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Updating Centrality]]></title>
@@ -343,140 +456,6 @@ done
 <blockquote>
   <p>There were initially a lot more differences but a small change in the code to correct for auto-correlations in centrality took care of that issue.</p>
 </blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Tuesday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/19/tuesday-week-47/"/>
-    <updated>2013-11-19T10:53:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/19/tuesday-week-47</id>
-    <content type="html"><![CDATA[<h2 id="todo">TODO</h2>
-
-<h3 id="qc">QC</h3>
-
-<ul>
-  <li>Fix QC Pages</li>
-  <li>Check QC output from Yang</li>
-  <li>Do the QC</li>
-</ul>
-
-<h3 id="centrality-doneish">Centrality (<strong>DONEISH</strong>)</h3>
-
-<ul>
-  <li>Look at centrality code and diagnose possible improvements in efficiency</li>
-  <li>Write up a bit on possible code changes</li>
-  <li>Implement possible changes</li>
-</ul>
-
-<h3 id="abide-other-processing">ABIDE Other Processing</h3>
-
-<ul>
-  <li><strong>DONE</strong> Copy the other data into a new directory</li>
-  <li>Create new generate quick pack scripts for the new data</li>
-  <li>Talk to Chao-Gan about details of his results (ask him what the </li>
-</ul>
-
-<p>high reproducibility doesn’t necessary correlate with prediction value.</p>
-
-<h2 id="centrality">Centrality</h2>
-
-<h3 id="basics">Basics</h3>
-
-<p>I want to first iron out some general questions:</p>
-
-<ul>
-  <li>What data is used by centrality? And what space is it in?</li>
-  <li>How is the smoothing done?</li>
-</ul>
-
-<p>These steps can be seen in <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/pipeline/cpac_pipeline.py"><code>pipeline/cpac_pipeline.py</code></a>.</p>
-
-<h4 id="dataspace">Data/Space</h4>
-
-<p>First, we find that the 4D functional data in standard space is used as an input as can be seen on line 3212:</p>
-
-<p><code>python
-node, out_file = strat.get_node_from_resource_pool('functional_mni')
-</code></p>
-
-<p>But it will resample that output in order to match the mask template based on some of the following lines:</p>
-
-<p>``` python
-resample_functional_to_template = pe.Node(interface=fsl.FLIRT(), name=’resample_functional_to_template<em>%d’ % num_strat)
-# …
-template_dataflow = create_mask_dataflow(c.templateSpecificationFile, ‘template_dataflow</em>%d’ % num_strat)
-# …</p>
-
-<p>node, out_file = strat.get_node_from_resource_pool(‘functional_mni’)
-# resample the input functional file to template(roi/mask)
-workflow.connect(node, out_file,
-                 resample_functional_to_template, ‘in_file’)
-workflow.connect(template_dataflow, ‘outputspec.out_file’,
-                 resample_functional_to_template, ‘reference’)
-```</p>
-
-<p>So the space is actually whatever your mask template is in.</p>
-
-<h4 id="smoothing">Smoothing</h4>
-
-<p>If smoothing is required, then it is applied to the centrality outputs from the prior step.</p>
-
-<h3 id="centrality-workflow">Centrality Workflow</h3>
-
-<p>Let’s figure out what’s going on with the centrality workflow located principally in <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/network_centrality/resting_state_centrality.py"><code>network_centrality/resting_state_centrality.py</code></a>. The initial documentation is pretty good.</p>
-
-<h3 id="load">Load</h3>
-
-<p>It loads all the data as 32bit float so memory demands are decreased relative to float 64bit. While loading the data, it appears to save the masked functional time-series data as npy files. It’s not totally clear why this is needed by default. Furthermore, these 32bit files are later </p>
-
-<h3 id="calculate-centrality">Calculate Centrality</h3>
-
-<p>There are actually two functions for this step: <code>get_centrality</code> and <code>get_centrality_opt</code>. The first function saves the correlation matrix while the second function only saves for eigenvector centrality. In both approaches, I should check the correlation calculation and also how the block (to reduce memory) is implemented. It seems like the first function is called when there is need for a sparsity threshold and no memory limit is set.</p>
-
-<p><code>python
-n2gb = lambda x: (float(x)*8)/(1024**3)
-nvoxs = shape[0]
-ntpts = shape[1]
-#
-mem_func = n2gb(nvoxs*ntpts)
-mem_result = n2gb(nvoxs*2)
-mem_cormaps = n2gb(nvoxs*1)
-#
-# mem_limit = mem_func + mem_result + b*mem_cormaps
-b = (mem_limit - mem_func - mem_result)/mem_cormaps
-#
-return b
-</code></p>
-
-<h2 id="cpac-centrality---code-changes">CPAC Centrality - Code Changes</h2>
-
-<p>Ok so let’s reorient. What do I want to do.</p>
-
-<ul>
-  <li>I want to do away with the step of saving an intermediate functional file. </li>
-  <li>I want to improve the calculation of the memory limit (I think they are being overly conservative before)</li>
-  <li>I want to change how the correlation is calculated</li>
-</ul>
-
-<h3 id="remove-saving-of-functionals">Remove saving of functionals</h3>
-
-<h2 id="opening-writedown-easy">Opening WriteDown Easy</h2>
-
-<p>I figured out that I’m slow and can actually open markdown files into WriteRoom from the command-line. For example:</p>
-
-<p><code>bash
-open -a WriteDown source/_posts/2013-11-19-tuesday-week-47.markdown
-</code></p>
-
-<p>I made this even easier with a simple bash script so I can call the above command with</p>
-
-<p><code>bash
-writedown source/_posts/2013-11-19-tuesday-week-47.markdown
-</code></p>
-
-<p>Thanks to the following link http://stackoverflow.com/questions/1308755/launch-an-app-on-os-x-with-command-line.</p>
-
 ]]></content>
   </entry>
   
