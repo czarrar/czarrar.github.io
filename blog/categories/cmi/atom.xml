@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-17T20:27:16-05:00</updated>
+  <updated>2013-12-19T00:39:52-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DPARSF Quick Pack]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack/"/>
+    <updated>2013-12-18T17:14:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack</id>
+    <content type="html"><![CDATA[<p>I want to first get down what files from the DPARSF preprocessed output correspond to inputs needed by CPAC for running the derivatives.</p>
+
+<p>A big thing here is that I am running DPARSF in native space. Then on the this derivative data, I would normalize it using DARTELS. And I guess then apply smoothing using DPARSF. How to I apply smoothing with Chao-Gan’s script (emailed him to find out)?</p>
+
+<h2 id="naming-conventions">Naming Conventions</h2>
+
+<p><code>
+A=slice timing
+R=renormalization
+C=covariate regressed
+W=spatially normalized
+S=smoothed
+F=filtered
+Sym=for VMH
+global=GSR
+</code></p>
+
+<h2 id="anatomical">Anatomical</h2>
+
+<p>I don’t need any of these since they are only for registration</p>
+
+<h2 id="functional">Functional</h2>
+
+<ul>
+  <li>functional_brain_mask</li>
+  <li>functional_nuisance_residuals</li>
+  <li>functional_freq_filtered</li>
+  <li></li>
+</ul>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CPAC Derivative Inputs]]></title>
@@ -323,47 +360,6 @@ write.table(df.txt, file=”rockland_pilot.txt”, row.names=F, col.names=F, quo
 <h3 id="link-to-pages-by-week-and-month">Link to pages by week and month</h3>
 
 <p>Another nice thing would be to have a summary page at the end of the week with links to all the other pages that week (might want to check if those exist?) and similarly at the end of the month could have a page with the lists for that month. I wonder if this could be within the pages section?</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Week 49 - Wednesday]]></title>
-    <link href="http://czarrar.github.io/blog/2013/12/04/week-49-wednesday/"/>
-    <updated>2013-12-04T10:02:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/12/04/week-49-wednesday</id>
-    <content type="html"><![CDATA[<h2 id="summarytodo">Summary/TODO</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>[x] QC (1 hour)</li>
-    </ul>
-  </li>
-  <li>CPAC (related to ABIDE)
-    <ul>
-      <li>[] Functional Density Mapping</li>
-      <li>[] Fast Eigenvector Centrality
-        <ul>
-          <li>[x] Respond to Wink</li>
-          <li>[x] Tried installing the C++ version (1 hr)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>[] Tagging</li>
-  <li>Dan Dickstein CWAS
-    <ul>
-      <li>[x] Get details from Dan</li>
-      <li>[x] Phil Meeting about CWAS Paper. Discussed way to get confidence intervals for simulation power analysis. (1 hr)</li>
-    </ul>
-  </li>
-  <li>CWAS with Steve. Worked out a plan to have a workable version of CWAS into the next release (30 min)</li>
-  <li>Went to talk with Matt Hutchinson. Asked a super intelligent question. (1-2 hrs)</li>
-</ul>
-
-<h2 id="abide-qc">ABIDE QC</h2>
-
-<p>Start at 10am till 11am.</p>
 ]]></content>
   </entry>
   

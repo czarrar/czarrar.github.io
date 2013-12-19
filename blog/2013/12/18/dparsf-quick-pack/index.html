@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Monday - Week 48 - Zarrar's Journaling</title>
+  <title>DPARSF Quick Pack - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Plans Today, I planned to work on…see summary section for what actually got done. finish memory fixes to centrality code checking on the 3mm &hellip;">
+  <meta name="description" content="I want to first get down what files from the DPARSF preprocessed output correspond to inputs needed by CPAC for running the derivatives. A big thing &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/25/monday-week-48/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Monday - Week 48</h1>
+        <h1 class="entry-title">DPARSF Quick Pack</h1>
       
     
     
@@ -93,48 +93,48 @@
   
 
 
-<time datetime="2013-11-25T09:59:00-05:00" pubdate data-updated="true">Nov 25<span>th</span>, 2013</time>
+<time datetime="2013-12-18T17:14:00-05:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2 id="plans">Plans</h2>
+<div class="entry-content"><p>I want to first get down what files from the DPARSF preprocessed output correspond to inputs needed by CPAC for running the derivatives.</p>
 
-<p>Today, I planned to work on…see summary section for what actually got done.</p>
+<p>A big thing here is that I am running DPARSF in native space. Then on the this derivative data, I would normalize it using DARTELS. And I guess then apply smoothing using DPARSF. How to I apply smoothing with Chao-Gan’s script (emailed him to find out)?</p>
+
+<h2 id="naming-conventions">Naming Conventions</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">A=slice timing
+</span><span class="line">R=renormalization
+</span><span class="line">C=covariate regressed
+</span><span class="line">W=spatially normalized
+</span><span class="line">S=smoothed
+</span><span class="line">F=filtered
+</span><span class="line">Sym=for VMH
+</span><span class="line">global=GSR</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="anatomical">Anatomical</h2>
+
+<p>I don’t need any of these since they are only for registration</p>
+
+<h2 id="functional">Functional</h2>
 
 <ul>
-  <li>finish memory fixes to centrality code</li>
-  <li>checking on the 3mm registration of ABIDE</li>
-  <li>setup quick pack for Pierre &amp; Xinian’s data</li>
-  <li>setup quick pack for ABIDE data (centrality and VMHC)</li>
+  <li>functional_brain_mask</li>
+  <li>functional_nuisance_residuals</li>
+  <li>functional_freq_filtered</li>
+  <li></li>
 </ul>
-
-<h2 id="summary">Summary</h2>
-
-<p>I wasn’t able to get through a lot that was planned. I worked on the following (described more later):</p>
-
-<ul>
-  <li>Centrality Coding</li>
-  <li>Checking paths for ABIDE preprocessing</li>
-</ul>
-
-<h2 id="centrality-code">Centrality Code</h2>
-
-<p>I updated the centrality code with several fixes and cleaned up some of the functions. Details of this work can be found on this <a href="/blog/2013/11/25/update-centrality">other post</a>.</p>
-
-<h2 id="qc">QC</h2>
-
-<p>The 3mm registration is done. I want to now take a closer look at the data. I want to take a look at a few things:</p>
-
-<ul>
-  <li>Are all the outputs there? Maybe make some type of table or record of what is good with what?</li>
-  <li>Can we fix up the QC pages?</li>
-  <li>Do the images look good?</li>
-</ul>
-
-<p>I began to create the code to find the needed paths in the preprocessing directory. This can be found in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/24_check/10_check_path.py</code>.</p>
 </div>
 
 
@@ -157,12 +157,12 @@
   
 
 
-<time datetime="2013-11-25T09:59:00-05:00" pubdate data-updated="true">Nov 25<span>th</span>, 2013</time>
+<time datetime="2013-12-18T17:14:00-05:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cmi/'>cmi</a>
+    <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>
   
 </span>
 
@@ -171,7 +171,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/25/monday-week-48/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/25/monday-week-48/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack/" >Tweet</a>
   
   
   
@@ -180,10 +180,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/24/timing-comparison/" title="Previous Post: Timing Comparison">&laquo; Timing Comparison</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/17/cpac-derivative-inputs/" title="Previous Post: CPAC Derivative Inputs">&laquo; CPAC Derivative Inputs</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/25/updating-centrality/" title="Next Post: Updating Centrality">Updating Centrality &raquo;</a>
       
     </p>
   </footer>
@@ -194,23 +192,7 @@
 <aside class="sidebar">
   
     
-  <section>
-  <h1>Contents</h1>
-  <ol class="nested" style="margin-left: 1.3em;">
-<li class="nested" style="list-style:inherit;">
-	<a href="#plans">Plans</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#summary">Summary</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#centrality-code">Centrality Code</a>
-
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#qc">QC</a>
-
-</li></ol>
-  </section>
+  
 
 <section>
   <h1>Tag Cloud</h1>

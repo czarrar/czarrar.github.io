@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-17T20:27:16-05:00</updated>
+  <updated>2013-12-19T00:39:52-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,49 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DPARSF Quick Pack]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack/"/>
+    <updated>2013-12-18T17:14:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack</id>
+    <content type="html"><![CDATA[<p>I want to first get down what files from the DPARSF preprocessed output correspond to inputs needed by CPAC for running the derivatives.</p>
+
+<p>A big thing here is that I am running DPARSF in native space. Then on the this derivative data, I would normalize it using DARTELS. And I guess then apply smoothing using DPARSF. How to I apply smoothing with Chao-Gan’s script (emailed him to find out)?</p>
+
+<h2 id="naming-conventions">Naming Conventions</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">A=slice timing
+</span><span class="line">R=renormalization
+</span><span class="line">C=covariate regressed
+</span><span class="line">W=spatially normalized
+</span><span class="line">S=smoothed
+</span><span class="line">F=filtered
+</span><span class="line">Sym=for VMH
+</span><span class="line">global=GSR</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="anatomical">Anatomical</h2>
+
+<p>I don’t need any of these since they are only for registration</p>
+
+<h2 id="functional">Functional</h2>
+
+<ul>
+  <li>functional_brain_mask</li>
+  <li>functional_nuisance_residuals</li>
+  <li>functional_freq_filtered</li>
+  <li></li>
+</ul>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CPAC Derivative Inputs]]></title>
@@ -1506,90 +1549,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 <h2 id="update-connectir">Update Connectir</h2>
 
 <p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Saturday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/23/saturday-week-47/"/>
-    <updated>2013-11-23T13:54:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/23/saturday-week-47</id>
-    <content type="html"><![CDATA[<p>This page covers both Saturday and Sunday (which is technically week 48).</p>
-
-<h2 id="todo">TODO</h2>
-
-<ul>
-  <li><strong>Permutation test for dice and spearman with IQ CWAS</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Compare computational time for MDMR to other approaches</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Bootstrap analyses</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Compare different distances</strong>
-    <ul>
-      <li><em>DONE WITH TABLES</em></li>
-      <li><em>GENERATE SURFACE RESULTS</em></li>
-      <li><em>WRITE TEXT FOR PAPER</em></li>
-      <li><em>UPDATE RESPONSE</em></li>
-    </ul>
-  </li>
-  <li><strong>Simulations</strong>
-    <ul>
-      <li><em>WRITE CODE</em></li>
-      <li><em>GENERATE PLOTS</em></li>
-      <li><em>ADD TO RESPONSE LETTER</em></li>
-    </ul>
-  </li>
-  <li><strong>Results</strong>
-    <ul>
-      <li><em>RE-COMPUTE WHERE NEEDED</em></li>
-      <li><em>ADD TO PAPER</em></li>
-    </ul>
-  </li>
-  <li><strong>Update paper with stuff from response letter</strong>
-    <ul>
-      <li><em>I guess waiting for feedback on response letter</em></li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
-
-<p>See details at <a href="http://czarrar.github.io/2013/11/24/similarity-of-iq-cwas-across-scans/">my other post</a>.</p>
-
-<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
-
-<h2 id="computational-time">Computational Time</h2>
-
-<p>Below is the average time (ms) across 100 iterations. MDMR is a little slower than GLM but comparable.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">   method      time
-1  Degree   5.76817
-2     GLM  30.12167
-3    MDMR  51.73251
-4     SVM 228.89548
-5 K-Means 788.41195</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Further details can be found on the <a href="http://czarrar.github.io/2013/11/24/timing-comparison/">following post</a>.</p>
-
-<h2 id="comparing-distances">Comparing Distances</h2>
-
-<p>Further details can be found on the <a href="http://czarrar.github.io/2013/11/09/comparing-distances">following post</a>.</p>
-
-<h2 id="simulations">Simulations</h2>
-
-<p>Getting a late start on the simulations. </p>
-
 ]]></content>
   </entry>
   

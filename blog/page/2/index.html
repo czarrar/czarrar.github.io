@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="I should check the data that I am plotted. Right now, I am examining the mean -log10p value of the MDMR results but I think I might want to look at &hellip;">
+  <meta name="description" content="Summary Checked and finalized fixing a subject. Resolved questions with QC Discussed issue with VMHC Setup quick pack for Xinian’s dataset Read &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,136 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/02/week-49-monday/">Week 49 - Monday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-02T13:25:00-05:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="summary">Summary</h2>
+
+<ul>
+  <li>Checked and finalized fixing a subject.</li>
+  <li>Resolved questions with QC</li>
+  <li>Discussed issue with VMHC</li>
+  <li>Setup quick pack for Xinian’s dataset</li>
+  <li>Read through the eigenvector centrality paper</li>
+  <li>Went through a few articles for tagging with updated instructions</li>
+</ul>
+
+<h2 id="todos">TODOs</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>Check on fixed subject</li>
+      <li>Email about QC</li>
+      <li>Look into VMHC issue on github</li>
+      <li>Create quick packs for everyone</li>
+      <li>Email to ask about eigenvector centrality</li>
+    </ul>
+  </li>
+  <li>Check fixed subject</li>
+  <li>Find out about tagging</li>
+</ul>
+
+<h2 id="abide---fixed-subject">ABIDE - Fixed Subject</h2>
+
+<p>I reran one participant with missing derivatives. It appears that everything is good.</p>
+
+<h2 id="abide---quick-packs">ABIDE - Quick Packs</h2>
+
+<p>We are looking to have the following derivatives:</p>
+
+<ul>
+  <li>Timeseries for different regions of interest</li>
+  <li>Dual Regression maps</li>
+  <li>ALFF/fALFF</li>
+  <li>REHO</li>
+  <li>Degree/Eigen Centrality</li>
+  <li>VMHC</li>
+</ul>
+
+<h3 id="cameron">Cameron</h3>
+
+<p>For our data, we already have most of the above derivatives and need the following:</p>
+
+<ul>
+  <li>Degree/Eigen Centrality</li>
+  <li>VMHC</li>
+</ul>
+
+<p>Degree I should be able to run now but need to wait on Eigen and VMHC.</p>
+
+<h3 id="xinian">Xinian</h3>
+
+<p>I started to create the quick pack for this dataset. The one issue is that it’s unclear whether the global signal correction was applied to either the filtered or non-filtered data. It should be applied to both so will need to contact some people in order to figure out how to resolve this issue. Hopefully no heads will roll.</p>
+
+<p>The scripts and what not for this dataset quick pack are located in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/32_xinian</code>. I still need to write some code to generate the standard brain mask and of course test it all as well.</p>
+
+<h3 id="pierre">Pierre</h3>
+
+<p>Pierre’s is already in standard space so I believe I should simply be able to turn off <code>runRegisterFuncToMNI</code> and also my custom option <code>applyRegisterFuncToMNI</code>. The regular outputs should be good enough.</p>
+
+<h3 id="chao-gan">Chao-Gan</h3>
+
+<p>Check with Chao-Gan.</p>
+
+<h2 id="abide---qc">ABIDE - QC</h2>
+
+<p>I should do a similar approach as Yang and reference an email from Pierre with some guidelines.</p>
+
+<h2 id="eigenvector-centrality">Eigenvector Centrality</h2>
+
+<p>I did a bit of reading last time about a faster approach to eigenvector centrality. Now I went through the main paper again. It appears that their speed-up is primarily by not having to compute the cross product between a matrix of time series (voxels x time points). They split this step up into two parts that reduces the complexity from N^2 to 2NT where N = voxels and T = time points. They make a claim that for voxelwise data, they see a speedup of 1000x.</p>
+
+<h2 id="tagging">Tagging</h2>
+
+<p>Spoke to Cameron. We discussed some potential changes and I emailed these out to him and Matt.</p>
+
+<p>In terms of tagging, here were some important points to note:</p>
+
+<ul>
+  <li>use mike’s opinions as the standard</li>
+  <li>basic neuroscience is a superset of brain/behavior</li>
+  <li>only include resting-state fMRI studies!</li>
+</ul>
+
+<h2 id="cwas">CWAS</h2>
+
+<p>I got emails from Xavier and Phil with comments. I should look to integrate them.</p>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1052,119 +1182,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/23/saturday-week-47/">Saturday - Week 47</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-23T13:54:00-05:00" pubdate data-updated="true">Nov 23<span>rd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This page covers both Saturday and Sunday (which is technically week 48).</p>
-
-<h2 id="todo">TODO</h2>
-
-<ul>
-  <li><strong>Permutation test for dice and spearman with IQ CWAS</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Compare computational time for MDMR to other approaches</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Bootstrap analyses</strong>
-    <ul>
-      <li><em>DONE</em></li>
-    </ul>
-  </li>
-  <li><strong>Compare different distances</strong>
-    <ul>
-      <li><em>DONE WITH TABLES</em></li>
-      <li><em>GENERATE SURFACE RESULTS</em></li>
-      <li><em>WRITE TEXT FOR PAPER</em></li>
-      <li><em>UPDATE RESPONSE</em></li>
-    </ul>
-  </li>
-  <li><strong>Simulations</strong>
-    <ul>
-      <li><em>WRITE CODE</em></li>
-      <li><em>GENERATE PLOTS</em></li>
-      <li><em>ADD TO RESPONSE LETTER</em></li>
-    </ul>
-  </li>
-  <li><strong>Results</strong>
-    <ul>
-      <li><em>RE-COMPUTE WHERE NEEDED</em></li>
-      <li><em>ADD TO PAPER</em></li>
-    </ul>
-  </li>
-  <li><strong>Update paper with stuff from response letter</strong>
-    <ul>
-      <li><em>I guess waiting for feedback on response letter</em></li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="similarity-of-iq-cwas-across-scans">Similarity of IQ CWAS across scans</h2>
-
-<p>See details at <a href="/2013/11/24/similarity-of-iq-cwas-across-scans/">my other post</a>.</p>
-
-<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
-
-<h2 id="computational-time">Computational Time</h2>
-
-<p>Below is the average time (ms) across 100 iterations. MDMR is a little slower than GLM but comparable.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">   method      time
-1  Degree   5.76817
-2     GLM  30.12167
-3    MDMR  51.73251
-4     SVM 228.89548
-5 K-Means 788.41195</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Further details can be found on the <a href="/2013/11/24/timing-comparison/">following post</a>.</p>
-
-<h2 id="comparing-distances">Comparing Distances</h2>
-
-<p>Further details can be found on the <a href="/2013/11/09/comparing-distances">following post</a>.</p>
-
-<h2 id="simulations">Simulations</h2>
-
-<p>Getting a late start on the simulations. </p>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1182,11 +1199,15 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 138.1818181818182%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(11)</a> <a href='/blog/categories/cpac' style='font-size: 143.63636363636363%'>cpac(8)</a> <a href='/blog/categories/cwas' style='font-size: 154.54545454545456%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.9090909090909%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.45454545454545%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.45454545454545%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 116.36363636363636%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 132.72727272727272%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.45454545454545%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.45454545454545%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.45454545454545%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.45454545454545%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 135.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(12)</a> <a href='/blog/categories/cpac' style='font-size: 145.0%'>cpac(9)</a> <a href='/blog/categories/cwas' style='font-size: 150.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 115.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 130.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.0%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
@@ -1202,10 +1223,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/07/cwas-simulations/">CWAS Simulations</a>
       </li>
     
   </ul>
@@ -1366,6 +1383,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/18/2013');
+  hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
+  
   highlightArray.push('12/17/2013');
   hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
   
@@ -1377,9 +1397,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/09/2013');
   hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
-  
-  highlightArray.push('12/07/2013');
-  hightlightLinks.push('/blog/2013/12/07/cwas-simulations/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

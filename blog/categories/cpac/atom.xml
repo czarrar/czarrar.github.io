@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cpac | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cpac/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-17T20:27:16-05:00</updated>
+  <updated>2013-12-19T00:39:52-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DPARSF Quick Pack]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack/"/>
+    <updated>2013-12-18T17:14:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/18/dparsf-quick-pack</id>
+    <content type="html"><![CDATA[<p>I want to first get down what files from the DPARSF preprocessed output correspond to inputs needed by CPAC for running the derivatives.</p>
+
+<p>A big thing here is that I am running DPARSF in native space. Then on the this derivative data, I would normalize it using DARTELS. And I guess then apply smoothing using DPARSF. How to I apply smoothing with Chao-Gan’s script (emailed him to find out)?</p>
+
+<h2 id="naming-conventions">Naming Conventions</h2>
+
+<p><code>
+A=slice timing
+R=renormalization
+C=covariate regressed
+W=spatially normalized
+S=smoothed
+F=filtered
+Sym=for VMH
+global=GSR
+</code></p>
+
+<h2 id="anatomical">Anatomical</h2>
+
+<p>I don’t need any of these since they are only for registration</p>
+
+<h2 id="functional">Functional</h2>
+
+<ul>
+  <li>functional_brain_mask</li>
+  <li>functional_nuisance_residuals</li>
+  <li>functional_freq_filtered</li>
+  <li></li>
+</ul>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CPAC Derivative Inputs]]></title>
@@ -423,39 +460,6 @@ done
 <h3 id="memtop">Memtop</h3>
 
 <p>I also used a command-line tool <a href="http://www.webhostingtalk.com/showthread.php?t=1256200">memtop</a> that wraps around the command-line tool <code>ps</code>. This showed 4.2gb being used at the peak.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Wednesday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/20/wednesday-week-47/"/>
-    <updated>2013-11-20T12:01:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/20/wednesday-week-47</id>
-    <content type="html"><![CDATA[<h2 id="todo">TODO</h2>
-
-<h3 id="centrality">Centrality</h3>
-
-<ul>
-  <li>xx Look to using 4mm grey-matter mask</li>
-  <li>xx Run speed test on new analysis</li>
-  <li></li>
-</ul>
-
-<h2 id="centrality-1">Centrality</h2>
-
-<p>There a few issues related to needing to changing the inputs to the centrality nipype node. Those where straightforward.</p>
-
-<p>Now I’m having some weird bug where the centrality outputs are not being saved. Trying to debug at the <code>map_centrality_matrix</code> function. Ended up being a simple typo and returning the template_type instead of centrality file outputs from the <code>calc_centrality</code> command.</p>
-
-<p>I ran a comparison with AFNI’s 3dTcorrMap. When looking at the binarized result, almost all the voxels were the same except 8 in this particular case. I have tried doing centrality manually for those 8 voxels and keep getting the values from CPAC, which are 1 higher than the values from AFNI. I tried different correlation approaches as well as removing any voxel’s with constant time-series. However, since the difference is so small (only 1 for the binarized results) and there are so few voxels involved (8/19+k), I’m leaving it right now as a to be continued.</p>
-
-<p>I ‘ve also changed the way the correlations are calculated. Now the time-series will all be first normalized and then a dot product will be computed. This is in contrast, to doing both steps all at once for each block that the correlation is computed. So this will be a much greater speed boon when there are many blocks. In a small speed comparison using the normalization approach leads to a 2x improvement in speed.</p>
-
-<p>Although the setting of the block size does seem off, I will leave it for now. The actual amount of RAM being used is less than the amount </p>
-
-<blockquote>
-  <p>There were initially a lot more differences but a small change in the code to correct for auto-correlations in centrality took care of that issue.</p>
-</blockquote>
 ]]></content>
   </entry>
   
