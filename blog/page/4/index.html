@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="We want to show that the choice of your distance metric won’t substantially change your results. I’ll be using the first scan of the IQ dataset. I &hellip;">
+  <meta name="description" content="ABIDE I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,92 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-11T16:26:00-05:00" pubdate data-updated="true">Nov 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="abide">ABIDE</h1>
+
+<p>I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also check up on the mounted data on rocky.</p>
+
+<h2 id="pierre-preprocessed-data">Pierre Preprocessed Data</h2>
+
+<p>There are 4 different preprocessed data types.</p>
+
+<ol>
+  <li>No GSR and low-pass filter</li>
+  <li>No GSR and no low-pass filter</li>
+  <li>GSR and low-pass filter</li>
+  <li>GSR and no low-pass filter</li>
+</ol>
+
+<p>A json file is included with each preprocessed data. This has regressor information and time-points (which I guess are the time-points that were kept for the analysis…so there was scrubbing).</p>
+
+<h2 id="xinian-preprocessed-data">Xinian Preprocessed Data</h2>
+
+<p>Subjects here are labeled by their site. Data includes freesurfer information. For the functional data, I am not totally sure which of the different preprocessed outputs to use. Also will we be making use of the freesurfer registered functional output?</p>
+
+<p>A brief overview shows the following preprocessing factors that were varied:</p>
+
+<ul>
+  <li>Temporal Filtering (guessing same way as Pierre’s)</li>
+  <li>Smoothnesss (0 or 6 mm FWHM)</li>
+</ul>
+
+<p>So for this and the other preprocessed data, I will need to have a working Quick Pack.</p>
+
+<h1 id="cpac">CPAC</h1>
+
+<p>To help better understand why some working directories are being deleted but not others, we made a change to the file for standard output and standard error. Previously, this file held information for all participants. Here are the changes I made to running with SGE that did away with this issue:</p>
+
+<ul>
+  <li>Run each subject separately with the grid engine (instead of as a job array).</li>
+  <li>Use a different standard output and error for each subject</li>
+  <li>Save the list of job ids and corresponding subjects</li>
+</ul>
+
+<p>Pretty simple change but big in allowing me to figure out what’s going on. Additionally, I can manually check job ids that have completed and knowing the corresponding subjects, I could manually delete the working directories if they have not been deleted already.</p>
+
+<h1 id="quickpack">QuickPack</h1>
+
+<p>So where did we leave off. It appears like it will run if I use the GUI but throws an error. </p>
+
+<h1 id="other-projects">Other Projects</h1>
+
+<p>I’m also still looking at EmotionalBS and is there anything else?</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1739,142 +1825,9 @@ http://connectir.projects.nitrc.org/adhd40_p4.nii.gz</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/10/30/another-look-at-quick-pack-journey/">Another Quick Pack Journey</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-30T15:55:00-04:00" pubdate data-updated="true">Oct 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today, I’ve got through a few things. First, I finished compiling the <code>regressors.csv</code> file for </p>
-
-<p>Some minor things, I helped Krishna with some ROI error he had in CPAC. It turned out that his issue was due to incorrectly binarizing the mask.</p>
-
-<h1 id="quickpack">QuickPack</h1>
-
-<p>Trying my hand again on quick pack today. Last time I got a bunch of different errors that I really couldn’t track. I am re-running the complete run to see what errors I get again and try to figure those out. I’m also rerunning the alff to see what happens there.</p>
-
-<h2 id="complete-run">Complete Run</h2>
-
-<p>This appears to be re-running smoothly (knock on wood). The last time I ran a complete (preprocessing + derivatives) run, it led to some unclear problems.</p>
-
-<h2 id="alff-qp">ALFF QP</h2>
-
-<p>I get the same link error as I did before. The error occurs on line 562 in <code>utils.py</code> within the <code>create_symbolic_links</code>. The line and error are</p>
-
-<pre><code>ext = fname.split('.', 1)[1]
-IndexError: list index out of range
-</code></pre>
-
-<p>Basically <code>fname</code> should be a filename but a directory is passed instead and so it fails. Specifically, it appears to be passing <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Output/pipeline_0/0051466_session_1/functional_freq_filtered/_scan_rest_1_rest/sinker_16</code>. I don’t have much sense about what is going on with this file.</p>
-
-<p>Other bits of information:</p>
-
-<ul>
-  <li>The crash file is located <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-145001-milham-link_16.a0.np
-z</code>.</li>
-  <li>The directory in the working directory is <code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/ALFF_Working/resting_preproc_0051466_session_1/_scan_rest_1_rest/link_16</code></li>
-</ul>
-
-<h3 id="steve-talk">Steve Talk</h3>
-
-<p>I discussed this issue with Steve and it seems I will need to get down and dirty with nipype to understand the origin of this problem.</p>
-
-<h2 id="reho-qp">REHO QP</h2>
-
-<p>Here I got two errors. One of the errors was the same as with ALFF except instead of link<em>16 it is link</em>5. The other error is new and specific to REHO with the crash file: <code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz</code>. It appears the error is an empty input filename being passed to the <code>compute_reho</code> in <code>reho/utils</code>.</p>
-
-<p>A snapshot of the error is given below:</p>
-
-<pre><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/Reho_Working/resting_preproc_0051466_session_1/reho_0/_scan_rest_1_rest/_scan_rest_1_rest/reho_map/&lt;string&gt; in compute_reho(in_file, mask_file, cluster_size)
-
-/home/data/PublicProgram/epd-7.2-2-rh5-x86_64/lib/python2.7/site-packages/nibabel/loadsave.pyc in load(filename)
-     37     except KeyError:
-     38         raise ImageFileError('Cannot work out file type of "%s"' %
----&gt; 39                              filename)
-     40     if ext in ('.nii', '.mnc', '.mgh', '.mgz'):
-     41         klass = class_map[img_type]['class']
-
-ImageFileError: Cannot work out file type of ""
-Interface Function failed to run. 
-</code></pre>
-
-<p>To run the crash file, see the code below.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;/home2/data/Projects/CPAC_Regression_Test/nipype-installs/fcp-indi-nipype/running-install/lib/python2.7/site-packages&#39;</span><span class="p">)</span>
-</span><span class="line"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC&quot;</span><span class="p">)</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC</span>
-</span><span class="line"><span class="kn">import</span> <span class="nn">CPAC.reho.utils</span>
-</span><span class="line"><span class="kn">from</span> <span class="nn">nipype.utils.filemanip</span> <span class="kn">import</span> <span class="n">loadflat</span>
-</span><span class="line">
-</span><span class="line"><span class="n">crashinfo</span> <span class="o">=</span> <span class="n">loadflat</span><span class="p">(</span><span class="s">&quot;/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/crash/crash-20131030-164123-milham-reho_map.a0.a0.npz&quot;</span><span class="p">)</span>
-</span><span class="line"><span class="n">crashinfo</span><span class="p">[</span><span class="s">&#39;node&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h1 id="preprocessing-emotionalbs">Preprocessing EmotionalBS</h1>
-
-<p>I am going to preprocess the emotionalBS data again with CPAC+ANTS. Some relevant parameters are:</p>
-
-<ul>
-  <li>Used ANTS for registration</li>
-  <li>Two nuisance correction strategies
-      * compcor+motion+linear+quadratic
-      * compcor+global+motion+linear+quadratic</li>
-  <li>Both frequency filtering (0.01-0.1 Hz) and no filtering</li>
-  <li>Smoothing of 4.5mm (only for derivatives)</li>
-  <li>Generated some SCA and drSCA based derivates using ROIs/maps from the ABIDE preprocessing. Otherwise no other derivatives were created.</li>
-</ul>
-
-<h2 id="install-fsl-5-for-gelert">Install FSL 5 for Gelert</h2>
-
-<p>I was a little confused on how to install fsl 5 to a custom path (<code>/home2/data/PublicProgram</code>). It seemed to go through neurodebian and apt-get, I needed certain admin privileges that even Mike’s account didn’t have. And even if I had those, it wasn’t clear how I would install to a custom directory. Then I realized I could just copy the current fsl5 in <code>/usr/share/fsl/5.o</code> into that directory. The reason for this (<code>/home2/data/PublicProgram</code>) directory is so </p>
-
-<h1 id="new-journal">New Journal</h1>
-
-<p>I also worked on setting up this blog/journal with github user account. The goal is to chronicle my work efforts with particular thought on any issues I encounter. A major side benefit will be easier communication with others in the lab (e.g., was able to easily show the error for ALFF quick pack to Steve). Previously, I had been using different journal pages for each of my projects. I ended up being a big confused where to post stuff and often lost track of the markdown pages that I had created before they were published. With one journal site, this should all be easier.</p>
-
-<p>I’m also testing out this slightly different jekyll wrapper (octopress). I unfortunately spent a lot longer (2 hours) setting it up cuz of a git error then I had wanted. So I hope some of its benefits over jekyll bootstrap such as easier syncing, simpler interface, and simpler integration of more advanced plugins, will be useful in the long run. That way I can justify my time spent installing it!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/5/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1889,11 +1842,15 @@ Interface Function failed to run.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 135.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(12)</a> <a href='/blog/categories/cpac' style='font-size: 145.0%'>cpac(9)</a> <a href='/blog/categories/cwas' style='font-size: 150.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 115.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 130.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 132.30769230769232%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(13)</a> <a href='/blog/categories/cpac' style='font-size: 146.15384615384616%'>cpac(10)</a> <a href='/blog/categories/cwas' style='font-size: 146.15384615384616%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 109.23076923076923%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.61538461538461%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.61538461538461%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 113.84615384615384%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 127.6923076923077%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.61538461538461%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.61538461538461%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.61538461538461%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.61538461538461%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/20/derivative-class/">Derivative Class</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
@@ -1909,10 +1866,6 @@ Interface Function failed to run.
     
       <li class="post">
         <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
       </li>
     
   </ul>
@@ -2073,6 +2026,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/20/2013');
+  hightlightLinks.push('/blog/2013/12/20/derivative-class/');
+  
   highlightArray.push('12/18/2013');
   hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
   
@@ -2084,9 +2040,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/10/2013');
   hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
-  
-  highlightArray.push('12/09/2013');
-  hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

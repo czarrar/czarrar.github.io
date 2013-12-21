@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="This page covers both Saturday and Sunday (which is technically week 48). TODO Permutation test for dice and spearman with IQ CWAS DONE Compare &hellip;">
+  <meta name="description" content="Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,104 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-24T11:51:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">measures</th>
+      <th>values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">dice</td>
+      <td>0.2731</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">pearson</td>
+      <td>0.2571</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">spearman</td>
+      <td>0.2511</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">kendalls</td>
+      <td>0.1695</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
+
+<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
+
+<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">cd /home2/data/Projects/CWAS/share/nki/05_cwas
+</span><span class="line">./30_mdmr_using_perms.bash</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
+
+<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
+
+<ol>
+  <li>Read in the permuted Fstats</li>
+  <li>Loop through each permutation so you can</li>
+  <li>Calculate significance for both scans</li>
+  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
+  <li>Return this result and loop to #3 for the next permutation</li>
+</ol>
+
+<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
+
+<h2 id="results">Results</h2>
+
+<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
+
+<h2 id="update-connectir">Update Connectir</h2>
+
+<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1575,92 +1673,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/11/monday-for-veterans/">Monday for Veterans</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-11T16:26:00-05:00" pubdate data-updated="true">Nov 11<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="abide">ABIDE</h1>
-
-<p>I started running the ABIDE dataset once again! I wonder if a separate post that is an aggregate of my progress would be good? I need to also check up on the mounted data on rocky.</p>
-
-<h2 id="pierre-preprocessed-data">Pierre Preprocessed Data</h2>
-
-<p>There are 4 different preprocessed data types.</p>
-
-<ol>
-  <li>No GSR and low-pass filter</li>
-  <li>No GSR and no low-pass filter</li>
-  <li>GSR and low-pass filter</li>
-  <li>GSR and no low-pass filter</li>
-</ol>
-
-<p>A json file is included with each preprocessed data. This has regressor information and time-points (which I guess are the time-points that were kept for the analysis…so there was scrubbing).</p>
-
-<h2 id="xinian-preprocessed-data">Xinian Preprocessed Data</h2>
-
-<p>Subjects here are labeled by their site. Data includes freesurfer information. For the functional data, I am not totally sure which of the different preprocessed outputs to use. Also will we be making use of the freesurfer registered functional output?</p>
-
-<p>A brief overview shows the following preprocessing factors that were varied:</p>
-
-<ul>
-  <li>Temporal Filtering (guessing same way as Pierre’s)</li>
-  <li>Smoothnesss (0 or 6 mm FWHM)</li>
-</ul>
-
-<p>So for this and the other preprocessed data, I will need to have a working Quick Pack.</p>
-
-<h1 id="cpac">CPAC</h1>
-
-<p>To help better understand why some working directories are being deleted but not others, we made a change to the file for standard output and standard error. Previously, this file held information for all participants. Here are the changes I made to running with SGE that did away with this issue:</p>
-
-<ul>
-  <li>Run each subject separately with the grid engine (instead of as a job array).</li>
-  <li>Use a different standard output and error for each subject</li>
-  <li>Save the list of job ids and corresponding subjects</li>
-</ul>
-
-<p>Pretty simple change but big in allowing me to figure out what’s going on. Additionally, I can manually check job ids that have completed and knowing the corresponding subjects, I could manually delete the working directories if they have not been deleted already.</p>
-
-<h1 id="quickpack">QuickPack</h1>
-
-<p>So where did we leave off. It appears like it will run if I use the GUI but throws an error. </p>
-
-<h1 id="other-projects">Other Projects</h1>
-
-<p>I’m also still looking at EmotionalBS and is there anything else?</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1678,11 +1690,15 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 135.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(12)</a> <a href='/blog/categories/cpac' style='font-size: 145.0%'>cpac(9)</a> <a href='/blog/categories/cwas' style='font-size: 150.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 115.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 130.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 132.30769230769232%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(13)</a> <a href='/blog/categories/cpac' style='font-size: 146.15384615384616%'>cpac(10)</a> <a href='/blog/categories/cwas' style='font-size: 146.15384615384616%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 109.23076923076923%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.61538461538461%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.61538461538461%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 113.84615384615384%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 127.6923076923077%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.61538461538461%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.61538461538461%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.61538461538461%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.61538461538461%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/20/derivative-class/">Derivative Class</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
@@ -1698,10 +1714,6 @@ IOError: Duplicate node name montage_mni_anat</em>0 found.
     
       <li class="post">
         <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
       </li>
     
   </ul>
@@ -1862,6 +1874,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/20/2013');
+  hightlightLinks.push('/blog/2013/12/20/derivative-class/');
+  
   highlightArray.push('12/18/2013');
   hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
   
@@ -1873,9 +1888,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/10/2013');
   hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
-  
-  highlightArray.push('12/09/2013');
-  hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

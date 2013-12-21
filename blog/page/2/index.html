@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Summary Checked and finalized fixing a subject. Resolved questions with QC Discussed issue with VMHC Setup quick pack for Xinian’s dataset Read &hellip;">
+  <meta name="description" content="testing draft Summary/TODO ABIDE [x] Create quick pack for degree centrality [x] Email Xinian about GSR data and having filtered/non-filtered [x] &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/03/week-49-tuesday/">Week 49 - Tuesday</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-03T11:30:00-05:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>testing draft</p>
+
+<h2 id="summarytodo">Summary/TODO</h2>
+
+<ul>
+  <li>ABIDE
+    <ul>
+      <li>[x] Create quick pack for degree centrality</li>
+      <li>[x] Email Xinian about GSR data and having filtered/non-filtered</li>
+      <li>[x] Finish creating quick pack for LFCD</li>
+    </ul>
+  </li>
+  <li>CPAC
+    <ul>
+      <li>[] Run an initial test of the functional node</li>
+    </ul>
+  </li>
+  <li>Tag</li>
+</ul>
+
+<p>I also took the speaker (Matt) out to lunch with Zhen, and then showed him some of my slides about CWAS.</p>
+
+<h2 id="quick-pack-for-centrality">Quick Pack for Centrality</h2>
+
+<h3 id="cpac-preprocessed-data">CPAC Preprocessed Data</h3>
+
+<p>The scripts for this analysis are located in <code>/data/Projects/ABIDE_Initiative/CPAC/abide/config/30_centrality</code>. I was able to first generate a subject list YAML file with <code>10_gen_quick_pack.py</code>. Below is a sample of what a file for one subject looks like:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">  functional_brain_mask: {filt_global: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
+</span><span class="line">    filt_noglobal: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
+</span><span class="line">    nofilt_global: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz,
+</span><span class="line">    nofilt_noglobal: /home2/data/Projects/ABIDE_Initiative/CPAC/Output_2013-11-22/pipeline_MerrittIsland/0050642_session_1/functional_brain_mask/_scan_rest_1_rest/rest_3dc_tshift_RPI_3dv_automask.nii.gz}</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We can see that we have each filtering and global option as the input. This is a little bit of cheating since the different input keys are interpreted as different scans.</p>
+
+<p>We can then use these different inputs in one CPAC run with <code>20_run_gen_quick_pack.py</code>. This script is currently running and the output/working directories can be found in <code>/data/Projects/ABIDE_Initiative/Derivatives/CPAC/Cent</code>.</p>
+
+<h2 id="eigenvector-centrality">Eigenvector Centrality</h2>
+
+<p>I emailed out to the author of the fast implementation paper to ask for his C++ code. However, if the author does not respond, the paper is fairly descriptive and I imagine it would be possible to write our own code based on the methods description.</p>
+
+<h2 id="qc">QC</h2>
+
+<p>I created the new excel file and looked through one subject. Should confirm the following: should have columns for anat, func, and reg with comments for each of those, and a final status column and final comments column. Do I need anything for the segmentations?</p>
+
+<h2 id="functional-density-mapping">Functional Density Mapping</h2>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1084,104 +1171,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/24/similarity-of-iq-cwas-across-scans/">Similarity of IQ CWAS Across Scans</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-24T11:51:00-05:00" pubdate data-updated="true">Nov 24<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: right">measures</th>
-      <th>values</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: right">dice</td>
-      <td>0.2731</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">pearson</td>
-      <td>0.2571</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">spearman</td>
-      <td>0.2511</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">kendalls</td>
-      <td>0.1695</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
-
-<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
-
-<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">cd /home2/data/Projects/CWAS/share/nki/05_cwas
-</span><span class="line">./30_mdmr_using_perms.bash</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
-
-<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
-
-<ol>
-  <li>Read in the permuted Fstats</li>
-  <li>Loop through each permutation so you can</li>
-  <li>Calculate significance for both scans</li>
-  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
-  <li>Return this result and loop to #3 for the next permutation</li>
-</ol>
-
-<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
-
-<h2 id="results">Results</h2>
-
-<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
-
-<h2 id="update-connectir">Update Connectir</h2>
-
-<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1199,11 +1188,15 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 135.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(12)</a> <a href='/blog/categories/cpac' style='font-size: 145.0%'>cpac(9)</a> <a href='/blog/categories/cwas' style='font-size: 150.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 110.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 105.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 105.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 115.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 130.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 105.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 105.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 105.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 105.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 132.30769230769232%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(13)</a> <a href='/blog/categories/cpac' style='font-size: 146.15384615384616%'>cpac(10)</a> <a href='/blog/categories/cwas' style='font-size: 146.15384615384616%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 109.23076923076923%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.61538461538461%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.61538461538461%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 113.84615384615384%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 127.6923076923077%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.61538461538461%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.61538461538461%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.61538461538461%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.61538461538461%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/20/derivative-class/">Derivative Class</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
@@ -1219,10 +1212,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/09/week-50-monday/">Week 50 - Monday</a>
       </li>
     
   </ul>
@@ -1383,6 +1372,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/20/2013');
+  hightlightLinks.push('/blog/2013/12/20/derivative-class/');
+  
   highlightArray.push('12/18/2013');
   hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
   
@@ -1394,9 +1386,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/10/2013');
   hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
-  
-  highlightArray.push('12/09/2013');
-  hightlightLinks.push('/blog/2013/12/09/week-50-monday/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

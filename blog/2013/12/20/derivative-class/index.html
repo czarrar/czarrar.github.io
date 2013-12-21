@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Derivative Class - Zarrar's Journaling</title>
+  <meta name="author" content="Zarrar Shehzad">
+
+  
+  <meta name="description" content="Mission:
+» Refractor current derivative workflows in cpac_pipeline.py (if you choose to accept it) Why:
+» Easier to read code
+» Easier to implement &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/12/20/derivative-class/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Zarrar's Journaling" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">mob</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Zarrar's Journaling</a></h1>
+  
+    <h2>To the edge and beyond</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:czarrar.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Derivative Class</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-20T21:36:00-05:00" pubdate data-updated="true">Dec 20<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>Mission:</strong><br />
+» Refractor current derivative workflows in <code>cpac_pipeline.py</code> (if you choose to accept it)</p>
+
+<p><strong>Why:</strong><br />
+» Easier to read code<br />
+» Easier to implement quick packs
+» Testing should be much more straightforward
+» Potential for an extension-like system for users to integrate their own derivatives in the future (plug-in-play)</p>
+
+<p>I personally have two objectives with these changes based on working with the ABIDE dataset. First, it is to make it easier to use other preprocessed data as inputs to CPAC. Second, it is to add a new derivative (functional density mapping; Tomasi et al., 2010) to the current pipeline system.</p>
+
+<h2 id="how-does-it-currently-work-using-reho-as-an-example">How does it currently work? Using REHO as an example.</h2>
+
+<p>I will be focusing on the <code>CPAC/pipeline/cpac_pipeline.py</code> file. This is a bit of a gargantuan file and contains both high-level (in terms of the pipeline) and low-level code, so it can get a bit confusing to go through. With that said, having everything in one place like this also makes it easier to go through after you know your way around.</p>
+
+<p>I’ll skip past most of this code till about line 1796<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> where the REHO workflow starts. Then, I’ll go line by line (somewhat) to understand what’s happening until line 1833 when this part of the REHO code ends. Let’s begin shall we? I might suggest a good whiskey, it goes well while reading certain code.</p>
+
+<h3 id="getting-our-toes-wet">Getting our toes wet</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">new_stops_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line"><span class="n">new_strat_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line"><span class="n">num_strat</span> <span class="o">=</span> <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The <code>num_strat</code> stores the current strategy number (or index in a list, in this case). A strategy is one while run of the pipeline (i think), and anytime there is a fork in the pipeline (e.g., using versus not using bandpass filtering), a new strategy is created. This is all determined before as the data is preprocessed.</p>
+
+<p>And it seems like the <code>new_stops_list</code> and <code>new_strat_list</code> do not get used in this section. So kindly ignore them. The <code>new_strat_list</code> is usually for when you add a new strategy to the list (i.e., there is a fork in the pipeline).</p>
+
+<h3 id="getting-our-feet-wet">Getting our feet wet</h3>
+
+<p>Ok so we haven’t even scratched the surface yet. Now I’ll throw all the code at you here for this section and then go through it gradually.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">if</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">runReHo</span><span class="p">:</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">strat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strat_list</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">preproc</span> <span class="o">=</span> <span class="n">create_reho</span><span class="p">()</span>
+</span><span class="line">        <span class="n">preproc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">cluster_size</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">clusterSize</span>
+</span><span class="line">        <span class="n">reho</span> <span class="o">=</span> <span class="n">preproc</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="s">&#39;reho_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">try</span><span class="p">:</span>
+</span><span class="line">            <span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_leaf_properties</span><span class="p">()</span>
+</span><span class="line">            <span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                             <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_res_filt&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">            <span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_brain_mask&#39;</span><span class="p">)</span>
+</span><span class="line">            <span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                             <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_mask&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="k">except</span><span class="p">:</span>
+</span><span class="line">            <span class="k">print</span> <span class="s">&#39;Invalid Connection: REHO:&#39;</span><span class="p">,</span> <span class="n">num_strat</span><span class="p">,</span> <span class="s">&#39; resource_pool: &#39;</span><span class="p">,</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_resource_pool</span><span class="p">()</span>
+</span><span class="line">            <span class="k">raise</span>
+</span><span class="line">
+</span><span class="line"><span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;raw_reho_map&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">)})</span>
+</span><span class="line">        <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;reho_Z_img&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.z_score&#39;</span><span class="p">)})</span>
+</span><span class="line">        <span class="n">strat</span><span class="o">.</span><span class="n">append_name</span><span class="p">(</span><span class="n">reho</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">create_log_node</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">,</span> <span class="n">num_strat</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">num_strat</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="lines-1-2">Lines 1-2</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">if</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">runReHo</span><span class="p">:</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">strat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strat_list</span><span class="p">):</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>For all derivatives, we usually start with an if statement that checks if the user wants to run this particular derivative. Then we loop through each strategy to access the preprocessed functional data. The node information for these files are kept in the <code>strat_list</code>, which is a list of strategy objects. </p>
+
+<h4 id="lines-4-6">Lines 4-6</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">    <span class="n">preproc</span> <span class="o">=</span> <span class="n">create_reho</span><span class="p">()</span>
+</span><span class="line">    <span class="n">preproc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">cluster_size</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">clusterSize</span>
+</span><span class="line">    <span class="n">reho</span> <span class="o">=</span> <span class="n">preproc</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="s">&#39;reho_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This is a little confusing but <code>preproc</code> is actually a workflow object for running REHO. It needs one input cluster size for the number of neighboring voxels to examine when measuring the regional homogeneity of the time-series. We then clone this reho workflow so that we can have a unique one for each reho named <code>'reho_%d' % num_strat</code>.</p>
+
+<p>Maybe you like me are wondering why you can’t pass the cluster size and the name of the workflow as an argument to <code>create_reho</code>, which would eliminate those two additional lines. Not sure.</p>
+
+<h4 id="lines-9-15">Lines 9-15</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_leaf_properties</span><span class="p">()</span>
+</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_res_filt&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_brain_mask&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_mask&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>One key step to any derivative is it’s inputs. As I mentioned before the <code>start</code> object holds the node information for the preprocessed functional data. First, we get the filtered functional data <code>inputspec.rest_res_filt</code>. Then, we get the functional brain mask. We will extract REHO estimates from our functional data within our brain mask.</p>
+
+<p>Now you might be wondering, what is the difference between <code>strat.get_leaf_properties()</code> vs. <code>strat.get_node_from_resource_pool('functional_brain_mask')</code>? The former (for the time series) is when one node and output name get added to the <code>start</code> object as a leaf. It appears that there is only one leaf of it’s kind and this is used specifically for functional preprocessed data. This file can be the functional data at different stages of preprocessing depending on either the stage in the pipeline or the preferences of the user. This could be the file preprocessed data, preprocessed + nuisance regression, or preprocess + nuisance regression + filtering. The latter (for the brain mask) is a bit more straightforward and simply gets the information for ‘functional_brain_mask’ in the strat object (an element in a dictionary).</p>
+
+<h4 id="lines-20-24">Lines 20-24</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">    <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;raw_reho_map&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">)})</span>
+</span><span class="line">    <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;reho_Z_img&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.z_score&#39;</span><span class="p">)})</span>
+</span><span class="line">    <span class="n">strat</span><span class="o">.</span><span class="n">append_name</span><span class="p">(</span><span class="n">reho</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">create_log_node</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">,</span> <span class="n">num_strat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>These functions all have to do with adding the files generated by our reho workflow into the <code>start</code> object. Specifically, we will be adding the raw reho map and the Z-score transformed reho map. The last line here is related to keeping a log of this REHO workflow by creating a new log node.</p>
+
+<p>Also I have no idea what the <code>strat.append_name</code> is about. Will need to find out.</p>
+
+<h4 id="lines-26-27">Lines 26-27</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">    <span class="n">num_strat</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">stops_list</span> <span class="o">+=</span> <span class="n">new_stops_list</span>
+</span><span class="line"><span class="n">strat_list</span> <span class="o">+=</span> <span class="n">new_strat_list</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I’ve sort-of gone through these lines before so I’ll spare you the repetition.</p>
+
+<h2 id="improving-this-code">Improving this code?</h2>
+
+<p>I picked a pretty easy derivative. I mentioned some avenues of improvement. The function that generates the derivative workflow should be able to take in arguments. The <code>get_leaf_properties</code> is a little confusing and should be replaced.</p>
+
+<p>The other avenue of improvement is the possibility that much of this is repeated in the other derivatives. You have some input functional data from the <code>strat</code> object and you need to save some output data into the <code>strat</code> object. We should be able to create an abstract <code>Derivative</code> class.</p>
+
+<p>So we take in some inputs that are in the strat class and we give them to the reho class.</p>
+
+<p>Below is a very rough and quick switch of this process.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Derivative</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot;For adding a derivative to your workflow&quot;&quot;&quot;</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">workflow</span><span class="p">,</span> <span class="n">strat</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwrds</span><span class="p">):</span>
+</span><span class="line">        <span class="nb">super</span><span class="p">(</span><span class="n">Derivative</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="o">=</span> <span class="n">workflow</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">strat</span> <span class="o">=</span> <span class="n">strat</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">kwrds</span> <span class="o">=</span> <span class="n">kwrds</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwrds</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">connect_inputs</span><span class="p">(</span><span class="o">**</span><span class="n">kwrds</span><span class="p">):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">deriv_in</span><span class="p">,</span><span class="n">strat_out</span> <span class="ow">in</span> <span class="n">kwrds</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+</span><span class="line">            <span class="n">node</span><span class="p">,</span><span class="n">out_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="n">strat_out</span><span class="p">)</span>
+</span><span class="line">            <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                                  <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">,</span> <span class="s">&#39;inputspec.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">deriv_in</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">connect_outputs</span><span class="p">(</span><span class="o">**</span><span class="n">kwrds</span><span class="p">):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">strat_in</span><span class="p">,</span><span class="n">deriv_out</span> <span class="ow">in</span> <span class="n">kwrds</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+</span><span class="line">            <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="n">strat_in</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">,</span> <span class="n">deriv_out</span><span class="p">)})</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>The exact line number (1796) will vary depending on your version. Just search ‘Inserting REHO’ and you’ll be golden.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zarrar Shehzad</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-20T21:36:00-05:00" pubdate data-updated="true">Dec 20<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/12/20/derivative-class/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/12/20/derivative-class/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/18/dparsf-quick-pack/" title="Previous Post: DPARSF Quick Pack">&laquo; DPARSF Quick Pack</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Contents</h1>
+  <ol class="nested" style="margin-left: 1.3em;">
+<li class="nested" style="list-style:inherit;">
+	<a href="#how-does-it-currently-work-using-reho-as-an-example">How does it currently work? Using REHO as an example.</a>
+<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#getting-our-toes-wet">Getting our toes wet</a></li>
+ 		<li class="nested" style="list-style:inherit;"><a href="#getting-our-feet-wet">Getting our feet wet</a></li>
+</ul>
+</li><li class="nested" style="list-style:inherit;">
+	<a href="#improving-this-code">Improving this code?</a>
+
+</li></ol>
+  </section>
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 132.30769230769232%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(13)</a> <a href='/blog/categories/cpac' style='font-size: 146.15384615384616%'>cpac(10)</a> <a href='/blog/categories/cwas' style='font-size: 146.15384615384616%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 109.23076923076923%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.61538461538461%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.61538461538461%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 113.84615384615384%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 127.6923076923077%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.61538461538461%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.61538461538461%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.61538461538461%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.61538461538461%'>writedown(1)</a> </span>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/20/derivative-class/">Derivative Class</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/czarrar">@czarrar</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'czarrar',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>My Pinboard</h1>
+  <ul id="pinboard_linkroll">Fetching linkroll...</ul>
+  <p><a href="http://pinboard.in/u:czarrar">My Pinboard Bookmarks &raquo;</a></p>
+</section>
+<script type="text/javascript">
+  var linkroll = 'pinboard_linkroll'; //id target for pinboard list
+  var pinboard_user = "czarrar"; //id target for pinboard list
+  var pinboard_count = 3; //id target for pinboard list
+  (function(){
+    var pinboardInit = document.createElement('script');
+    pinboardInit.type = 'text/javascript';
+    pinboardInit.async = true;
+    pinboardInit.src = '/javascripts/pinboard.js';
+    document.getElementsByTagName('head')[0].appendChild(pinboardInit);
+  })();
+</script>
+
+<!--
+    Calendar aside/plugin for octopress blogging framework.
+    Copyright (C) 2012  Neeraj Kumar ( neerajpkumar@gmail.com, neerajkumar@outlook.com)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<style>
+	.highlighted-calendar-day
+	{
+		color : #CCC;
+		font-weight : bold;
+	}
+	
+	.calendar-header-day{
+		font-weight : bold;
+		color : #AAA;
+		font-size : 14px;
+	}
+	
+	.highlighted-calendar-day a
+	{
+		
+	}
+	
+	.prev-link
+	{
+		float:left;
+	}
+	
+	.next-link
+	{
+		float: right;
+	}
+	.calendar-day
+	{
+		color : #888;
+		font-weight : 12px;
+	}
+	
+	.calendar-table
+	{
+		width : 100%;
+		
+	}
+	
+	.calendar-table td
+	{
+		border-right : dotted 1px lightgrey;
+		text-align : center;
+	}
+	
+	.calendar-table td:last-child
+	{
+		border-right : none;
+	}
+	
+	.calendar-table th
+	{
+		background-color : lightgrey;
+		text-align : center;
+	}
+	.prevCalendarLink img
+	{	
+		
+		width : 20px;
+		height : 20px;
+		border: 0px;
+		float: left;
+		
+	}
+	
+	.nextCalendarLink img
+	{
+		
+		width : 20px;
+		height: 20px;
+		border: 0px;
+		float: right;
+		
+	}
+</style>
+<script type="text/javascript" src="/javascripts/calendar.js"></script>
+<section id="calendarDiv">
+	<h1>Calendar</h1>
+	<span style="display:block" id="calendarSpan"></span>
+	<div>
+		<a href="#" class="previousMonth show"/><a href="#" class="nextMonth hide"/>
+	</div>
+</section>
+<script type="text/javascript">
+  
+monthCalendar = function(id,year,month)
+{
+  var highlightArray = new Array();
+  var hightlightLinks = new Array();
+  
+  highlightArray.push('12/20/2013');
+  hightlightLinks.push('/blog/2013/12/20/derivative-class/');
+  
+  highlightArray.push('12/18/2013');
+  hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
+  
+  highlightArray.push('12/17/2013');
+  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
+  
+  highlightArray.push('12/13/2013');
+  hightlightLinks.push('/blog/2013/12/13/week-50-friday/');
+  
+  highlightArray.push('12/10/2013');
+  hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
+  		
+  var cal = new Calendar(month,year,highlightArray,hightlightLinks);
+  cal.generateHTML(id);
+  var element = document.getElementById(id);
+  element.innerHTML = cal.getHTML();
+}
+	
+loadCalendar = function(){
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  monthCalendar('calendarDiv',year,month);
+}
+	
+	if(Array.prototype.indexOf == undefined)
+	{
+		 Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+			"use strict";
+			if (this == null) {
+				throw new TypeError();
+			}
+			var t = Object(this);
+			var len = t.length >>> 0;
+			if (len === 0) {
+				return -1;
+			}
+			var n = 0;
+			if (arguments.length > 0) {
+				n = Number(arguments[1]);
+				if (n != n) { // shortcut for verifying if it's NaN
+					n = 0;
+				} else if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+			if (n >= len) {
+				return -1;
+			}
+			var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+			for (; k < len; k++) {
+				if (k in t && t[k] === searchElement) {
+					return k;
+				}
+			}
+			return -1;
+		}
+	}
+$(document).ready(function(){
+  loadCalendar();
+});
+</script>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Zarrar Shehzad -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

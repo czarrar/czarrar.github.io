@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-19T00:39:52-05:00</updated>
+  <updated>2013-12-21T18:38:40-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,232 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Derivative Class]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/20/derivative-class/"/>
+    <updated>2013-12-20T21:36:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/20/derivative-class</id>
+    <content type="html"><![CDATA[<p><strong>Mission:</strong><br />
+» Refractor current derivative workflows in <code>cpac_pipeline.py</code> (if you choose to accept it)</p>
+
+<p><strong>Why:</strong><br />
+» Easier to read code<br />
+» Easier to implement quick packs
+» Testing should be much more straightforward
+» Potential for an extension-like system for users to integrate their own derivatives in the future (plug-in-play)</p>
+
+<p>I personally have two objectives with these changes based on working with the ABIDE dataset. First, it is to make it easier to use other preprocessed data as inputs to CPAC. Second, it is to add a new derivative (functional density mapping; Tomasi et al., 2010) to the current pipeline system.</p>
+
+<h2 id="how-does-it-currently-work-using-reho-as-an-example">How does it currently work? Using REHO as an example.</h2>
+
+<p>I will be focusing on the <code>CPAC/pipeline/cpac_pipeline.py</code> file. This is a bit of a gargantuan file and contains both high-level (in terms of the pipeline) and low-level code, so it can get a bit confusing to go through. With that said, having everything in one place like this also makes it easier to go through after you know your way around.</p>
+
+<p>I’ll skip past most of this code till about line 1796<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> where the REHO workflow starts. Then, I’ll go line by line (somewhat) to understand what’s happening until line 1833 when this part of the REHO code ends. Let’s begin shall we? I might suggest a good whiskey, it goes well while reading certain code.</p>
+
+<h3 id="getting-our-toes-wet">Getting our toes wet</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">new_stops_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line"><span class="n">new_strat_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line"><span class="n">num_strat</span> <span class="o">=</span> <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The <code>num_strat</code> stores the current strategy number (or index in a list, in this case). A strategy is one while run of the pipeline (i think), and anytime there is a fork in the pipeline (e.g., using versus not using bandpass filtering), a new strategy is created. This is all determined before as the data is preprocessed.</p>
+
+<p>And it seems like the <code>new_stops_list</code> and <code>new_strat_list</code> do not get used in this section. So kindly ignore them. The <code>new_strat_list</code> is usually for when you add a new strategy to the list (i.e., there is a fork in the pipeline).</p>
+
+<h3 id="getting-our-feet-wet">Getting our feet wet</h3>
+
+<p>Ok so we haven’t even scratched the surface yet. Now I’ll throw all the code at you here for this section and then go through it gradually.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">if</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">runReHo</span><span class="p">:</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">strat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strat_list</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">preproc</span> <span class="o">=</span> <span class="n">create_reho</span><span class="p">()</span>
+</span><span class="line">        <span class="n">preproc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">cluster_size</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">clusterSize</span>
+</span><span class="line">        <span class="n">reho</span> <span class="o">=</span> <span class="n">preproc</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="s">&#39;reho_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">try</span><span class="p">:</span>
+</span><span class="line">            <span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_leaf_properties</span><span class="p">()</span>
+</span><span class="line">            <span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                             <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_res_filt&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">            <span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_brain_mask&#39;</span><span class="p">)</span>
+</span><span class="line">            <span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                             <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_mask&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="k">except</span><span class="p">:</span>
+</span><span class="line">            <span class="k">print</span> <span class="s">&#39;Invalid Connection: REHO:&#39;</span><span class="p">,</span> <span class="n">num_strat</span><span class="p">,</span> <span class="s">&#39; resource_pool: &#39;</span><span class="p">,</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_resource_pool</span><span class="p">()</span>
+</span><span class="line">            <span class="k">raise</span>
+</span><span class="line">
+</span><span class="line"><span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;raw_reho_map&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">)})</span>
+</span><span class="line">        <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;reho_Z_img&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.z_score&#39;</span><span class="p">)})</span>
+</span><span class="line">        <span class="n">strat</span><span class="o">.</span><span class="n">append_name</span><span class="p">(</span><span class="n">reho</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">create_log_node</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">,</span> <span class="n">num_strat</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">num_strat</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="lines-1-2">Lines 1-2</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">if</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">runReHo</span><span class="p">:</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">strat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strat_list</span><span class="p">):</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>For all derivatives, we usually start with an if statement that checks if the user wants to run this particular derivative. Then we loop through each strategy to access the preprocessed functional data. The node information for these files are kept in the <code>strat_list</code>, which is a list of strategy objects. </p>
+
+<h4 id="lines-4-6">Lines 4-6</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">    <span class="n">preproc</span> <span class="o">=</span> <span class="n">create_reho</span><span class="p">()</span>
+</span><span class="line">    <span class="n">preproc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">cluster_size</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">clusterSize</span>
+</span><span class="line">    <span class="n">reho</span> <span class="o">=</span> <span class="n">preproc</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="s">&#39;reho_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num_strat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This is a little confusing but <code>preproc</code> is actually a workflow object for running REHO. It needs one input cluster size for the number of neighboring voxels to examine when measuring the regional homogeneity of the time-series. We then clone this reho workflow so that we can have a unique one for each reho named <code>'reho_%d' % num_strat</code>.</p>
+
+<p>Maybe you like me are wondering why you can’t pass the cluster size and the name of the workflow as an argument to <code>create_reho</code>, which would eliminate those two additional lines. Not sure.</p>
+
+<h4 id="lines-9-15">Lines 9-15</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_leaf_properties</span><span class="p">()</span>
+</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_res_filt&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span> <span class="o">=</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="s">&#39;functional_brain_mask&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">reho</span><span class="p">,</span> <span class="s">&#39;inputspec.rest_mask&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>One key step to any derivative is it’s inputs. As I mentioned before the <code>start</code> object holds the node information for the preprocessed functional data. First, we get the filtered functional data <code>inputspec.rest_res_filt</code>. Then, we get the functional brain mask. We will extract REHO estimates from our functional data within our brain mask.</p>
+
+<p>Now you might be wondering, what is the difference between <code>strat.get_leaf_properties()</code> vs. <code>strat.get_node_from_resource_pool('functional_brain_mask')</code>? The former (for the time series) is when one node and output name get added to the <code>start</code> object as a leaf. It appears that there is only one leaf of it’s kind and this is used specifically for functional preprocessed data. This file can be the functional data at different stages of preprocessing depending on either the stage in the pipeline or the preferences of the user. This could be the file preprocessed data, preprocessed + nuisance regression, or preprocess + nuisance regression + filtering. The latter (for the brain mask) is a bit more straightforward and simply gets the information for ‘functional_brain_mask’ in the strat object (an element in a dictionary).</p>
+
+<h4 id="lines-20-24">Lines 20-24</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">    <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;raw_reho_map&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">)})</span>
+</span><span class="line">    <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="s">&#39;reho_Z_img&#39;</span><span class="p">:(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.z_score&#39;</span><span class="p">)})</span>
+</span><span class="line">    <span class="n">strat</span><span class="o">.</span><span class="n">append_name</span><span class="p">(</span><span class="n">reho</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">create_log_node</span><span class="p">(</span><span class="n">reho</span><span class="p">,</span> <span class="s">&#39;outputspec.raw_reho_map&#39;</span><span class="p">,</span> <span class="n">num_strat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>These functions all have to do with adding the files generated by our reho workflow into the <code>start</code> object. Specifically, we will be adding the raw reho map and the Z-score transformed reho map. The last line here is related to keeping a log of this REHO workflow by creating a new log node.</p>
+
+<p>Also I have no idea what the <code>strat.append_name</code> is about. Will need to find out.</p>
+
+<h4 id="lines-26-27">Lines 26-27</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line">    <span class="n">num_strat</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">stops_list</span> <span class="o">+=</span> <span class="n">new_stops_list</span>
+</span><span class="line"><span class="n">strat_list</span> <span class="o">+=</span> <span class="n">new_strat_list</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I’ve sort-of gone through these lines before so I’ll spare you the repetition.</p>
+
+<h2 id="improving-this-code">Improving this code?</h2>
+
+<p>I picked a pretty easy derivative. I mentioned some avenues of improvement. The function that generates the derivative workflow should be able to take in arguments. The <code>get_leaf_properties</code> is a little confusing and should be replaced.</p>
+
+<p>The other avenue of improvement is the possibility that much of this is repeated in the other derivatives. You have some input functional data from the <code>strat</code> object and you need to save some output data into the <code>strat</code> object. We should be able to create an abstract <code>Derivative</code> class.</p>
+
+<p>So we take in some inputs that are in the strat class and we give them to the reho class.</p>
+
+<p>Below is a very rough and quick switch of this process.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Derivative</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot;For adding a derivative to your workflow&quot;&quot;&quot;</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">workflow</span><span class="p">,</span> <span class="n">strat</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwrds</span><span class="p">):</span>
+</span><span class="line">        <span class="nb">super</span><span class="p">(</span><span class="n">Derivative</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="o">=</span> <span class="n">workflow</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">strat</span> <span class="o">=</span> <span class="n">strat</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">kwrds</span> <span class="o">=</span> <span class="n">kwrds</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwrds</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">connect_inputs</span><span class="p">(</span><span class="o">**</span><span class="n">kwrds</span><span class="p">):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">deriv_in</span><span class="p">,</span><span class="n">strat_out</span> <span class="ow">in</span> <span class="n">kwrds</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+</span><span class="line">            <span class="n">node</span><span class="p">,</span><span class="n">out_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strat</span><span class="o">.</span><span class="n">get_node_from_resource_pool</span><span class="p">(</span><span class="n">strat_out</span><span class="p">)</span>
+</span><span class="line">            <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+</span><span class="line">                                  <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">,</span> <span class="s">&#39;inputspec.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">deriv_in</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">connect_outputs</span><span class="p">(</span><span class="o">**</span><span class="n">kwrds</span><span class="p">):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">strat_in</span><span class="p">,</span><span class="n">deriv_out</span> <span class="ow">in</span> <span class="n">kwrds</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+</span><span class="line">            <span class="n">strat</span><span class="o">.</span><span class="n">update_resource_pool</span><span class="p">({</span><span class="n">strat_in</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">,</span> <span class="n">deriv_out</span><span class="p">)})</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>The exact line number (1796) will vary depending on your version. Just search ‘Inserting REHO’ and you’ll be golden.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DPARSF Quick Pack]]></title>
@@ -1480,75 +1706,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 </script>
 
 <div id="chart_div" style="width: 500px; height: 300px;"></div>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Similarity of IQ CWAS Across Scans]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans/"/>
-    <updated>2013-11-24T11:51:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/24/similarity-of-iq-cwas-across-scans</id>
-    <content type="html"><![CDATA[<p>Get the overlap (dice) and similarity (spearman) of the IQ CWAS between scans, and estimate the significance. Below are the current results for a simple comparison.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: right">measures</th>
-      <th>values</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: right">dice</td>
-      <td>0.2731</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">pearson</td>
-      <td>0.2571</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">spearman</td>
-      <td>0.2511</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">kendalls</td>
-      <td>0.1695</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Let’s focus on just the dice and spearman for now. For a proper permutation test, I want to make sure that the permuted subject indices are the same for scan 1 and 2. This would allow one to test the hypothesis of how similar the CWAS results for IQ are between scans when given a random list of participants.</p>
-
-<h2 id="re-running-mdmr-for-scan-2">Re-Running MDMR for Scan 2</h2>
-
-<p>This understanding mean I need to rerun the MDMR for scan 2 using the permutation indices from scan 1. I have created a new script to run these modified MDMR analyses for scan 2.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class=""><span class="line">cd /home2/data/Projects/CWAS/share/nki/05_cwas
-</span><span class="line">./30_mdmr_using_perms.bash</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="permutations-for-dice-and-spearman">Permutations for dice and spearman</h2>
-
-<p>Now we need to take the extra time to gather p-values for everything so we can threshold and compare. I’ll use some of the false positive code <code>share/results/20_cwas_iq/40_false_positives.R</code> in getting the p-values of the permutations. The result of this inspiration can be found in <code>/home2/data/Projects/CWAS/share/figures/fig_03</code> where I created the <code>E2_compare_scans.R</code> file. This script does the following (among other things):</p>
-
-<ol>
-  <li>Read in the permuted Fstats</li>
-  <li>Loop through each permutation so you can</li>
-  <li>Calculate significance for both scans</li>
-  <li>Compare the two scans with dice (p &lt; 0.05) and spearman</li>
-  <li>Return this result and loop to #3 for the next permutation</li>
-</ol>
-
-<p>Note that I’m not clustering correcting for the dice comparison and I’m using p-values here instead of F-stats.</p>
-
-<h2 id="results">Results</h2>
-
-<p>Highly significant with dice = 0.2731411 (p &lt; 0.001 or p = 0.0003) and spearman rho = 0.2510524 (p &lt; 0.005 or p = 0.004).</p>
-
-<h2 id="update-connectir">Update Connectir</h2>
-
-<p>To do this analysis, I updated the MDMR script to accept an external permutation file. This is with the new option <code>--permfiles</code>. It accepts a list of descriptor files (comma separated) that should reflect the number of factors2perm.</p>
 ]]></content>
   </entry>
   

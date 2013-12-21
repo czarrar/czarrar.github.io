@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cmi | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cmi/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-19T00:39:52-05:00</updated>
+  <updated>2013-12-21T18:38:40-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,183 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Derivative Class]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/20/derivative-class/"/>
+    <updated>2013-12-20T21:36:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/20/derivative-class</id>
+    <content type="html"><![CDATA[<p><strong>Mission:</strong><br />
+» Refractor current derivative workflows in <code>cpac_pipeline.py</code> (if you choose to accept it)</p>
+
+<p><strong>Why:</strong><br />
+» Easier to read code<br />
+» Easier to implement quick packs
+» Testing should be much more straightforward
+» Potential for an extension-like system for users to integrate their own derivatives in the future (plug-in-play)</p>
+
+<p>I personally have two objectives with these changes based on working with the ABIDE dataset. First, it is to make it easier to use other preprocessed data as inputs to CPAC. Second, it is to add a new derivative (functional density mapping; Tomasi et al., 2010) to the current pipeline system.</p>
+
+<h2 id="how-does-it-currently-work-using-reho-as-an-example">How does it currently work? Using REHO as an example.</h2>
+
+<p>I will be focusing on the <code>CPAC/pipeline/cpac_pipeline.py</code> file. This is a bit of a gargantuan file and contains both high-level (in terms of the pipeline) and low-level code, so it can get a bit confusing to go through. With that said, having everything in one place like this also makes it easier to go through after you know your way around.</p>
+
+<p>I’ll skip past most of this code till about line 1796<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> where the REHO workflow starts. Then, I’ll go line by line (somewhat) to understand what’s happening until line 1833 when this part of the REHO code ends. Let’s begin shall we? I might suggest a good whiskey, it goes well while reading certain code.</p>
+
+<h3 id="getting-our-toes-wet">Getting our toes wet</h3>
+
+<p><code>python
+new_stops_list = []
+new_strat_list = []
+num_strat = 0
+</code></p>
+
+<p>The <code>num_strat</code> stores the current strategy number (or index in a list, in this case). A strategy is one while run of the pipeline (i think), and anytime there is a fork in the pipeline (e.g., using versus not using bandpass filtering), a new strategy is created. This is all determined before as the data is preprocessed.</p>
+
+<p>And it seems like the <code>new_stops_list</code> and <code>new_strat_list</code> do not get used in this section. So kindly ignore them. The <code>new_strat_list</code> is usually for when you add a new strategy to the list (i.e., there is a fork in the pipeline).</p>
+
+<h3 id="getting-our-feet-wet">Getting our feet wet</h3>
+
+<p>Ok so we haven’t even scratched the surface yet. Now I’ll throw all the code at you here for this section and then go through it gradually.</p>
+
+<p>``` python
+if 1 in c.runReHo:
+    for i,strat in enumerate(strat_list):</p>
+
+<pre><code>    preproc = create_reho()
+    preproc.inputs.inputspec.cluster_size = c.clusterSize
+    reho = preproc.clone('reho_%d' % num_strat)
+
+    try:
+        node, out_file = strat.get_leaf_properties()
+        workflow.connect(node, out_file,
+                         reho, 'inputspec.rest_res_filt')
+
+        node, out_file = strat.get_node_from_resource_pool('functional_brain_mask')
+        workflow.connect(node, out_file,
+                         reho, 'inputspec.rest_mask')
+    except:
+        print 'Invalid Connection: REHO:', num_strat, ' resource_pool: ', strat.get_resource_pool()
+        raise
+</code></pre>
+
+<p>strat.update_resource_pool({‘raw_reho_map’:(reho, ‘outputspec.raw_reho_map’)})
+        strat.update_resource_pool({‘reho_Z_img’:(reho, ‘outputspec.z_score’)})
+        strat.append_name(reho.name)</p>
+
+<pre><code>    create_log_node(reho, 'outputspec.raw_reho_map', num_strat)
+    
+    num_strat += 1
+</code></pre>
+
+<p>```</p>
+
+<h4 id="lines-1-2">Lines 1-2</h4>
+
+<p><code>python
+if 1 in c.runReHo:
+    for i,strat in enumerate(strat_list):
+</code></p>
+
+<p>For all derivatives, we usually start with an if statement that checks if the user wants to run this particular derivative. Then we loop through each strategy to access the preprocessed functional data. The node information for these files are kept in the <code>strat_list</code>, which is a list of strategy objects. </p>
+
+<h4 id="lines-4-6">Lines 4-6</h4>
+
+<p><code>python
+        preproc = create_reho()
+        preproc.inputs.inputspec.cluster_size = c.clusterSize
+        reho = preproc.clone('reho_%d' % num_strat)
+</code></p>
+
+<p>This is a little confusing but <code>preproc</code> is actually a workflow object for running REHO. It needs one input cluster size for the number of neighboring voxels to examine when measuring the regional homogeneity of the time-series. We then clone this reho workflow so that we can have a unique one for each reho named <code>'reho_%d' % num_strat</code>.</p>
+
+<p>Maybe you like me are wondering why you can’t pass the cluster size and the name of the workflow as an argument to <code>create_reho</code>, which would eliminate those two additional lines. Not sure.</p>
+
+<h4 id="lines-9-15">Lines 9-15</h4>
+
+<p>``` python</p>
+
+<p>node, out_file = strat.get_leaf_properties()
+workflow.connect(node, out_file, reho, ‘inputspec.rest_res_filt’)</p>
+
+<p>node, out_file = strat.get_node_from_resource_pool(‘functional_brain_mask’)
+workflow.connect(node, out_file, reho, ‘inputspec.rest_mask’)</p>
+
+<p>``` </p>
+
+<p>One key step to any derivative is it’s inputs. As I mentioned before the <code>start</code> object holds the node information for the preprocessed functional data. First, we get the filtered functional data <code>inputspec.rest_res_filt</code>. Then, we get the functional brain mask. We will extract REHO estimates from our functional data within our brain mask.</p>
+
+<p>Now you might be wondering, what is the difference between <code>strat.get_leaf_properties()</code> vs. <code>strat.get_node_from_resource_pool('functional_brain_mask')</code>? The former (for the time series) is when one node and output name get added to the <code>start</code> object as a leaf. It appears that there is only one leaf of it’s kind and this is used specifically for functional preprocessed data. This file can be the functional data at different stages of preprocessing depending on either the stage in the pipeline or the preferences of the user. This could be the file preprocessed data, preprocessed + nuisance regression, or preprocess + nuisance regression + filtering. The latter (for the brain mask) is a bit more straightforward and simply gets the information for ‘functional_brain_mask’ in the strat object (an element in a dictionary).</p>
+
+<h4 id="lines-20-24">Lines 20-24</h4>
+
+<p>``` python
+        strat.update_resource_pool({‘raw_reho_map’:(reho, ‘outputspec.raw_reho_map’)})
+        strat.update_resource_pool({‘reho_Z_img’:(reho, ‘outputspec.z_score’)})
+        strat.append_name(reho.name)</p>
+
+<pre><code>    create_log_node(reho, 'outputspec.raw_reho_map', num_strat)
+</code></pre>
+
+<p>```</p>
+
+<p>These functions all have to do with adding the files generated by our reho workflow into the <code>start</code> object. Specifically, we will be adding the raw reho map and the Z-score transformed reho map. The last line here is related to keeping a log of this REHO workflow by creating a new log node.</p>
+
+<p>Also I have no idea what the <code>strat.append_name</code> is about. Will need to find out.</p>
+
+<h4 id="lines-26-27">Lines 26-27</h4>
+
+<p><code>python
+        num_strat += 1
+stops_list += new_stops_list
+strat_list += new_strat_list
+</code></p>
+
+<p>I’ve sort-of gone through these lines before so I’ll spare you the repetition.</p>
+
+<h2 id="improving-this-code">Improving this code?</h2>
+
+<p>I picked a pretty easy derivative. I mentioned some avenues of improvement. The function that generates the derivative workflow should be able to take in arguments. The <code>get_leaf_properties</code> is a little confusing and should be replaced.</p>
+
+<p>The other avenue of improvement is the possibility that much of this is repeated in the other derivatives. You have some input functional data from the <code>strat</code> object and you need to save some output data into the <code>strat</code> object. We should be able to create an abstract <code>Derivative</code> class.</p>
+
+<p>So we take in some inputs that are in the strat class and we give them to the reho class.</p>
+
+<p>Below is a very rough and quick switch of this process.</p>
+
+<p>``` python
+class Derivative(object):
+    “"”For adding a derivative to your workflow”””
+    def <strong>init</strong>(self, fun, workflow, strat, <em>args, **kwrds):
+        super(Derivative, self).<strong>init</strong>()
+        self.workflow = workflow
+        self.strat = strat
+        self.args = args
+        self.kwrds = kwrds
+        self.deriv = func(</em>args, **kwrds)</p>
+
+<pre><code>def connect_inputs(**kwrds):
+    for deriv_in,strat_out in kwrds.iteritems():
+        node,out_file = self.strat.get_node_from_resource_pool(strat_out)
+        self.workflow.connect(node, out_file, 
+                              self.deriv, 'inputspec.%s' % deriv_in)
+
+def connect_outputs(**kwrds):
+    for strat_in,deriv_out in kwrds.iteritems():
+        strat.update_resource_pool({strat_in: (self.deriv, deriv_out)})
+</code></pre>
+
+<p>```</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>The exact line number (1796) will vary depending on your version. Just search ‘Inserting REHO’ and you’ll be golden.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DPARSF Quick Pack]]></title>
@@ -282,84 +459,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 <h2 id="integrating-cwas-code-with-cpac">Integrating CWAS Code with CPAC</h2>
 
 <p>My issue in using the main CPAC repository was that although I was a member, I needed to be made an owner. After figuring this out, I created a ‘cwas’ branch and added the relevant changes to the cwas folder.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Week 49 - Friday]]></title>
-    <link href="http://czarrar.github.io/blog/2013/12/06/week-49-friday/"/>
-    <updated>2013-12-06T10:35:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/12/06/week-49-friday</id>
-    <content type="html"><![CDATA[<h2 id="plan">Plan</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>[] QC (1 hour)</li>
-    </ul>
-  </li>
-  <li>CPAC
-    <ul>
-      <li>[] Finish adapting fast eigenvector code (30 mins)</li>
-      <li>[] Write SVD version of eigenvector (1 hour)</li>
-      <li>[] Test new eigenvector code (2 hours)</li>
-      <li>[] @Steve CWAS Regression Test (1 hour)</li>
-    </ul>
-  </li>
-  <li>Tagging
-    <ul>
-      <li>[] Meeting to discuss criteria (1 hour)</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Look into SVD (20 mins). But it’s slower.</p>
-
-<p><code>python
-import numpy as np
-from numpy.linalg import svd
-from scipy.sparse.linalg import eigsh
-mat = np.random.random((100,1000))
-%timeit u,s,v = svd(mat.T, False)
-%timeit evalue, evector = eigsh(mat.T.dot(mat), k=1, which='LM', maxiter=1000) 
-</code></p>
-
-<p>In this case the current approach took 45.2ms and the SVD approach took 135ms.</p>
-
-<h2 id="fast-eigenvector-centrality">Fast Eigenvector Centrality</h2>
-
-<p>The plan for testing would be to first make sure that the code results are close to the original approach and possibly also compare to an SVD approach.</p>
-
-<h2 id="brain-size-ala-maarten">Brain Size ala Maarten</h2>
-
-<p>We ended up dropping the ball in getting Maarten some of these scripts.</p>
-
-<p>I need to create an input file with <code>T1file,age,sex</code>. If I am using the NKI Rockland pilot dataset, then I believe I should be able to find the relevant path. For the most recent data, there have been additions so let me confirm that I have access to everything. Ok so first, pilot dataset.</p>
-
-<p>``` r
-rawdir    &lt;- ‘/home2/data/Originals/Rockland/raw’
-phenofile &lt;- ‘/home2/data/Originals/Rockland/NKI.1-39_phenotypic.csv’</p>
-
-<p>pheno     &lt;- read.csv(phenofile)
-df        &lt;- pheno[,c(1,3,12)]
-df$paths  &lt;- file.path(rawdir, df$Subject, “touse”, “anat”, “mprage.nii.gz”)
-df$exists &lt;- file.exists(df$paths)*1</p>
-
-<p>df.txt &lt;- df[df$exists==1,c(4,3,2)]
-write.table(df.txt, file=”rockland_pilot.txt”, row.names=F, col.names=F, quote=F)
-```</p>
-
-<p>I want to now look at the Enhanced dataset.</p>
-
-<h2 id="thoughts">Thoughts</h2>
-
-<h3 id="plan-better">Plan Better</h3>
-
-<p>Last few days I feel that I haven’t gotten through as much as I could have. Possibly due to not sleeping as much and partly due to more socializing like with the speaker’s visit and a new office mate. Let’s try differently today.</p>
-
-<h3 id="link-to-pages-by-week-and-month">Link to pages by week and month</h3>
-
-<p>Another nice thing would be to have a summary page at the end of the week with links to all the other pages that week (might want to check if those exist?) and similarly at the end of the month could have a page with the lists for that month. I wonder if this could be within the pages section?</p>
 ]]></content>
   </entry>
   
