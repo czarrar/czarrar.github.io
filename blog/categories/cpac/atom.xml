@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cpac | Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/blog/categories/cpac/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-21T18:38:40-05:00</updated>
+  <updated>2013-12-30T14:57:56-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Fast Eigenvector Centrality]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/27/fast-eigenvector-centrality/"/>
+    <updated>2013-12-27T19:15:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/27/fast-eigenvector-centrality</id>
+    <content type="html"><![CDATA[<p>I’m working on adding the fast eigenvector centrality code<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> to CPAC. A big thing about the fast code is that it only works with unthresholded data. So one thing that we will do is </p>
+
+<h2 id="unit-testing">Unit Testing</h2>
+
+<p>I have a set of unit tests in <code>CPAC/network_centrality/tests/core.py</code>. I don’t like the filename core and should look to changing that. I wonder if the filenames can be somewhat generic with one file that has all the CPAC/nipype relevant code, another that has more utility functions, and a last one that does the core functionality. Something to consider.</p>
+
+<p>So I have tests that use random data and run the following commands to generate the data:</p>
+
+<p><code>python
+# Normalize Random Time-Series Data
+m = np.random.random((ntpts,nvoxs))
+m = norm_cols(m)
+# Correlation Data with Range 0-1
+mm = m.T.dot(m) # note that need to generate connectivity matrix here
+mm = (1+mm)/2  
+</code></p>
+
+<p>Note the range of the correlation values is changed to be 0-1 since</p>
+
+<ol>
+  <li>Negative values don’t make much sense for the eigenvectors</li>
+  <li>The power method used in the fast approach is based on this range</li>
+</ol>
+
+<p>Then, we can create the two different outputs based on the original and faster approach.</p>
+
+<p><code>python
+ref  = eigenvector_centrality(mm, verbose=False)
+comp = fast_eigenvector_centrality(m, verbose=False)  
+</code></p>
+
+<p>We finally compare the outputs and make sure they are almost equal, which it should. This degree of similarity however seems to be a little lower when using real data.</p>
+
+<p><code>python
+diff = np.abs(ref-comp).mean()
+ok_(diff &lt; np.spacing(1e2))  
+</code></p>
+
+<h2 id="confusion">Confusion</h2>
+
+<p>One point of confusion is why do you multiply the eigenvectors by your correlation matrix and then divide by your dominant eigenvalue? This is done in CPAC’s standard eigenvector centrality code and likely stems from work in Lohmann et al<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>. TODO: finish this section explaining my possible misunderstanding…</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>todo add citation.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p>todo add citation.<a href="#fnref:2" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Test Smoothing]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/27/test-smoothing/"/>
+    <updated>2013-12-27T17:31:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/27/test-smoothing</id>
+    <content type="html"><![CDATA[<p>[<strong>Note</strong>: This article was updated on 2013-12-30]</p>
+
+<p>I added a few lines to the cpac pipeline that apply smoothing to the 4D functional file in standard space. The information can be found in <code>/home2/data/Projects/CPAC_Regression_Test/smooth_tests</code>.</p>
+
+<h2 id="cpac-processing">CPAC Processing</h2>
+
+<p>Today, I wanted to start some testing of this new code. I had some issues that were related to not using a most recent version of nipype and also not linking to this version properly. I ran this test on Friday but saw today that the CPAC output appeared a little strange. There were multiple pipeline directories when there should have been only one. I am rerunning it now as I changed the config file from running both ANTS and FSL for registration to just ANTS.</p>
+
+<h2 id="testing">Testing</h2>
+
+<p>The simplest way to test the code is to manually smooth the unsmoothed 4D data and compare it to the smoothed version run with CPAC. I have written such a test in <code>x_compare.py</code> within the same main directory.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Derivative Class]]></title>
@@ -337,245 +416,6 @@ anat_suffixes = {
 } </p>
 
 <p>```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Updating Centrality]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/25/updating-centrality/"/>
-    <updated>2013-11-25T10:26:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/25/updating-centrality</id>
-    <content type="html"><![CDATA[<p>I’ll go through the different changes in the CPAC centrality code that I’ve implemented.</p>
-
-<h2 id="normalized-timeseries">Normalized Timeseries</h2>
-
-<p>The easiest change was to use normalized time series, which then allows one to compute the crossproduct of the time series to calculate the correlations. Below are the relevant code slices that call on functions used in CWAS.</p>
-
-<p><code>python
-timeseries = norm_cols(timeseries.T)
-corr_matrix = timeseries[:,j:i].T.dot(timeseries)
-</code></p>
-
-<h2 id="block-size">Block Size</h2>
-
-<p>We changed the block size to more accurately reflect the underlying operations. Although it should be noted that numpy has some poor memory handling as certain temporary objects will still be maintained in memory throwing off this calculation. However, later sections will show attempts to rectify this issue.</p>
-
-<p>``` python
-nvoxs   = timeseries.shape[0]
-ntpts   = timeseries.shape[1]
-nbytes  = timeseries.dtype.itemsize</p>
-
-<p>if memory_allocated:
-    memory_in_bytes = memory_allocated * 1024.0<em>*3    # assume it is in GB
-    block_size = int( memory_in_bytes/(nvoxs * nbytes) - 2 - ntpts</em>nbytes )</p>
-
-<p>if block_size &gt; nvoxs:
-    block_size = nvoxs
-elif block_size &lt; 1:
-    raise MemoryError(“ Not enough memory available to perform degree centrality”)
-```</p>
-
-<p>Note that the calculation is also dynamic with the data type of the time series.</p>
-
-<h2 id="no-more-nan-to-number">No More NaN to Number</h2>
-
-<p>This function <code>np.nan_to_num</code> is applied on the correlation matrix to turn any NaNs to 0s. This will occur when a time-series is all 0s leading to an error of sorts when calculating the correlation as you will be dividing by zeros and what not. The easiest way to avoid this error is to remove any flat time-series. I do this in the <code>load</code> function that initially reads in the time-series and the mask data.</p>
-
-<p>I create an additional mask that is specific to the data. This is then combined with the externally defined template mask for a final mask at a later step.</p>
-
-<p><code>python
-datmask = (data!=0).any(axis=3)
-mask    = nib.load(template).get_data().astype(np.float32)
-</code></p>
-
-<h2 id="more-efficient-sum-of-thresholded-correlations">More Efficient Sum of Thresholded Correlations</h2>
-
-<p>This particular step (below) is both slow and takes up a lot of memory. For instance the <code>corr_matrix &gt; r_value</code> must create a new copy of the matrix.</p>
-
-<p><code>python
- np.sum((corr_matrix &gt; r_value).astype(np.float32), axis = 1)
-</code></p>
-
-<p>One solution is to use cython. For now, I will do this without compiling the whole package and use <code>pyxthon</code> that will dynamically compile the new function at runtime. Below is the cython code.</p>
-
-<p><code>python
-def centrality_binarize_double(np.ndarray[double, ndim=2] cmat, np.ndarray[double, ndim=1] cent, double thresh):
-    cdef unsigned int i,j
-    for i in xrange(cmat.shape[0]):
-        for j in xrange(cmat.shape[1]):
-            cent[i] = cent[i] + 1*(cmat[i,j] &gt; thresh)
-#
-def centrality_weighted_double(np.ndarray[double, ndim=2] cmat, np.ndarray[double, ndim=1] cent, double thresh):
-    cdef unsigned int i,j
-    for i in xrange(cmat.shape[0]):
-        for j in xrange(cmat.shape[1]):
-            cent[i] = cent[i] + cmat[i,j]*(cmat[i,j] &gt; thresh)
-</code></p>
-
-<p>I created a wrapper centrality function that is fairly straightforward. It allows one to access all the different C functions through one python function. I also wrote 2 tests that both passed. Here’s one example to illustrate the new functionality (<code>comp</code>) relative to the old (<code>ref</code>).</p>
-
-<p>``` python
-def test_centrality_binarize():
-    print “testing centrality binarize”</p>
-
-<pre><code>method      = "binarize"
-nblock      = 20
-nvoxs       = 100
-r_value     = 0.2
-corr_matrix = np.random.random((nblock, nvoxs))
-
-ref  = np.sum(corr_matrix&gt;r_value, axis=1)
-comp = centrality(corr_matrix, r_value, method)
-
-assert_equal(ref, comp) ```
-</code></pre>
-
-<h2 id="deleting-temporary-correlation-matrix">Deleting Temporary Correlation Matrix</h2>
-
-<p>The correlation matrix created for each block loop will not be freed, hence there is a build up of these matrices in memory. A simple fix for this is to delete the correlation matrix at the end of each loop. It is then freed when the next loop iteration begins.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Friday - Week 47]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/22/friday-week-47/"/>
-    <updated>2013-11-22T15:44:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/22/friday-week-47</id>
-    <content type="html"><![CDATA[<h2 id="summary">Summary</h2>
-
-<h3 id="centrality-and-memory">Centrality and Memory</h3>
-
-<p>The conclusion from today’s work is that at three steps in the computation of centrality there is a huge spike in memory load that then stays there.</p>
-
-<ol>
-  <li>When computing the correlations, additional memory is allocated then that used for the output (up to 0.5x more).</li>
-  <li>When converting any NaNs to 0s, more than 2x more than the current memory is used (I guess because a copy of the data is created but not wiped from memory at a later point).</li>
-  <li>When calculating the degree centrality from the connectivity about 2x the amount of memory is used at this step.</li>
-</ol>
-
-<p>We actually can deal with step 2, since this only occurs because some time-series are flat or all zeros. If we mask those time series out in advance, then we don’t need to worry about that particular issue.</p>
-
-<p>The third step might also be solved semi-easily with some cython. There is one nice tutorial/comparison here: http://technicaldiscovery.blogspot.com/2011/06/speeding-up-python-numpy-cython-and.html. We could then write a function that loops through the array, thresholds each element, and adds each element to a vector.</p>
-
-<p>Further details are given below on examining memory issues in centrality using (1) 3mm brain and breakpoints and (2) a toy example to get more details.</p>
-
-<h3 id="abide">ABIDE</h3>
-
-<p>I began running CPAC to register the participant functional data and derivatives to 3mm space.</p>
-
-<h2 id="memory-issues">Memory Issues</h2>
-
-<p>There are a couple of nice pages on some memory issues with numpy. One suggestion was to upgrade to version 1.7.1+ where some memory leaks were fixed. I’m currently using version 1.6.1 so it’s possible using a more advanced version could help…however, I did check with a version of numpy Dan has and this didn’t solve my particular issues.</p>
-
-<h2 id="detailed-memory-test">Detailed Memory Test</h2>
-
-<p>I have put a few breakpoints in the centrality function to see where the memory blows up. I will record the memory usage based on <code>ps</code> at one of 4 points below. I really run the following command <code>./memtopX ./x_test_memprof.py</code>. I will be using 3mm data here.</p>
-
-<p><code>python
-TODO: breaks pigments will compile elsewhere
-</code></p>
-
-<p>block -&gt; 34382 0</p>
-
-<ol>
-  <li>93.88 MB</li>
-  <li>139.12 MB</li>
-  <li>6.45 GB (but note that before this point, memory goes up to 18.1GB)</li>
-  <li>6.45 GB</li>
-  <li>6.45 GB (but note that before this point, memory goes up to 13.75GB)</li>
-</ol>
-
-<p>block -&gt; 45262 34382</p>
-
-<p>Also there was a second block so points 3-4 repeat. They both had 2.49 GB as that used.</p>
-
-<p>Took about 324.71 secs or 5mins.</p>
-
-<h2 id="for-our-sanity">For our Sanity</h2>
-
-<p>So to confirm that we get sane numbers in python, one can run the following code and then monitor the memory externally with <code>./memtop</code>. Here, we will create a <code>corr_matrix</code> identical in size as in block 1 above. We find generally that our own calculation of this matrix is the same as that within python, which is the same as that using <code>memtop</code> (depends on <code>ps</code>). To get <code>memtop</code>, please follow this link: http://justinfranks.com/code/scripts/memtop.</p>
-
-<p>``` python
-import numpy as np</p>
-
-<p>nvoxs = 34382
-corr_matrix = np.ones((nvoxs, nvoxs)).astype(‘float32’)</p>
-
-<h1 id="our-assumption-44gb">Our assumption (4.4GB)</h1>
-<p>size_us = 4 * nvoxs<strong>2 / float(1024</strong>2)</p>
-
-<h1 id="using-numpy-44gb">Using numpy (4.4GB)</h1>
-<p>size_np = corr_matrix.nbytes / float(1024**2)</p>
-
-<h1 id="from-the-command-line-445gb">From the command-line (4.45GB)</h1>
-<p>import os
-os.system(“./memtop | grep ipython”)
-```</p>
-
-<h2 id="understanding-memory-for-dot-product">Understanding memory for dot product</h2>
-
-<p>``` python
-import sys
-sys.path = [’’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/User/lib/python2.7/site-packages/nibabel-1.3.0-py2.7.egg’, ‘/home2/dlurie/Enthought/Canopy</em>64bit/User/lib/python2.7/site-packages/pydicom-0.9.8-py2.7.egg’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/User/lib/python2.7/site-packages/networkx-1.7-py2.7.egg’, ‘/home2/dlurie/Enthought/Canopy</em>64bit/User/lib/python2.7/site-packages/pysurfer-0.3.1-py2.7.egg’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python27.zip’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python2.7/plat-linux2’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/lib-tk’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86<em>64/lib/python2.7/lib-old’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/lib-dynload’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/User/lib/python2.7/site-packages’, ‘/home2/dlurie/Enthought/Canopy</em>64bit/System/lib/python2.7/site-packages’, ‘/home2/dlurie/Enthought/Canopy<em>64bit/System/lib/python2.7/site-packages/PIL’, ‘/home2/dlurie/Canopy/appdata/canopy-1.0.3.1262.rh5-x86</em>64/lib/python2.7/site-packages’]</p>
-
-<h1 id="note-there-is-a-base-memory-of-8486--mb">Note there is a base memory of 84.86  MB</h1>
-<p>import numpy as np
-npsize = lambda x: x.nbytes/float(1024**3)</p>
-
-<p>nvoxs = 10000
-ntpts = 150</p>
-
-<h1 id="there-is-an-increase-to-1007-mb-with-the-time-series">There is an increase to 100.7 MB with the time series</h1>
-<p># this is a little larger then it’s 11.5MB size
-timeseries = np.random.random((nvoxs,ntpts)).T
-timeseries[:,100:104] = 0</p>
-
-<h1 id="to-86373-mb">to 863.73 MB</h1>
-<p>corr_matrix = np.zeros((nvoxs,nvoxs))</p>
-
-<h1 id="to-135-gb-even-after-it-is-done">to 1.35 GB (even after it is done)</h1>
-<p>np.dot(timeseries.T[:,0:nvoxs], timeseries, out=corr_matrix)</p>
-
-<h1 id="to-247-gb-but-stays-at-209-gb">to 2.47 GB but stays at 2.09 GB</h1>
-<p>corr_matrix = np.nan_to_num(corr_matrix)</p>
-
-<h1 id="still-at-209-gb">still at 2.09 GB</h1>
-<p>degree_centrality_weighted = np.zeros(nvoxs)</p>
-
-<h1 id="to-368-gb-but-stays-at-284-gb">to 3.68 GB but stays at 2.84 GB</h1>
-<p>r_value = 0.2
-np.sum(corr_matrix*(corr_matrix &gt; r_value), axis=1, out=degree_centrality_weighted)</p>
-
-<h1 id="note-that-theoretically-we-might-have-thought-a-limit-of-075-gb">Note that theoretically, we might have thought a limit of 0.75 GB</h1>
-<p>(nvoxs<em>nvoxs + nvoxs + nvoxs</em>ntpts)*8/float(1024**3)
-```</p>
-
-<p>Below is the parallel commands that I ran to monitor the memory usage above.</p>
-
-<p><code>bash
-./memtop | grep ipython # get the pid
-PID=7873
-while [[ True ]]; do
-	./memtop -s -p $PID
-	sleep 0.5
-done
-</code></p>
-
-<h2 id="memory-leakage-links">Memory Leakage Links</h2>
-
-<ul>
-  <li>http://stackoverflow.com/questions/12422307/reducing-numpy-memory-footprint-in-long-running-application</li>
-  <li>http://stackoverflow.com/questions/12461413/why-does-comparison-of-a-numpy-array-with-a-list-consume-so-much-memory</li>
-  <li>http://stackoverflow.com/questions/15191391/how-to-avoid-this-four-line-memory-leak-with-numpymkl</li>
-</ul>
-
-<h2 id="running-centrality-on-abide">Running Centrality on ABIDE</h2>
-
-<p>The usage approaches 18GB when I set a 12GB limit. On gelert, each node has about 16GB of RAM. The easiest thing might be to run one process on each node with a limit of 6GB to keep well within range.</p>
-
-<h2 id="registering-data-to-3mm-space">Registering Data to 3mm Space</h2>
-
-<p>I also want to redo the registration to be in 3mm standard space, whereas it currently is in 2mm. I’m working on the script for that task and have started running this on gelert now.</p>
 ]]></content>
   </entry>
   

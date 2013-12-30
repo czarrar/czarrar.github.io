@@ -9,10 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Mission:
-» Refractor current derivative workflows in cpac_pipeline.py (if you choose to accept it) Why:
-» Easier to read code
-» Easier to implement &hellip;">
+  <meta name="description" content="I’m working on adding the fast eigenvector centrality code1 to CPAC. A big thing about the fast code is that it only works with unthresholded data. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +72,150 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/27/fast-eigenvector-centrality/">Fast Eigenvector Centrality</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-27T19:15:00-05:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’m working on adding the fast eigenvector centrality code<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> to CPAC. A big thing about the fast code is that it only works with unthresholded data. So one thing that we will do is </p>
+
+<h2 id="unit-testing">Unit Testing</h2>
+
+<p>I have a set of unit tests in <code>CPAC/network_centrality/tests/core.py</code>. I don’t like the filename core and should look to changing that. I wonder if the filenames can be somewhat generic with one file that has all the CPAC/nipype relevant code, another that has more utility functions, and a last one that does the core functionality. Something to consider.</p>
+
+<p>So I have tests that use random data and run the following commands to generate the data:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># Normalize Random Time-Series Data</span>
+</span><span class="line"><span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">ntpts</span><span class="p">,</span><span class="n">nvoxs</span><span class="p">))</span>
+</span><span class="line"><span class="n">m</span> <span class="o">=</span> <span class="n">norm_cols</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</span><span class="line"><span class="c"># Correlation Data with Range 0-1</span>
+</span><span class="line"><span class="n">mm</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="c"># note that need to generate connectivity matrix here</span>
+</span><span class="line"><span class="n">mm</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">mm</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Note the range of the correlation values is changed to be 0-1 since</p>
+
+<ol>
+  <li>Negative values don’t make much sense for the eigenvectors</li>
+  <li>The power method used in the fast approach is based on this range</li>
+</ol>
+
+<p>Then, we can create the two different outputs based on the original and faster approach.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">ref</span>  <span class="o">=</span> <span class="n">eigenvector_centrality</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class="line"><span class="n">comp</span> <span class="o">=</span> <span class="n">fast_eigenvector_centrality</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We finally compare the outputs and make sure they are almost equal, which it should. This degree of similarity however seems to be a little lower when using real data.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ref</span><span class="o">-</span><span class="n">comp</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</span><span class="line"><span class="n">ok_</span><span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">spacing</span><span class="p">(</span><span class="mf">1e2</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="confusion">Confusion</h2>
+
+<p>One point of confusion is why do you multiply the eigenvectors by your correlation matrix and then divide by your dominant eigenvalue? This is done in CPAC’s standard eigenvector centrality code and likely stems from work in Lohmann et al<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>. TODO: finish this section explaining my possible misunderstanding…</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>todo add citation.<a href="#fnref:1" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p>todo add citation.<a href="#fnref:2" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/27/test-smoothing/">Test Smoothing</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-27T17:31:00-05:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>[<strong>Note</strong>: This article was updated on 2013-12-30]</p>
+
+<p>I added a few lines to the cpac pipeline that apply smoothing to the 4D functional file in standard space. The information can be found in <code>/home2/data/Projects/CPAC_Regression_Test/smooth_tests</code>.</p>
+
+<h2 id="cpac-processing">CPAC Processing</h2>
+
+<p>Today, I wanted to start some testing of this new code. I had some issues that were related to not using a most recent version of nipype and also not linking to this version properly. I ran this test on Friday but saw today that the CPAC output appeared a little strange. There were multiple pipeline directories when there should have been only one. I am rerunning it now as I changed the config file from running both ANTS and FSL for registration to just ANTS.</p>
+
+<h2 id="testing">Testing</h2>
+
+<p>The simplest way to test the code is to manually smooth the unsmoothed 4D data and compare it to the smoothed version run with CPAC. I have written such a test in <code>x_compare.py</code> within the same main directory.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1114,146 +1255,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/05/week-49-thursday/">Week 49 - Thursday</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-05T11:48:00-05:00" pubdate data-updated="true">Dec 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-  <li>ABIDE
-    <ul>
-      <li>[x] QC (1 hour)</li>
-    </ul>
-  </li>
-  <li>Fast Eigenvector Centrality
-    <ul>
-      <li>[x] Tried installing the C++ version (2 hrs)</li>
-    </ul>
-  </li>
-  <li>Tagging</li>
-</ul>
-
-<h2 id="abide">ABIDE</h2>
-
-<p>I am still waiting on Xinian to get back to me about his global signal regressed data (getting filtered vs non-filtered data).</p>
-
-<p>I want to also get some QC done today.</p>
-
-<h2 id="cpac">CPAC</h2>
-
-<h3 id="fecm">fECM</h3>
-
-<p>I was tried to install the fast eigenvector centrality code but had problems with importing all the C++11 headers on my mac. It wasn’t totally clear what was wrong to me except that the mac doesn’t really ship with the latest gear. So I contacted Stan to install a very recent version of gcc on rocky and I tried to install the latest version of gcc on my computer through home-brew. Still waiting on the first option and for the second, after some work, I was able to start the following command <code>brew install --enable-cxx --enable-fortran gcc49</code>. This failure is a little disappointing because it seems so simple but I’ve now hung up my towel for the moment and going to focus on my other tasks.</p>
-
-<h2 id="tagging">Tagging</h2>
-
-<p>I really want to get at least one hour of tagging into the mix here.</p>
-
-<h2 id="general">General</h2>
-
-<p>I emailed Dan Dickstein suggesting to use the R version of CWAS for now and pointed him to an install script that I have on github.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/04/week-49-wednesday/">Week 49 - Wednesday</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-04T10:02:00-05:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="summarytodo">Summary/TODO</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>[x] QC (1 hour)</li>
-    </ul>
-  </li>
-  <li>CPAC (related to ABIDE)
-    <ul>
-      <li>[] Functional Density Mapping</li>
-      <li>[] Fast Eigenvector Centrality
-        <ul>
-          <li>[x] Respond to Wink</li>
-          <li>[x] Tried installing the C++ version (1 hr)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>[] Tagging</li>
-  <li>Dan Dickstein CWAS
-    <ul>
-      <li>[x] Get details from Dan</li>
-      <li>[x] Phil Meeting about CWAS Paper. Discussed way to get confidence intervals for simulation power analysis. (1 hr)</li>
-    </ul>
-  </li>
-  <li>CWAS with Steve. Worked out a plan to have a workable version of CWAS into the next release (30 min)</li>
-  <li>Went to talk with Matt Hutchinson. Asked a super intelligent question. (1-2 hrs)</li>
-</ul>
-
-<h2 id="abide-qc">ABIDE QC</h2>
-
-<p>Start at 10am till 11am.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1269,11 +1270,19 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 132.30769230769232%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(13)</a> <a href='/blog/categories/cpac' style='font-size: 146.15384615384616%'>cpac(10)</a> <a href='/blog/categories/cwas' style='font-size: 146.15384615384616%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 109.23076923076923%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.61538461538461%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.61538461538461%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 113.84615384615384%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 127.6923076923077%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.61538461538461%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.61538461538461%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.61538461538461%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.61538461538461%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 128.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(15)</a> <a href='/blog/categories/cpac' style='font-size: 148.0%'>cpac(12)</a> <a href='/blog/categories/cwas' style='font-size: 140.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 108.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 112.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 124.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.0%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/fast-eigenvector-centrality/">Fast Eigenvector Centrality</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/test-smoothing/">Test Smoothing</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/20/derivative-class/">Derivative Class</a>
@@ -1285,14 +1294,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
     
       <li class="post">
         <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/13/week-50-friday/">Week 50 - Friday</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/10/installing-connectir/">Installing Connectir</a>
       </li>
     
   </ul>
@@ -1453,6 +1454,12 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/27/2013');
+  hightlightLinks.push('/blog/2013/12/27/fast-eigenvector-centrality/');
+  
+  highlightArray.push('12/27/2013');
+  hightlightLinks.push('/blog/2013/12/27/test-smoothing/');
+  
   highlightArray.push('12/20/2013');
   hightlightLinks.push('/blog/2013/12/20/derivative-class/');
   
@@ -1461,12 +1468,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/17/2013');
   hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
-  
-  highlightArray.push('12/13/2013');
-  hightlightLinks.push('/blog/2013/12/13/week-50-friday/');
-  
-  highlightArray.push('12/10/2013');
-  hightlightLinks.push('/blog/2013/12/10/installing-connectir/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

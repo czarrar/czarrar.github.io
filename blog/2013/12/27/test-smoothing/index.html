@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Bootstrap of IQ CWAS - Zarrar's Journaling</title>
+  <title>Test Smoothing - Zarrar's Journaling</title>
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the &hellip;">
+  <meta name="description" content="[Note: This article was updated on 2013-12-30] I added a few lines to the cpac pipeline that apply smoothing to the 4D functional file in standard &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/">
+  <link rel="canonical" href="http://czarrar.github.io/blog/2013/12/27/test-smoothing/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Bootstrap of IQ CWAS</h1>
+        <h1 class="entry-title">Test Smoothing</h1>
       
     
     
@@ -93,154 +93,24 @@
   
 
 
-<time datetime="2013-11-04T23:38:00-05:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
+<time datetime="2013-12-27T17:31:00-05:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>As per one of the reviewer comments, I am assessing the reproducibility of CWAS with a bootstrap analysis. I am only examining the results from the IQ dataset and will be looking at both the scans.</p>
+<div class="entry-content"><p>[<strong>Note</strong>: This article was updated on 2013-12-30]</p>
 
-<h2 id="bootstrap-with-subsampling">Bootstrap with Subsampling</h2>
+<p>I added a few lines to the cpac pipeline that apply smoothing to the 4D functional file in standard space. The information can be found in <code>/home2/data/Projects/CPAC_Regression_Test/smooth_tests</code>.</p>
 
-<p>I randomly generated 500 samples of subject indices that were 90% of my original set. For each sample, I computed a standard MDMR for IQ. The script for running the short scan can be found at <code>/home/data/Projects/CWAS/share/nki/09_bootstrap/10_boot_voxelwise_short.R</code>.</p>
+<h2 id="cpac-processing">CPAC Processing</h2>
 
-<p><strong>DONE</strong></p>
+<p>Today, I wanted to start some testing of this new code. I had some issues that were related to not using a most recent version of nipype and also not linking to this version properly. I ran this test on Friday but saw today that the CPAC output appeared a little strange. There were multiple pipeline directories when there should have been only one. I am rerunning it now as I changed the config file from running both ANTS and FSL for registration to just ANTS.</p>
 
-<p>Now we want to represent a few aspects of the data. The easiest approach here is for us to plot the correlation and dice values comparing the different subsamples. This could help show how reproducible the different bootstrap samples are for our data. We can also further visualize this with surface maps of two of the samples with a median dice coefficient. In summary, todo:</p>
+<h2 id="testing">Testing</h2>
 
-<ul>
-  <li>Histogram of percent significant results (just for reference)</li>
-  <li>Correlate and dice</li>
-  <li>Plot two samples on brain</li>
-</ul>
-
-<h3 id="code-to-plot">Code to Plot</h3>
-
-<p>I want to write this code to export the relevant figures to flickr, which I can then use here and in any of my pages documents.</p>
-
-<p>The relevant scripts to plot are in <code>/home2/data/Projects/CWAS/share/figures/sfig_bootstrap</code> with output directed to <code>/home2/data/Projects/CWAS/figures/sfig_bootstrap</code>.</p>
-
-<hr />
-
-<h2 id="bootstrap-with-replication">Bootstrap with Replication</h2>
-
-<p>Note I do not take this approach anymore but I have included it for posterity (is that spelled right).</p>
-
-<h3 id="analysis">Analysis</h3>
-
-<p>I conducted the CWAS as a plugin with the <code>boot</code> package. The actual code can be seen with the github gist at the end. Note that the boot package resamples with replacement.</p>
-
-<p>After I got the p-values, I computed a correlation between all the possible pairs of bootstrap sample results. I used a spearman correlation so the exact transformation of the p-value to something more appropriate wasn’t necessary. To me these values appear a bit low.</p>
-
-<h3 id="plotting">Plotting</h3>
-
-<p>I want to look at a randomish sampling of the results to see how similar or dissimilar things appear.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">mpath <span class="o">&lt;-</span> file.path<span class="p">(</span><span class="s">&quot;/home2/data/Projects/CWAS/nki/cwas&quot;</span><span class="p">,</span> scan<span class="p">,</span>  <span class="s">&quot;compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/mask.nii.gz&quot;</span><span class="p">)</span>
-</span><span class="line">mask  <span class="o">&lt;-</span> read.mask<span class="p">(</span>mpath<span class="p">)</span>
-</span><span class="line">hdr   <span class="o">&lt;-</span> read.nifti.header<span class="p">(</span>mpath<span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h3 id="histogram-issue">Histogram Issue</h3>
-
-<p>When I examine the histogram of p-values for the original ordering compared to 2 bootstrap samples, I find some striking differences.</p>
-
-<p>So my thought now is to see if the bootstrap approach with <code>boot</code> is shifting things in the wrong direction.</p>
-
-<p>My analysis/tests show that bootstrap with replication is not appropriate here and instead we should be using subsampling (bootstrapping without replication).</p>
-
-<p>http://rpubs.com/czarrar/cwas_distributions</p>
-
-<h4 id="older-approach">Older approach</h4>
-
-<p>I previously had examined the proportion of significant results across bootstrap samples. The basic plots can be found on http://rpubs.com/czarrar/cwas-bootstrap.</p>
-
-<h3 id="code">Code</h3>
-
-<div><script src="https://gist.github.com/7164165.js?file=cwas_bootstrap.R"></script>
-<noscript><pre><code>library(connectir)
-library(boot)
-
-# data = model
-boot_mdmr &lt;- function(formula, data, indices, sdist, factors2perm) {
-    ###
-    # Distances
-    ###
-    
-    # We need to sample the distances based on the indices
-    # that is we will create a new set of distances with subject indices based on indices
-    # This will also create a local copy of the big matrix
-    cat(&quot;Subset of subjects in distances\n&quot;)
-    sdist &lt;- filter_subdist(sdist, subs=indices)
-    
-    # Now we can gowerify
-    cat(&quot;Gowerify\n&quot;)
-    gmat &lt;- gower.subdist2(sdist)
-    
-    # Info
-    nvoxs &lt;- ncol(gmat)
-    nsubs &lt;- sqrt(nrow(gmat))
-    nperms &lt;- 4999
-    nfactors &lt;- 1
-    
-    
-    ###
-    # Calculate memory demands
-    ###
-    opts &lt;- list(verbose=TRUE, memlimit=20, blocksize=0, superblocksize=0)
-    opts &lt;- get_mdmr_memlimit(opts, nsubs, nvoxs, nperms, nfactors)
-    # this will give opts$blocksize and opts$superblocksize that will
-    # limit total RAM usage to 20GB
-    
-    ###
-    # Get the model ready
-    ###
-    
-    cat(&quot;Subset of subjects in model\n&quot;)
-    model &lt;- data.frame(data[indices,])
-    
-    
-    ###
-    # Call MDMR
-    ###
-    
-    ret &lt;- mdmr(gmat, formula, model, nperms, factors2perm, 
-                 superblocksize=opts$superblocksize, blocksize=opts$blocksize)
-    
-    -log10(ret$pvals[,]) # or should I just return p-values?
-}
-
-
-###
-# Bootstrap ROI-based IQ Results
-###
-
-# Set parallel processing
-nthreads &lt;- 8
-set_parallel_procs(1, nthreads, TRUE)
-
-# Read in the distances (using ROI-based distances and not voxelwise here)
-#dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_kvoxs_fwhm08_to_kvoxs_fwhm08/subdist.desc&quot;
-dpath &lt;- &quot;/home2/data/Projects/CWAS/nki/cwas/short/compcor_only_rois_random_k0800/subdist.desc&quot;
-sdist &lt;- attach.big.matrix(dpath)
-
-# Read in the model
-mpath &lt;- &quot;/home2/data/Projects/CWAS/share/nki/subinfo/40_Set1_N104/subject_info_with_iq_and_gcors.csv&quot;
-model &lt;- read.csv(mpath)
-model &lt;- subset(model, select=c(&quot;FSIQ&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;short_meanFD&quot;))
-
-# Set the formula
-f     &lt;- ~ FSIQ + Age + Sex + short_meanFD
-
-# Call
-results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdist, factors2perm=&quot;FSIQ&quot;)
-</code></pre></noscript></div>
-
+<p>The simplest way to test the code is to manually smooth the unsmoothed 4D data and compare it to the smoothed version run with CPAC. I have written such a test in <code>x_compare.py</code> within the same main directory.</p>
 </div>
 
 
@@ -263,12 +133,12 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
   
 
 
-<time datetime="2013-11-04T23:38:00-05:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
+<time datetime="2013-12-27T17:31:00-05:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cwas/'>cwas</a>
+    <a class='category' href='/blog/categories/cmi/'>cmi</a>, <a class='category' href='/blog/categories/cpac/'>cpac</a>
   
 </span>
 
@@ -277,7 +147,7 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/11/04/bootstrap-of-iq-cwas/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://czarrar.github.io/blog/2013/12/27/test-smoothing/" data-via="" data-counturl="http://czarrar.github.io/blog/2013/12/27/test-smoothing/" >Tweet</a>
   
   
   
@@ -286,10 +156,10 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/04/monday/" title="Previous Post: Monday">&laquo; Monday</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/20/derivative-class/" title="Previous Post: Derivative Class">&laquo; Derivative Class</a>
       
       
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/05/tuesday/" title="Next Post: Tuesday">Tuesday &raquo;</a>
+        <a class="basic-alignment right articlenav" href="/blog/2013/12/27/fast-eigenvector-centrality/" title="Next Post: Fast Eigenvector Centrality">Fast Eigenvector Centrality &raquo;</a>
       
     </p>
   </footer>
@@ -300,22 +170,7 @@ results &lt;- boot(data=model, statistic=boot_mdmr, R=500, formula=f, sdist=sdis
 <aside class="sidebar">
   
     
-  <section>
-  <h1>Contents</h1>
-  <ol class="nested" style="margin-left: 1.3em;">
-<li class="nested" style="list-style:inherit;">
-	<a href="#bootstrap-with-subsampling">Bootstrap with Subsampling</a>
-<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#code-to-plot">Code to Plot</a></li>
-</ul>
-</li><li class="nested" style="list-style:inherit;">
-	<a href="#bootstrap-with-replication">Bootstrap with Replication</a>
-<ol class="nested" style="margin-left: 1.3em;">		<li class="nested" style="list-style:inherit;"><a href="#analysis">Analysis</a></li>
- 		<li class="nested" style="list-style:inherit;"><a href="#plotting">Plotting</a></li>
- 		<li class="nested" style="list-style:inherit;"><a href="#histogram-issue">Histogram Issue</a></li>
- 		<li class="nested" style="list-style:inherit;"><a href="#code">Code</a></li>
-</ul>
-</li></ol>
-  </section>
+  
 
 <section>
   <h1>Tag Cloud</h1>
