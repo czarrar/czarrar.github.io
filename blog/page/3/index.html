@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="Plans Today, I planned to work on…see summary section for what actually got done. finish memory fixes to centrality code checking on the 3mm &hellip;">
+  <meta name="description" content="I’ll go through the different changes in the CPAC centrality code that I’ve implemented. Normalized Timeseries The easiest change was to use &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,166 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/25/updating-centrality/">Updating Centrality</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-25T10:26:00-05:00" pubdate data-updated="true">Nov 25<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’ll go through the different changes in the CPAC centrality code that I’ve implemented.</p>
+
+<h2 id="normalized-timeseries">Normalized Timeseries</h2>
+
+<p>The easiest change was to use normalized time series, which then allows one to compute the crossproduct of the time series to calculate the correlations. Below are the relevant code slices that call on functions used in CWAS.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">norm_cols</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[:,</span><span class="n">j</span><span class="p">:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="block-size">Block Size</h2>
+
+<p>We changed the block size to more accurately reflect the underlying operations. Although it should be noted that numpy has some poor memory handling as certain temporary objects will still be maintained in memory throwing off this calculation. However, later sections will show attempts to rectify this issue.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">nvoxs</span>   <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line"><span class="n">ntpts</span>   <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line"><span class="n">nbytes</span>  <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+</span><span class="line">
+</span><span class="line"><span class="k">if</span> <span class="n">memory_allocated</span><span class="p">:</span>
+</span><span class="line">    <span class="n">memory_in_bytes</span> <span class="o">=</span> <span class="n">memory_allocated</span> <span class="o">*</span> <span class="mf">1024.0</span><span class="o">**</span><span class="mi">3</span>    <span class="c"># assume it is in GB</span>
+</span><span class="line">    <span class="n">block_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">memory_in_bytes</span><span class="o">/</span><span class="p">(</span><span class="n">nvoxs</span> <span class="o">*</span> <span class="n">nbytes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">ntpts</span><span class="o">*</span><span class="n">nbytes</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="n">nvoxs</span><span class="p">:</span>
+</span><span class="line">    <span class="n">block_size</span> <span class="o">=</span> <span class="n">nvoxs</span>
+</span><span class="line"><span class="k">elif</span> <span class="n">block_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class="line">    <span class="k">raise</span> <span class="ne">MemoryError</span><span class="p">(</span><span class="s">&quot; Not enough memory available to perform degree centrality&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Note that the calculation is also dynamic with the data type of the time series.</p>
+
+<h2 id="no-more-nan-to-number">No More NaN to Number</h2>
+
+<p>This function <code>np.nan_to_num</code> is applied on the correlation matrix to turn any NaNs to 0s. This will occur when a time-series is all 0s leading to an error of sorts when calculating the correlation as you will be dividing by zeros and what not. The easiest way to avoid this error is to remove any flat time-series. I do this in the <code>load</code> function that initially reads in the time-series and the mask data.</p>
+
+<p>I create an additional mask that is specific to the data. This is then combined with the externally defined template mask for a final mask at a later step.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">datmask</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="n">mask</span>    <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="more-efficient-sum-of-thresholded-correlations">More Efficient Sum of Thresholded Correlations</h2>
+
+<p>This particular step (below) is both slow and takes up a lot of memory. For instance the <code>corr_matrix &gt; r_value</code> must create a new copy of the matrix.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>One solution is to use cython. For now, I will do this without compiling the whole package and use <code>pyxthon</code> that will dynamically compile the new function at runtime. Below is the cython code.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">centrality_binarize_double</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">cmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">cent</span><span class="p">,</span> <span class="n">double</span> <span class="n">thresh</span><span class="p">):</span>
+</span><span class="line">    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+</span><span class="line">            <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
+</span><span class="line"><span class="c">#</span>
+</span><span class="line"><span class="k">def</span> <span class="nf">centrality_weighted_double</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">cmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">cent</span><span class="p">,</span> <span class="n">double</span> <span class="n">thresh</span><span class="p">):</span>
+</span><span class="line">    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+</span><span class="line">            <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I created a wrapper centrality function that is fairly straightforward. It allows one to access all the different C functions through one python function. I also wrote 2 tests that both passed. Here’s one example to illustrate the new functionality (<code>comp</code>) relative to the old (<code>ref</code>).</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">test_centrality_binarize</span><span class="p">():</span>
+</span><span class="line">    <span class="k">print</span> <span class="s">&quot;testing centrality binarize&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">method</span>      <span class="o">=</span> <span class="s">&quot;binarize&quot;</span>
+</span><span class="line">    <span class="n">nblock</span>      <span class="o">=</span> <span class="mi">20</span>
+</span><span class="line">    <span class="n">nvoxs</span>       <span class="o">=</span> <span class="mi">100</span>
+</span><span class="line">    <span class="n">r_value</span>     <span class="o">=</span> <span class="mf">0.2</span>
+</span><span class="line">    <span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nblock</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">ref</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">&gt;</span><span class="n">r_value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">    <span class="n">comp</span> <span class="o">=</span> <span class="n">centrality</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">assert_equal</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="deleting-temporary-correlation-matrix">Deleting Temporary Correlation Matrix</h2>
+
+<p>The correlation matrix created for each block loop will not be freed, hence there is a build up of these matrices in memory. A simple fix for this is to delete the correlation matrix at the end of each loop. It is then freed when the next loop iteration begins.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1186,74 +1346,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/15/testing-quick-pack/">Testing Quick Pack</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-15T15:41:00-05:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today, I want to test my different quick pack results with the combined preprocessing + derivates run.</p>
-
-<p>Note that the files for running the preprocessing and derivatives are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/test_quick_pack</code>.</p>
-
-<p>The files for testing the outputs are in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/tests/quickpack</code>.</p>
-
-<h2 id="failed-comparison">Failed Comparison</h2>
-
-<p>My first run at comparing the ALFF/REHO results failed. So now I’m figuring out what was different in their inputs (assuming that actual computation was the same).</p>
-
-<p>The complete CPAC run uses that following as input for REHO:</p>
-
-<p><code>/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Working/resting_preproc_0051466_session_1/nuisance_0/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global1.motion1.quadratic1.gm0.compcor1.csf0/residuals/residual.nii.gz</code></p>
-
-<p>So here it appears there is no frequency filtering that was applied. However, it appears the input used in the reho quick pack is not the same although the path looks similar:</p>
-
-<p><code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/sym_links/pipeline_MerrittIsland/_compcor_ncomponents_5_linear1.global1.motion1.quadratic1.compcor1.CSF_0.96_GM_0.7_WM_0.96/0051466_session_1/scan_rest_1_rest/func/functional_nuisance_residuals.nii.gz</code></p>
-
-<p>Now since the above file is in the symlinks directory, I found out the original file and it appears it points to a nuisance residuals that has not had global correction.</p>
-
-<p><code>/home2/data/Projects/ABIDE_Initiative/CPAC/test_qp/All_Output/pipeline_MerrittIsland/0051466_session_1/functional_nuisance_residuals/_scan_rest_1_rest/_csf_threshold_0.96/_gm_threshold_0.7/_wm_threshold_0.96/_compcor_ncomponents_5_selector_pc10.linear1.wm0.global0.motion1.quadratic1.gm0.compcor1.csf0/residual.nii.gz</code></p>
-
-<p>If I use the global1 version of things, the files used with All_Output and Reho_Output are now the same. This implies that the symlinks for All_Output should not be used. So for now use only the working directory outputs!!! I should be able to guess these from the sink outputs?</p>
-
-<h2 id="test-1">Test 1</h2>
-
-<script type="math/tex; mode=display"> \sqrt{2*(1-r)} </script>
-
-<h3 id="greater-test">Greater Test</h3>
-
-<p>Match - Game - Point</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1271,11 +1363,15 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 128.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(15)</a> <a href='/blog/categories/cpac' style='font-size: 148.0%'>cpac(12)</a> <a href='/blog/categories/cwas' style='font-size: 140.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 108.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 112.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 124.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 130.0%'>abide(8)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(16)</a> <a href='/blog/categories/cpac' style='font-size: 145.0%'>cpac(12)</a> <a href='/blog/categories/cwas' style='font-size: 137.5%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 107.5%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 103.75%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 103.75%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 111.25%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 122.5%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 103.75%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 103.75%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 103.75%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 103.75%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/30/ccs-derivatives/">CCS Derivatives</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/27/fast-eigenvector-centrality/">Fast Eigenvector Centrality</a>
@@ -1291,10 +1387,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
       </li>
     
   </ul>
@@ -1455,6 +1547,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/30/2013');
+  hightlightLinks.push('/blog/2013/12/30/ccs-derivatives/');
+  
   highlightArray.push('12/27/2013');
   hightlightLinks.push('/blog/2013/12/27/fast-eigenvector-centrality/');
   
@@ -1466,9 +1561,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/18/2013');
   hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
-  
-  highlightArray.push('12/17/2013');
-  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

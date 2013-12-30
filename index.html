@@ -9,7 +9,7 @@
   <meta name="author" content="Zarrar Shehzad">
 
   
-  <meta name="description" content="I’m working on adding the fast eigenvector centrality code1 to CPAC. A big thing about the fast code is that it only works with unthresholded data. &hellip;">
+  <meta name="description" content="These data are from Xinian’s lab and are preprocessed with CCS in-house (their house). Limited details on these scripts can be found at XXX. All the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,63 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/30/ccs-derivatives/">CCS Derivatives</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-30T15:16:00-05:00" pubdate data-updated="true">Dec 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>These data are from Xinian’s lab and are preprocessed with CCS in-house (their house). Limited details on these scripts can be found at XXX.</p>
+
+<p>All the derivatives (discussed below) were generated with a modified version of CPAC that allows for a ghetto version of quick pack (i.e., derivates can be generated with external inputs and not just CPAC preprocessed data). This particular blend of CPAC can be found in <code>/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC</code>.</p>
+
+<h2 id="ts-dr-falff-and-reho">TS, DR, (f)ALFF, and REHO</h2>
+
+<p>The first batch of pre-processed data has been run and can be found in <code>/home2/data/Projects/ABIDE_Initiative/Derivatives/CCS/Output</code>. The different pipelines represent variations on filtering and/or global signal regression on the functional data: filt_global, filt_noglobal, nofilt_noglobal, nofilt_noglobal. </p>
+
+<p>The scripts to run all this are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/40_xinian</code>. Below are explanations of some of these scripts.</p>
+
+<ul>
+  <li><em>00_create_filt_links.bash</em>: Since the names of the filtered data were not consistent between global and non-global preprocessed data, I created this script to create some soft-links and make life easier for later steps.</li>
+  <li><em>02_gen_std_mask.bash</em>: Creates a mask based on the functional data in standard space.</li>
+  <li><em>10_gen_quick_pack.py</em>: Not the best script but it generates a YAML file with information about the different preprocessed functional data from the CCS pipeline. This yaml file is similar to the subject file used by CPAC for doing preprocessing and more.</li>
+  <li><em>20_run_quick_pack.py</em>: This runs CPAC to generate derivatives based on the quick pack yaml file from the previous step.</li>
+</ul>
+
+<h2 id="centrality">Centrality</h2>
+
+<p>In order to run centrality, we need to first make a group mask. I did this with the following script: <code>00_gen_group_mask.py</code>. I didn’t need to generate any quick pack yaml files since that was done previously. And, I just ran <code>20_run_quick_pack.py</code>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1134,127 +1191,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/06/week-49-friday/">Week 49 - Friday</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-06T10:35:00-05:00" pubdate data-updated="true">Dec 6<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="plan">Plan</h2>
-
-<ul>
-  <li>ABIDE
-    <ul>
-      <li>[] QC (1 hour)</li>
-    </ul>
-  </li>
-  <li>CPAC
-    <ul>
-      <li>[] Finish adapting fast eigenvector code (30 mins)</li>
-      <li>[] Write SVD version of eigenvector (1 hour)</li>
-      <li>[] Test new eigenvector code (2 hours)</li>
-      <li>[] @Steve CWAS Regression Test (1 hour)</li>
-    </ul>
-  </li>
-  <li>Tagging
-    <ul>
-      <li>[] Meeting to discuss criteria (1 hour)</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Look into SVD (20 mins). But it’s slower.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class="line"><span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">svd</span>
-</span><span class="line"><span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">eigsh</span>
-</span><span class="line"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
-</span><span class="line"><span class="o">%</span><span class="n">timeit</span> <span class="n">u</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
-</span><span class="line"><span class="o">%</span><span class="n">timeit</span> <span class="n">evalue</span><span class="p">,</span> <span class="n">evector</span> <span class="o">=</span> <span class="n">eigsh</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s">&#39;LM&#39;</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>In this case the current approach took 45.2ms and the SVD approach took 135ms.</p>
-
-<h2 id="fast-eigenvector-centrality">Fast Eigenvector Centrality</h2>
-
-<p>The plan for testing would be to first make sure that the code results are close to the original approach and possibly also compare to an SVD approach.</p>
-
-<h2 id="brain-size-ala-maarten">Brain Size ala Maarten</h2>
-
-<p>We ended up dropping the ball in getting Maarten some of these scripts.</p>
-
-<p>I need to create an input file with <code>T1file,age,sex</code>. If I am using the NKI Rockland pilot dataset, then I believe I should be able to find the relevant path. For the most recent data, there have been additions so let me confirm that I have access to everything. Ok so first, pilot dataset.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">rawdir    <span class="o">&lt;-</span> <span class="s">&#39;/home2/data/Originals/Rockland/raw&#39;</span>
-</span><span class="line">phenofile <span class="o">&lt;-</span> <span class="s">&#39;/home2/data/Originals/Rockland/NKI.1-39_phenotypic.csv&#39;</span>
-</span><span class="line">
-</span><span class="line">pheno     <span class="o">&lt;-</span> read.csv<span class="p">(</span>phenofile<span class="p">)</span>
-</span><span class="line">df        <span class="o">&lt;-</span> pheno<span class="p">[,</span>c<span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">12</span><span class="p">)]</span>
-</span><span class="line">df<span class="o">$</span>paths  <span class="o">&lt;-</span> file.path<span class="p">(</span>rawdir<span class="p">,</span> df<span class="o">$</span>Subject<span class="p">,</span> <span class="s">&quot;touse&quot;</span><span class="p">,</span> <span class="s">&quot;anat&quot;</span><span class="p">,</span> <span class="s">&quot;mprage.nii.gz&quot;</span><span class="p">)</span>
-</span><span class="line">df<span class="o">$</span>exists <span class="o">&lt;-</span> file.exists<span class="p">(</span>df<span class="o">$</span>paths<span class="p">)</span><span class="o">*</span><span class="m">1</span>
-</span><span class="line">
-</span><span class="line">df.txt <span class="o">&lt;-</span> df<span class="p">[</span>df<span class="o">$</span>exists<span class="o">==</span><span class="m">1</span><span class="p">,</span>c<span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">)]</span>
-</span><span class="line">write.table<span class="p">(</span>df.txt<span class="p">,</span> file<span class="o">=</span><span class="s">&quot;rockland_pilot.txt&quot;</span><span class="p">,</span> row.names<span class="o">=</span><span class="k-Variable">F</span><span class="p">,</span> col.names<span class="o">=</span><span class="k-Variable">F</span><span class="p">,</span> quote<span class="o">=</span><span class="k-Variable">F</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>I want to now look at the Enhanced dataset.</p>
-
-<h2 id="thoughts">Thoughts</h2>
-
-<h3 id="plan-better">Plan Better</h3>
-
-<p>Last few days I feel that I haven’t gotten through as much as I could have. Possibly due to not sleeping as much and partly due to more socializing like with the speaker’s visit and a new office mate. Let’s try differently today.</p>
-
-<h3 id="link-to-pages-by-week-and-month">Link to pages by week and month</h3>
-
-<p>Another nice thing would be to have a summary page at the end of the week with links to all the other pages that week (might want to check if those exist?) and similarly at the end of the month could have a page with the lists for that month. I wonder if this could be within the pages section?</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1270,11 +1206,15 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 128.0%'>abide(7)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(15)</a> <a href='/blog/categories/cpac' style='font-size: 148.0%'>cpac(12)</a> <a href='/blog/categories/cwas' style='font-size: 140.0%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 108.0%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 104.0%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 104.0%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 112.0%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 124.0%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 104.0%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 104.0%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 104.0%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 104.0%'>writedown(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/abide' style='font-size: 130.0%'>abide(8)</a> <a href='/blog/categories/cmi' style='font-size: 160.0%'>cmi(16)</a> <a href='/blog/categories/cpac' style='font-size: 145.0%'>cpac(12)</a> <a href='/blog/categories/cwas' style='font-size: 137.5%'>cwas(10)</a> <a href='/blog/categories/emotional-bs' style='font-size: 107.5%'>emotional-bs(2)</a> <a href='/blog/categories/jekyll' style='font-size: 103.75%'>jekyll(1)</a> <a href='/blog/categories/mdmr' style='font-size: 103.75%'>mdmr(1)</a> <a href='/blog/categories/nilearn' style='font-size: 111.25%'>nilearn(3)</a> <a href='/blog/categories/quickpack' style='font-size: 122.5%'>quickpack(6)</a> <a href='/blog/categories/r' style='font-size: 103.75%'>r(1)</a> <a href='/blog/categories/simulations' style='font-size: 103.75%'>simulations(1)</a> <a href='/blog/categories/work' style='font-size: 103.75%'>work(1)</a> <a href='/blog/categories/writedown' style='font-size: 103.75%'>writedown(1)</a> </span>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/30/ccs-derivatives/">CCS Derivatives</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/27/fast-eigenvector-centrality/">Fast Eigenvector Centrality</a>
@@ -1290,10 +1230,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
     
       <li class="post">
         <a href="/blog/2013/12/18/dparsf-quick-pack/">DPARSF Quick Pack</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/17/cpac-derivative-inputs/">CPAC Derivative Inputs</a>
       </li>
     
   </ul>
@@ -1454,6 +1390,9 @@ monthCalendar = function(id,year,month)
   var highlightArray = new Array();
   var hightlightLinks = new Array();
   
+  highlightArray.push('12/30/2013');
+  hightlightLinks.push('/blog/2013/12/30/ccs-derivatives/');
+  
   highlightArray.push('12/27/2013');
   hightlightLinks.push('/blog/2013/12/27/fast-eigenvector-centrality/');
   
@@ -1465,9 +1404,6 @@ monthCalendar = function(id,year,month)
   
   highlightArray.push('12/18/2013');
   hightlightLinks.push('/blog/2013/12/18/dparsf-quick-pack/');
-  
-  highlightArray.push('12/17/2013');
-  hightlightLinks.push('/blog/2013/12/17/cpac-derivative-inputs/');
   		
   var cal = new Calendar(month,year,highlightArray,hightlightLinks);
   cal.generateHTML(id);

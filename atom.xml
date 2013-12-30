@@ -4,7 +4,7 @@
   <title><![CDATA[Zarrar's Journaling]]></title>
   <link href="http://czarrar.github.io/atom.xml" rel="self"/>
   <link href="http://czarrar.github.io/"/>
-  <updated>2013-12-30T14:57:56-05:00</updated>
+  <updated>2013-12-30T17:23:48-05:00</updated>
   <id>http://czarrar.github.io/</id>
   <author>
     <name><![CDATA[Zarrar Shehzad]]></name>
@@ -12,6 +12,34 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CCS Derivatives]]></title>
+    <link href="http://czarrar.github.io/blog/2013/12/30/ccs-derivatives/"/>
+    <updated>2013-12-30T15:16:00-05:00</updated>
+    <id>http://czarrar.github.io/blog/2013/12/30/ccs-derivatives</id>
+    <content type="html"><![CDATA[<p>These data are from Xinian’s lab and are preprocessed with CCS in-house (their house). Limited details on these scripts can be found at XXX.</p>
+
+<p>All the derivatives (discussed below) were generated with a modified version of CPAC that allows for a ghetto version of quick pack (i.e., derivates can be generated with external inputs and not just CPAC preprocessed data). This particular blend of CPAC can be found in <code>/home2/data/Projects/CPAC_Regression_Test/2013-05-30_cwas/C-PAC</code>.</p>
+
+<h2 id="ts-dr-falff-and-reho">TS, DR, (f)ALFF, and REHO</h2>
+
+<p>The first batch of pre-processed data has been run and can be found in <code>/home2/data/Projects/ABIDE_Initiative/Derivatives/CCS/Output</code>. The different pipelines represent variations on filtering and/or global signal regression on the functional data: filt_global, filt_noglobal, nofilt_noglobal, nofilt_noglobal. </p>
+
+<p>The scripts to run all this are located in <code>/home2/data/Projects/ABIDE_Initiative/CPAC/abide/config/40_xinian</code>. Below are explanations of some of these scripts.</p>
+
+<ul>
+  <li><em>00_create_filt_links.bash</em>: Since the names of the filtered data were not consistent between global and non-global preprocessed data, I created this script to create some soft-links and make life easier for later steps.</li>
+  <li><em>02_gen_std_mask.bash</em>: Creates a mask based on the functional data in standard space.</li>
+  <li><em>10_gen_quick_pack.py</em>: Not the best script but it generates a YAML file with information about the different preprocessed functional data from the CCS pipeline. This yaml file is similar to the subject file used by CPAC for doing preprocessing and more.</li>
+  <li><em>20_run_quick_pack.py</em>: This runs CPAC to generate derivatives based on the quick pack yaml file from the previous step.</li>
+</ul>
+
+<h2 id="centrality">Centrality</h2>
+
+<p>In order to run centrality, we need to first make a group mask. I did this with the following script: <code>00_gen_group_mask.py</code>. I didn’t need to generate any quick pack yaml files since that was done previously. And, I just ran <code>20_run_quick_pack.py</code>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Fast Eigenvector Centrality]]></title>
@@ -1546,137 +1574,6 @@ print 'correlation: ', np.corrcoef(e12.T, v13.T)[0,1]
 </span><span class="line">                        Output directory
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Updating Centrality]]></title>
-    <link href="http://czarrar.github.io/blog/2013/11/25/updating-centrality/"/>
-    <updated>2013-11-25T10:26:00-05:00</updated>
-    <id>http://czarrar.github.io/blog/2013/11/25/updating-centrality</id>
-    <content type="html"><![CDATA[<p>I’ll go through the different changes in the CPAC centrality code that I’ve implemented.</p>
-
-<h2 id="normalized-timeseries">Normalized Timeseries</h2>
-
-<p>The easiest change was to use normalized time series, which then allows one to compute the crossproduct of the time series to calculate the correlations. Below are the relevant code slices that call on functions used in CWAS.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">timeseries</span> <span class="o">=</span> <span class="n">norm_cols</span><span class="p">(</span><span class="n">timeseries</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-</span><span class="line"><span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[:,</span><span class="n">j</span><span class="p">:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">timeseries</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="block-size">Block Size</h2>
-
-<p>We changed the block size to more accurately reflect the underlying operations. Although it should be noted that numpy has some poor memory handling as certain temporary objects will still be maintained in memory throwing off this calculation. However, later sections will show attempts to rectify this issue.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">nvoxs</span>   <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class="line"><span class="n">ntpts</span>   <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span><span class="line"><span class="n">nbytes</span>  <span class="o">=</span> <span class="n">timeseries</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
-</span><span class="line">
-</span><span class="line"><span class="k">if</span> <span class="n">memory_allocated</span><span class="p">:</span>
-</span><span class="line">    <span class="n">memory_in_bytes</span> <span class="o">=</span> <span class="n">memory_allocated</span> <span class="o">*</span> <span class="mf">1024.0</span><span class="o">**</span><span class="mi">3</span>    <span class="c"># assume it is in GB</span>
-</span><span class="line">    <span class="n">block_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">memory_in_bytes</span><span class="o">/</span><span class="p">(</span><span class="n">nvoxs</span> <span class="o">*</span> <span class="n">nbytes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">ntpts</span><span class="o">*</span><span class="n">nbytes</span> <span class="p">)</span>
-</span><span class="line">
-</span><span class="line"><span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="n">nvoxs</span><span class="p">:</span>
-</span><span class="line">    <span class="n">block_size</span> <span class="o">=</span> <span class="n">nvoxs</span>
-</span><span class="line"><span class="k">elif</span> <span class="n">block_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span class="line">    <span class="k">raise</span> <span class="ne">MemoryError</span><span class="p">(</span><span class="s">&quot; Not enough memory available to perform degree centrality&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Note that the calculation is also dynamic with the data type of the time series.</p>
-
-<h2 id="no-more-nan-to-number">No More NaN to Number</h2>
-
-<p>This function <code>np.nan_to_num</code> is applied on the correlation matrix to turn any NaNs to 0s. This will occur when a time-series is all 0s leading to an error of sorts when calculating the correlation as you will be dividing by zeros and what not. The easiest way to avoid this error is to remove any flat time-series. I do this in the <code>load</code> function that initially reads in the time-series and the mask data.</p>
-
-<p>I create an additional mask that is specific to the data. This is then combined with the externally defined template mask for a final mask at a later step.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">datmask</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span class="line"><span class="n">mask</span>    <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="more-efficient-sum-of-thresholded-correlations">More Efficient Sum of Thresholded Correlations</h2>
-
-<p>This particular step (below) is both slow and takes up a lot of memory. For instance the <code>corr_matrix &gt; r_value</code> must create a new copy of the matrix.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">corr_matrix</span> <span class="o">&gt;</span> <span class="n">r_value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>One solution is to use cython. For now, I will do this without compiling the whole package and use <code>pyxthon</code> that will dynamically compile the new function at runtime. Below is the cython code.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">centrality_binarize_double</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">cmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">cent</span><span class="p">,</span> <span class="n">double</span> <span class="n">thresh</span><span class="p">):</span>
-</span><span class="line">    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
-</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-</span><span class="line">            <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
-</span><span class="line"><span class="c">#</span>
-</span><span class="line"><span class="k">def</span> <span class="nf">centrality_weighted_double</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">cmat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">double</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">cent</span><span class="p">,</span> <span class="n">double</span> <span class="n">thresh</span><span class="p">):</span>
-</span><span class="line">    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
-</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-</span><span class="line">            <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">cmat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>I created a wrapper centrality function that is fairly straightforward. It allows one to access all the different C functions through one python function. I also wrote 2 tests that both passed. Here’s one example to illustrate the new functionality (<code>comp</code>) relative to the old (<code>ref</code>).</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">test_centrality_binarize</span><span class="p">():</span>
-</span><span class="line">    <span class="k">print</span> <span class="s">&quot;testing centrality binarize&quot;</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">method</span>      <span class="o">=</span> <span class="s">&quot;binarize&quot;</span>
-</span><span class="line">    <span class="n">nblock</span>      <span class="o">=</span> <span class="mi">20</span>
-</span><span class="line">    <span class="n">nvoxs</span>       <span class="o">=</span> <span class="mi">100</span>
-</span><span class="line">    <span class="n">r_value</span>     <span class="o">=</span> <span class="mf">0.2</span>
-</span><span class="line">    <span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nblock</span><span class="p">,</span> <span class="n">nvoxs</span><span class="p">))</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">ref</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">&gt;</span><span class="n">r_value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class="line">    <span class="n">comp</span> <span class="o">=</span> <span class="n">centrality</span><span class="p">(</span><span class="n">corr_matrix</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">assert_equal</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h2 id="deleting-temporary-correlation-matrix">Deleting Temporary Correlation Matrix</h2>
-
-<p>The correlation matrix created for each block loop will not be freed, hence there is a build up of these matrices in memory. A simple fix for this is to delete the correlation matrix at the end of each loop. It is then freed when the next loop iteration begins.</p>
 ]]></content>
   </entry>
   
