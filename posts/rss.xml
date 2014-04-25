@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+  <channel>
+    <title>Site Title</title>
+    <description>Site Title</description>
+    <link>http://sample.com</link>
+    <pubDate>2014-04-25</pubDate>
+    <item>
+      <title>Checking on DVARS</title>
+      <link>http://sample.com/checking-on-dvars</link>
+      <pubDate>2014-04-25</pubDate>
+      <description>&#x201C;Examination of different implementations of DVARS&#x201D;</description>
+    </item>
+    <item>
+      <title>Overlay brain slices</title>
+      <link>http://sample.com/overlay-brain-slices</link>
+      <pubDate>2014-04-22</pubDate>
+      <description>&#x201C;Thinking through how to render overlays in R&#x201D;</description>
+    </item>
+    <item>
+      <title>Plot Brain Slices</title>
+      <link>http://sample.com/plot-brain-slices</link>
+      <pubDate>2014-04-13</pubDate>
+      <description>Thinking through code to plot brain slices in R</description>
+    </item>
+    <item>
+      <title>My First Post</title>
+      <link>http://sample.com/my-first-post</link>
+      <pubDate>2014-04-01</pubDate>
+      <description>Testing the waters</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Checking on DVARS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="“Examination of different implementations of DVARS”">
+    <meta name="author" content="First-name Last-name">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+<link href='/assets/stylesheets/bootstrap.min-88238289010db19359d2181e634e95cd.css' type='text/css' rel='stylesheet' media='all'>
+<link href='/assets/stylesheets/style-e81fa375b231bedf6cb2dbc6653570cc.css' type='text/css' rel='stylesheet' media='all'>
+<link href='/assets/stylesheets/google_prettify/sons-of-obsidian-afb0925bfa2d994f17dab93e13fbf999.css' type='text/css' rel='stylesheet' media='all'>
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">Site Title</a>
+          <ul class="nav">
+              
+                <li><a href="/archive">Archive</a></li>
+              
+              
+                <li><a href="/tags">Tags</a></li>
+              
+              
+                <li><a href="/categories">Categories</a></li>
+              
+              
+                <li><a href="/pages">Pages</a></li>
+              
+              
+                <li><a href="/about">About Me</a></li>
+              
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>Checking on DVARS </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>2014-04-25</strong>
+    </div>
+    <div class="content">
+      <h1 id="toc_0">Overview</h1>
+
+<p>I have been tasked with double-checking the DVARS output in CPAC.  The use of DVARS is inspired by the Power et al. (2013) paper, which attempted to derive measures to assess the level of subject motion in the fMRI data. Here is a paragraph borrowed from the paper to explain the measure:</p>
+
+<blockquote>
+<p>DVARS (D referring to temporal derivative of timecourses, VARS referring to RMS variance over voxels) indexes the rate of change of BOLD signal across the entire brain at each frame of data. To calculate DVARS, the volumetric timeseries is differentiated (by backwards differences) and RMS signal change is calculated over the whole brain. DVARS is thus a measure of how much the intensity of a brain image changes in comparison to the previous timepoint (as opposed to the global signal, which is the average value of a brain image at a timepoint).</p>
+</blockquote>
+
+<h1 id="toc_1">Details of Approach</h1>
+
+<h2 id="toc_2">Dr. Kelly</h2>
+
+<p>In an email, Dr. Clare Kelly described the pertinent steps for DVARS below.</p>
+
+<ol>
+<li>Motion correction</li>
+<li>Intensity normalization to whole brain mode value of 1000: which means, finding modal value across time and space for voxels within the brain, dividing each voxel by this modal value and multiplying by 1000</li>
+<li>Compute temporal derivative</li>
+<li>Square temporal derivative</li>
+<li>Get spatial mean of squared temporal derivative (i.e., a single time series)</li>
+<li>Get square root of squared temporal derivative at each time point</li>
+<li>Divide this number by 10 (because 10 units=1% signal change)</li>
+</ol>
+
+<p>I will use this nice breakdown of the steps and reference them later on. Please keep note.</p>
+
+<h2 id="toc_3">CPAC</h2>
+
+<h3 id="toc_4">Steps 1-2</h3>
+
+<p>In CPAC steps 1 and 2 (from above) are calculated in prior/generic step (see <a href="https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/func_preproc/func_preproc.py">https://github.com/FCP-INDI/C-PAC/blob/master/CPAC/func_preproc/func_preproc.py</a>). Consequently, intensity normalization uses <code>fslmaths … -ing 10000 …</code>, which adjusts the global 4D mean and not the mode value as in Clare’s approach above.</p>
+
+<h3 id="toc_5">Steps 3-6</h3>
+
+<p>In the rest of the computation (steps 3-6), CPAC’s approach matches Clare’s description of the Power paper (see X). The motion corrected and intensity normalized functional data is read in as <code>rest_data</code> along with the functional brain mask <code>mask_data</code>. </p>
+
+<p>Now the temporal derivative is calculated and subsequently squared (steps 3-4).</p>
+
+<pre><code>data = np.square(np.diff(rest_data, axis = 3))
+</code></pre>
+
+<p>A mask is applied to constrain the data to only brain (unclear why this is done here and not earlier).</p>
+
+<pre><code>data = data[mask_data]
+</code></pre>
+
+<p>Finally, the mean across all time-points? (shouldn’t this be across all voxels) is calculated followed by the square root (steps 5-6).</p>
+
+<pre><code>DVARS = np.sqrt(np.mean(data, axis=0))
+</code></pre>
+
+<h3 id="toc_6">Step 7 (no)</h3>
+
+<p>Note that there is no step 7 (divide by 10) in the present calculations. Not sure why.</p>
+
+<h2 id="toc_7">FSL</h2>
+
+<p>In fsl’s fsl<em>motion</em>outlier script, they include a calculation for the DVARS.</p>
+
+<h3 id="toc_8">Step 1</h3>
+
+<p>There is an option to motion correct with the script and I assume it will be used.</p>
+
+<h3 id="toc_9">Step 2-6</h3>
+
+<p>The functional data isn’t explicitly intensity normalized, however intensity normalization values are calculated including the median value within the brain and then used explicitly at the end.</p>
+
+<p>At this point in the code, the input functional is <code>$mcf</code> and the maximum time-point is <code>tmax1</code>, which is actually the number time-points minus one. They create a copy of the functional data with one that is shifted by 1.</p>
+
+<pre><code>fslroi $mcf ${mcf}1 0 $tmax1
+fslroi $mcf ${mcf}2 1 $tmax1
+</code></pre>
+
+<p>The shifted time-series <code>${mcf}2</code> can be used to calculated the temporal derivative within masked values <code>${mcf}2 -sub ${mcf}1 -mas ${mask}</code>. They then square this difference <code>-sqr</code> and take the spatial mean <code>-Xmean -Ymean -Zmean</code> and finally divide this by the fraction of voxels in the brain <code>maskmean</code> (this step accounts for taking the spatial mean across the whole  brain instead of the mask). Finally they take the square root of all this <code>$sqrtcom</code> (not sure why this was set as a variable).</p>
+
+<pre><code>fslmaths ${mcf}2 -sub ${mcf}1 -mas ${mask} -sqr -Xmean -Ymean -Zmean -div $maskmean $sqrtcom ${outdir}_mc/res_mse_diff -odt float
+</code></pre>
+
+<p>Now they normalize, their data by the median value within the brain <code>$brainmed</code> unlike the mode used by Clare or the mean used by CPAC. The result of this step is then multiplied by 1000 (unlike the 10000 used in CPAC but in line with the value used by Clare).</p>
+
+<h3 id="toc_10">Step 7 (no)</h3>
+
+<p>They also don’t use the x10 correction in Clare’s script.</p>
+
+<h2 id="toc_11">Dr. Nichols</h2>
+
+<p>Tom Nichols has developed a standardized version of DVARS that attempts to fix an issue where DVARS can lack interpretable units. His approach removes the dependence of the measure on temporal standard deviation and autocorrelation. Further details and a script can be found at <a href="http://blogs.warwick.ac.uk/nichols/entry/standardizing_dvars">http://blogs.warwick.ac.uk/nichols/entry/standardizing_dvars</a>.</p>
+
+<p>Since his code is pretty self-explanatory, I’m in a time crunch, and need to go eat, I will paste his code directly here:</p>
+
+<pre><code># Find mean over time
+fslmaths &quot;$FUNC&quot; -Tmean $Tmp-Mean
+# Find the brain
+bet $Tmp-Mean  $Tmp-MeanBrain
+
+# Compute robust estimate of standard deviation
+fslmaths &quot;$FUNC&quot; -Tperc 25 $Tmp-lq
+fslmaths &quot;$FUNC&quot; -Tperc 75 $Tmp-uq
+fslmaths $Tmp-uq -sub $Tmp-lq -div 1.349 $Tmp-SD -odt float
+
+# Compute (non-robust) estimate of lag-1 autocorrelation
+fslmaths &quot;$FUNC&quot; -sub $Tmp-Mean -Tar1 $Tmp-AR1 -odt float
+
+# Compute (predicted) standard deviation of temporal difference time series
+fslmaths $Tmp-AR1 -mul -1 -add 1 -mul 2 -sqrt -mul $Tmp-SD  $Tmp-DiffSDhat
+
+# Save mean value
+DiffSDmean=$(fslstats $Tmp-DiffSDhat -k $Tmp-MeanBrain -M)
+
+echo -n &quot;.&quot;
+
+# Compute temporal difference time series
+nVol=$(fslnvols &quot;$FUNC&quot;)
+fslroi &quot;$FUNC&quot; $Tmp-FUNC0 0 $((nVol-1))
+fslroi &quot;$FUNC&quot; $Tmp-FUNC1 1 $nVol
+
+echo -n &quot;.&quot;
+
+# Compute DVARS, no standization
+fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1                $Tmp-Diff -odt float
+fslstats -t $Tmp-Diff       -k $Tmp-MeanBrain -S &gt; $Tmp-DiffSD.dat
+
+if [ &quot;$AllVers&quot; = &quot;&quot; ] ; then
+    # Standardized
+    awk &#39;{printf(&quot;%g\n&quot;,$1/&#39;&quot;$DiffSDmean&quot;&#39;)}&#39; $Tmp-DiffSD.dat &gt; &quot;$OUT&quot;
+else
+    # Compute DVARS, based on voxel-wise standardized image
+    fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -div $Tmp-DiffSDhat $Tmp-DiffVxStdz
+    fslstats -t $Tmp-DiffVxStdz -k $Tmp-MeanBrain -S &gt; $Tmp-DiffVxStdzSD.dat
+
+    # Sew it all together
+    awk &#39;{printf(&quot;%g\t%g\n&quot;,$1/&#39;&quot;$DiffSDmean&quot;&#39;,$1)}&#39; $Tmp-DiffSD.dat &gt; $Tmp-DVARS
+    paste $Tmp-DVARS $Tmp-DiffVxStdzSD.dat &gt; &quot;$OUT&quot;
+fi
+</code></pre>
+
+<p>I’m not totally sure how this compares in practice but it seems to be a more rigorous approach. Note that to estimate standard deviation it uses the IQR.</p>
+
+    </div>
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+    </ul>
+    <ul class="tag_box inline">
+      <li><i class="icon-tags"></i></li>
+      <li>
+        <a href="/tags#cpac-ref">cpac <span>1</span></a>
+      </li>
+      <li>
+        <a href="/tags#preprocessing-ref">preprocessing <span>1</span></a>
+      </li>
+      <li>
+        <a href="/tags#fMRI-ref">fMRI <span>1</span></a>
+      </li>
+    </ul>
+    <hr>
+    <div class="pagination">
+      <ul>
+          <li class="prev"><a href="/overlay-brain-slices" title="Overlay brain slices">&larr; Previous</a></li>
+
+          <li><a href="/archive">Archive</a></li>
+
+          <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+    <div id="disqus_thread"></div>
+<script>
+    var disqus_developer = 1;
+    var disqus_shortname = 'czarrar'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</div>
+
+
+      </div>
+
+      <hr>
+      <div class="footer">
+        <p>&copy; First-name Last-name 2013
+          with help from <a href="http://ruhoh.com" target="_blank" title="The Definitive Technical Blogging Framework">ruhoh</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- Google Prettify -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js"></script>
+<script>
+  var pres = document.getElementsByTagName("pre");
+  for (var i=0; i < pres.length; ++i) {
+    pres[i].className = "prettyprint linenums";
+  }
+  prettyPrint();
+</script>
+<!-- end Google Prettify -->
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-123-12']);
+  _gaq.push(['_trackPageview']);
+  
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+    
+  </body>
+</html>

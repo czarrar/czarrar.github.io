@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Plot Brain Slices</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Thinking through code to plot brain slices in R">
+    <meta name="author" content="First-name Last-name">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+<link href='/assets/stylesheets/bootstrap.min-88238289010db19359d2181e634e95cd.css' type='text/css' rel='stylesheet' media='all'>
+<link href='/assets/stylesheets/style-e81fa375b231bedf6cb2dbc6653570cc.css' type='text/css' rel='stylesheet' media='all'>
+<link href='/assets/stylesheets/google_prettify/sons-of-obsidian-afb0925bfa2d994f17dab93e13fbf999.css' type='text/css' rel='stylesheet' media='all'>
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">Site Title</a>
+          <ul class="nav">
+              
+                <li><a href="/archive">Archive</a></li>
+              
+              
+                <li><a href="/tags">Tags</a></li>
+              
+              
+                <li><a href="/categories">Categories</a></li>
+              
+              
+                <li><a href="/pages">Pages</a></li>
+              
+              
+                <li><a href="/about">About Me</a></li>
+              
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>Plot Brain Slices </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>2014-04-13</strong>
+    </div>
+    <div class="content">
+      <p>I’m thinking of having this set of functions that allow to easily plot brain imaging slices in R. I have some basic functions from before but wanted to expand those. So what might I envision</p>
+
+<h1 id="toc_0">Possible Use Cases</h1>
+
+<h2 id="toc_1">Simplest?</h2>
+
+<p>Simplest case, I have just an underlay. I want to plot the axial slices for this underlay. Typically, I want to just specify the box (# or rows/cols of slices) like in AFNI to create a montage. It should figure out the slices with brain based on the underlay (or later some other reference image). </p>
+
+<pre><code>p &lt;- bplot(underlay) + brain_montage(“axial”, nrows=4, ncols=3)
+plot(p)
+</code></pre>
+
+<h3 id="toc_2">bplot</h3>
+
+<p>There would be some default values to <code>bplot</code>, including:</p>
+
+<ul>
+<li><em>color</em>: a color ramp palette for the underlay, default is greyscale</li>
+<li><em>bounding.box</em>: a string value, specifying the filename to a mask of slices to plot (e.g., brain) or if ‘auto’, this mask with slices of stuff will be determined internally.</li>
+</ul>
+
+<p>Under the hood, <code>bplot</code>  should be reading in the underlay into an array and figuring out the slices that are the brain (bounding box). </p>
+
+<h3 id="toc_3">brain_montage</h3>
+
+<p>We would be getting the slices based on the underlay and the three parameters to montage (axial, nrows, and ncols).  Since this function call doesn’t directly have access to the underlay information, we would return some other function that would take in the underlay information along with the other parameters. For instance, <code>BSmontage(bclass, slice_type, nrows, ncols)</code> could be that other function where <code>bclass</code> is an S3 class returned by <code>bplot</code>, maybe called <code>brainslices</code>.</p>
+
+<h3 id="toc_4">plot</h3>
+
+<p>This would actually be some call to <code>plot.brainslices</code> that would likely call the <code>BSmontage</code> (or maybe that function would be called during the <code>+</code> thingy). I guess this might also have calls to some other function that could handle plotting brain slices, either first concatenating it all into one matrix or plotting each slice, one by one. I can use what I did before for this.</p>
+
+<h1 id="toc_5">Other Stuff</h1>
+
+<p>When we add the overlay, we will need to deal with possible differences in the dimensions of the underlay vs overlay (e.g., 1mm vs 3mm space). The one question here is how AFNI deals with these different dimensions. For instance, in my case, it would be easy if it is 1mm vs 3mm but not if it’s 1mm vs 2.5mm. In that case, some amount of resampling and interpolation might be required to match the overlay slices. For now though let’s assume the dimensions are the exact same.</p>
+
+    </div>
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+    </ul>
+    <ul class="tag_box inline">
+      <li><i class="icon-tags"></i></li>
+      <li>
+        <a href="/tags#bplot-ref">bplot <span>2</span></a>
+      </li>
+      <li>
+        <a href="/tags#R-ref">R <span>2</span></a>
+      </li>
+    </ul>
+    <hr>
+    <div class="pagination">
+      <ul>
+          <li class="prev"><a href="/my-first-post" title="My First Post">&larr; Previous</a></li>
+
+          <li><a href="/archive">Archive</a></li>
+
+          <li class="next"><a href="/overlay-brain-slices" title="Overlay brain slices">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+    <div id="disqus_thread"></div>
+<script>
+    var disqus_developer = 1;
+    var disqus_shortname = 'czarrar'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</div>
+
+
+      </div>
+
+      <hr>
+      <div class="footer">
+        <p>&copy; First-name Last-name 2013
+          with help from <a href="http://ruhoh.com" target="_blank" title="The Definitive Technical Blogging Framework">ruhoh</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- Google Prettify -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js"></script>
+<script>
+  var pres = document.getElementsByTagName("pre");
+  for (var i=0; i < pres.length; ++i) {
+    pres[i].className = "prettyprint linenums";
+  }
+  prettyPrint();
+</script>
+<!-- end Google Prettify -->
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-123-12']);
+  _gaq.push(['_trackPageview']);
+  
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+    
+  </body>
+</html>
